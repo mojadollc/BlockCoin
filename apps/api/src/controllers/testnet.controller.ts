@@ -117,7 +117,7 @@ export async function getReceipt(req: AuthRequest, res: Response): Promise<void>
   const { network, txHash } = req.params
 
   try {
-    let receipt: sepolia.TxReceipt | tron.TronTxReceipt
+    let receipt: unknown
 
     if (network === 'sepolia') receipt = await sepolia.getTransactionReceipt(txHash)
     else if (network === 'tron-nile') receipt = await tron.getTransactionReceipt(txHash)
