@@ -15,10 +15,10 @@ export async function listWallets(req: AuthRequest, res: Response): Promise<void
       include: { ledgerAccount: { select: { balanceUnits: true } } },
     })
 
-    const result = wallets.map(w => ({
+    const result = wallets.map(({ ledgerAccount, ...w }) => ({
       ...w,
-      balanceDisplay: w.ledgerAccount
-        ? unitsToDisplay(w.ledgerAccount.balanceUnits)
+      balanceDisplay: ledgerAccount
+        ? unitsToDisplay(ledgerAccount.balanceUnits)
         : '0.000000',
     }))
 
@@ -62,6 +62,7 @@ export async function getWallet(req: AuthRequest, res: Response): Promise<void> 
 
     ok(res, {
       ...wallet,
+      ledgerAccount: undefined,
       balanceDisplay: wallet.ledgerAccount
         ? unitsToDisplay(wallet.ledgerAccount.balanceUnits)
         : '0.000000',
@@ -271,10 +272,10 @@ export async function getLedgerHistory(req: AuthRequest, res: Response): Promise
       prisma.ledgerEntry.count({ where: { ledgerAccountId: account.id } }),
     ])
 
-    const mapped = items.map(e => ({
+    const mapped = items.map(({ amountUnits, balanceAfter, ...e }) => ({
       ...e,
-      amountDisplay: unitsToDisplay(e.amountUnits),
-      balanceAfterDisplay: unitsToDisplay(e.balanceAfter),
+      amountDisplay: unitsToDisplay(amountUnits),
+      balanceAfterDisplay: unitsToDisplay(balanceAfter),
     }))
 
     ok(res, { items: mapped, total, page, limit })

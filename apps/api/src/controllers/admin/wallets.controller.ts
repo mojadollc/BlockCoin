@@ -27,7 +27,14 @@ export async function listWallets(req: AuthRequest, res: Response): Promise<void
       prisma.virtualWallet.count({ where }),
     ])
 
-    ok(res, { items, total, page, limit })
+    const mapped = items.map(({ ledgerAccount, ...w }) => ({
+      ...w,
+      ledgerAccount: ledgerAccount
+        ? { balanceUnits: ledgerAccount.balanceUnits.toString() }
+        : null,
+    }))
+
+    ok(res, { items: mapped, total, page, limit })
   } catch {
     serverError(res)
   }
