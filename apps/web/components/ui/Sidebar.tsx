@@ -9,7 +9,6 @@ const USER_NAV = [
   { href: '/dashboard/wallets', label: 'Wallets', icon: '◈' },
   { href: '/dashboard/transactions', label: 'Transactions', icon: '⇄' },
   { href: '/dashboard/simulations', label: 'Simulations', icon: '⚙' },
-  { href: '/dashboard/testnet', label: 'Testnet', icon: '⛓' },
   { href: '/dashboard/profile', label: 'Profile', icon: '◉' },
 ]
 

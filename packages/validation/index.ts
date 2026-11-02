@@ -23,13 +23,13 @@ export const AdjustBalanceSchema = z.object({
 })
 
 export const CreateSimulationSchema = z.object({
-  walletId: z.string().cuid(),
+  walletId: z.string().min(1),
   type: z.enum(['CREDIT', 'DEBIT', 'TRANSFER']),
   amountDisplay: z.string().regex(/^\d+(\.\d{1,6})?$/),
   description: z.string().max(500).optional(),
   processingDelay: z.number().int().min(0).max(3600).default(0),
   expiresInSeconds: z.number().int().min(0).optional(),
-  templateId: z.string().cuid().optional(),
+  templateId: z.string().min(1).optional(),
 })
 
 export const UpdateProfileSchema = z.object({
