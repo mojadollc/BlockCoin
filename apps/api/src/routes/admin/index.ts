@@ -11,7 +11,8 @@ import {
 import { listTransactions, listLedgerEntries } from '../../controllers/admin/transactions.controller'
 import { listTemplates, createTemplate, updateTemplate, deleteTemplate } from '../../controllers/admin/templates.controller'
 import { listAuditLogs } from '../../controllers/admin/audit.controller'
-import { getSettings, upsertSetting, getEnvKeys, updateEnvKey, getUIFlags, updateUIFlag, getSecurityReports } from '../../controllers/admin/settings.controller'
+import { getSettings, upsertSetting, getEnvKeys, updateEnvKey, updateUIFlag, getSecurityReports } from '../../controllers/admin/settings.controller'
+import { getUIFlags } from '../../controllers/admin/settings.controller'
 import {
   listScenarios, runScenario, getReport, listReports, deleteReport,
 } from '../../controllers/admin/security.controller'
@@ -76,8 +77,7 @@ router.post('/settings', upsertSetting)
 router.get('/env-keys', getEnvKeys)
 router.post('/env-keys', updateEnvKey)
 
-// UI flags
-router.get('/ui-flags', getUIFlags)
+// UI flags (write only — read is on public route)
 router.post('/ui-flags', updateUIFlag)
 
 // Simulations
