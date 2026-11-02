@@ -11,7 +11,7 @@ import {
 import { listTransactions, listLedgerEntries } from '../../controllers/admin/transactions.controller'
 import { listTemplates, createTemplate, updateTemplate, deleteTemplate } from '../../controllers/admin/templates.controller'
 import { listAuditLogs } from '../../controllers/admin/audit.controller'
-import { getSettings, upsertSetting, getSecurityReports } from '../../controllers/admin/settings.controller'
+import { getSettings, upsertSetting, getEnvKeys, updateEnvKey, getSecurityReports } from '../../controllers/admin/settings.controller'
 import {
   listScenarios, runScenario, getReport, listReports, deleteReport,
 } from '../../controllers/admin/security.controller'
@@ -71,6 +71,10 @@ router.get('/audit-logs', listAuditLogs)
 // Settings
 router.get('/settings', getSettings)
 router.post('/settings', upsertSetting)
+
+// Env key management
+router.get('/env-keys', getEnvKeys)
+router.post('/env-keys', updateEnvKey)
 
 // Simulations
 router.get('/simulations', adminListSimulations)
