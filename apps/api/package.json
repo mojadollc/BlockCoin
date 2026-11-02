@@ -11,6 +11,7 @@
     "@blockcoin/shared": "*",
     "@blockcoin/validation": "*",
     "argon2": "^0.31.2",
+    "dotenv": "^16.4.5",
     "bullmq": "^5.81.5",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

@@ -10,6 +10,7 @@
     "@blockcoin/database": "*",
     "@blockcoin/shared": "*",
     "bullmq": "^5.81.5",
+    "dotenv": "^16.4.5",
     "ioredis": "^5.11.1"
   },
   "devDependencies": {
