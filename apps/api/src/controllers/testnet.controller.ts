@@ -113,16 +113,25 @@ export async function submitTransaction(req: AuthRequest, res: Response): Promis
 
 // ── Receipt / verification ────────────────────────────────────────────────────
 
+interface AnyReceipt {
+  txHash: string
+  blockNumber: number
+  confirmations: number
+  status: string
+  fromAddress: string
+  toAddress: string
+}
+
 export async function getReceipt(req: AuthRequest, res: Response): Promise<void> {
   const { network, txHash } = req.params
 
   try {
-    let receipt: unknown
+    let receipt: AnyReceipt
 
     if (network === 'sepolia') receipt = await sepolia.getTransactionReceipt(txHash)
     else if (network === 'tron-nile') receipt = await tron.getTransactionReceipt(txHash)
-    else if (network === 'eth-mainnet') receipt = await ethMainnet.getTransactionReceipt(txHash)
-    else if (network === 'tron-mainnet') receipt = await tronMainnet.getTransactionReceipt(txHash)
+    else if (network === 'eth-mainnet') receipt = await ethMainnet.getTransactionReceipt(txHash) as AnyReceipt
+    else if (network === 'tron-mainnet') receipt = await tronMainnet.getTransactionReceipt(txHash) as AnyReceipt
     else { badRequest(res, 'Unknown network'); return }
 
     // Update our DB record if we have one
