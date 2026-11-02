@@ -97,7 +97,7 @@ export default function WalletDetailPage() {
       <div className="bg-card rounded-xl border border-white/5 p-6 mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs text-surface/40 mb-1">BlockCoin Virtual Wallet</p>
+            <p className="text-xs text-surface/40 mb-1">USDT Wallet</p>
             <h2 className="text-xl font-bold">{wallet.label}</h2>
             <p className="text-xs font-mono text-surface/30 mt-1">{wallet.address}</p>
           </div>
@@ -111,7 +111,7 @@ export default function WalletDetailPage() {
 
         <div className="mb-6">
           <p className="text-4xl font-bold font-mono text-primary">{wallet.balanceDisplay}</p>
-          <p className="text-sm text-surface/40 mt-1">USDT — BlockCoin Internal Balance</p>
+          <p className="text-sm text-surface/40 mt-1">USDT Balance</p>
         </div>
 
         {wallet.status === 'ACTIVE' && (

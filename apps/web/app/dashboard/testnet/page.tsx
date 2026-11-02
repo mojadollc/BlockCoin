@@ -69,8 +69,8 @@ export default function TestnetPage() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-6 md:mb-8">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold">Testnet</h2>
-          <p className="text-surface/50 text-sm mt-1">Real blockchain testnet operations — separate from virtual wallets</p>
+          <h2 className="text-xl md:text-2xl font-bold">Blockchain</h2>
+          <p className="text-surface/50 text-sm mt-1">On-chain operations via Sepolia and TRON Nile networks</p>
         </div>
         <EnvBadge env="TESTNET" />
       </div>
@@ -87,7 +87,7 @@ export default function TestnetPage() {
               <span className={`text-2xl ${net.color}`}>{net.icon}</span>
               <div>
                 <h3 className="font-semibold">{net.label}</h3>
-                <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">TESTNET</span>
+                <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">Live</span>
               </div>
             </div>
             <p className="text-sm text-surface/50">
@@ -100,11 +100,9 @@ export default function TestnetPage() {
 
       {/* Disclaimer */}
       <div className="bg-secondary/5 border border-secondary/20 rounded-xl p-4 mb-8">
-        <p className="text-sm text-secondary font-semibold mb-1">⛓ TESTNET ENVIRONMENT</p>
+        <p className="text-sm text-secondary font-semibold mb-1">⛓ Blockchain Network</p>
         <p className="text-xs text-surface/60">
-          Transactions on this page are real blockchain operations on public testnets. They use testnet assets only and have no real monetary value.
-          Transaction hashes can be independently verified on public blockchain explorers.
-          These records are completely separate from BlockCoin internal virtual transactions.
+          Transactions on this page are real blockchain operations. Transaction hashes can be independently verified on public blockchain explorers.
         </p>
       </div>
 

@@ -51,7 +51,7 @@ export default function DashboardPage() {
       <div className="flex flex-wrap items-start justify-between gap-2 mb-6 md:mb-8">
         <div>
           <h2 className="text-xl md:text-2xl font-bold">Welcome, {user?.firstName}</h2>
-          <p className="text-surface/50 text-sm mt-1">Your BlockCoin virtual wallet dashboard</p>
+          <p className="text-surface/50 text-sm mt-1">Your BlockCoin wallet dashboard</p>
         </div>
         <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
       </div>
@@ -59,14 +59,14 @@ export default function DashboardPage() {
       {/* Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl p-6 border border-white/5">
-          <p className="text-sm text-surface/50">Total Virtual Balance</p>
+          <p className="text-sm text-surface/50">Total Balance</p>
           <p className="text-3xl font-bold font-mono text-primary mt-2">
             {unitsToDisplay(totalBalance)}
           </p>
-          <p className="text-xs text-surface/40 mt-1">USDT — BlockCoin Internal</p>
+          <p className="text-xs text-surface/40 mt-1">USDT</p>
         </div>
         <div className="bg-card rounded-xl p-6 border border-white/5">
-          <p className="text-sm text-surface/50">Virtual Wallets</p>
+          <p className="text-sm text-surface/50">Wallets</p>
           <p className="text-3xl font-bold text-secondary mt-2">{wallets.length}</p>
           <p className="text-xs text-surface/40 mt-1">of 10 maximum</p>
         </div>
@@ -79,7 +79,7 @@ export default function DashboardPage() {
 
       {/* Wallets */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">Virtual Wallets</h3>
+        <h3 className="font-semibold">Wallets</h3>
         <Link
           href="/dashboard/wallets"
           className="text-sm text-primary hover:underline"

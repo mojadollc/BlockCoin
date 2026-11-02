@@ -18,13 +18,14 @@ export function StatusBadge({ status }: { status: SimulationStatus }) {
   )
 }
 
-export function EnvBadge({ env, show = true }: { env: Environment; show?: boolean }) {
+// EnvBadge kept for API compatibility but renders nothing — controlled via admin flags
+export function EnvBadge({ env, show = false }: { env: Environment; show?: boolean }) {
   if (!show) return null
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-      env === 'INTERNAL' ? 'bg-warning/20 text-warning' : 'bg-secondary/20 text-secondary'
+      env === 'INTERNAL' ? 'bg-primary/20 text-primary' : 'bg-secondary/20 text-secondary'
     }`}>
-      {env === 'INTERNAL' ? 'INTERNAL ENVIRONMENT' : 'TESTNET ENVIRONMENT'}
+      {env === 'INTERNAL' ? 'Live' : 'Testnet'}
     </span>
   )
 }

@@ -24,8 +24,8 @@ export default function AdminDashboard() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-6 md:mb-8">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold">Admin Dashboard</h2>
-          <p className="text-surface/50 text-sm mt-1">BlockCoin USDT Lab — Control Panel</p>
+          <h2 className="text-xl md:text-2xl font-bold">Dashboard</h2>
+          <p className="text-surface/50 text-sm mt-1">BlockCoin USDT Platform — Control Panel</p>
         </div>
         <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
       </div>

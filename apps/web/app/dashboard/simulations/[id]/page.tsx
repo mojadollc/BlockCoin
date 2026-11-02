@@ -84,7 +84,7 @@ export default function SimulationDetailPage() {
       <div className="bg-card rounded-xl border border-white/5 p-6 mb-4">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs text-surface/40 mb-1">Simulation</p>
+            <p className="text-xs text-surface/40 mb-1">Transaction</p>
             <p className="font-mono text-xs text-surface/50">{sim.id}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -97,7 +97,7 @@ export default function SimulationDetailPage() {
           <p className={`text-4xl font-bold font-mono ${sim.type === 'CREDIT' ? 'text-primary' : 'text-danger'}`}>
             {sim.type === 'CREDIT' ? '+' : '-'}{sim.amountDisplay}
           </p>
-          <p className="text-surface/40 text-sm mt-1">USDT — BlockCoin Simulated</p>
+          <p className="text-surface/40 text-sm mt-1">USDT</p>
         </div>
 
         <div className="space-y-2 text-sm">

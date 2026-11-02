@@ -4,53 +4,53 @@ const FEATURES = [
   {
     icon: '◈',
     color: 'text-primary bg-primary/10',
-    title: 'Virtual USDT Wallets',
-    desc: 'Create up to 10 isolated virtual wallets per account. Simulate real USDT balances with full ledger tracking and instant balance updates.',
+    title: 'USDT Wallets',
+    desc: 'Create and manage multiple USDT wallets per account. Full ledger tracking, real-time balance updates, and instant transaction history.',
   },
   {
     icon: '⚙',
     color: 'text-secondary bg-secondary/10',
-    title: 'Transaction Simulation Engine',
-    desc: 'Run CREDIT, DEBIT, and TRANSFER simulations with configurable delays, expiry timers, and real-time status progression.',
+    title: 'Transaction Engine',
+    desc: 'Execute CREDIT, DEBIT, and TRANSFER operations with configurable processing, expiry timers, and real-time status tracking.',
   },
   {
     icon: '🛡',
     color: 'text-warning bg-warning/10',
-    title: 'Security Simulator',
-    desc: 'Test wallet behavior under 20+ security scenarios — balance spoofing, pending manipulation, sync attacks, and more.',
+    title: 'Security Testing',
+    desc: 'Run 20+ security scenarios against your wallets. Identify vulnerabilities before they become problems.',
   },
   {
     icon: '⛓',
     color: 'text-secondary bg-secondary/10',
-    title: 'Live Testnet Integration',
-    desc: 'Connect to Ethereum Sepolia and TRON Nile testnets. Submit real on-chain transactions and verify them on public explorers.',
+    title: 'Blockchain Integration',
+    desc: 'Connect to Ethereum Sepolia and TRON Nile networks. Submit on-chain transactions and verify them on public explorers.',
   },
   {
     icon: '📋',
     color: 'text-primary bg-primary/10',
     title: 'Immutable Audit Logs',
-    desc: 'Every admin action, balance adjustment, and simulation is permanently recorded. Full accountability with actor tracking.',
+    desc: 'Every action, balance change, and transaction is permanently recorded. Full accountability with actor tracking.',
   },
   {
     icon: '⊞',
     color: 'text-warning bg-warning/10',
     title: 'Admin Control Panel',
-    desc: 'Manage users, wallets, and simulations from a powerful admin dashboard. Adjust balances, force statuses, and run security reports.',
+    desc: 'Manage users, wallets, and transactions from a powerful dashboard. Adjust balances, monitor activity, and run security reports.',
   },
 ]
 
 const STEPS = [
-  { step: '01', title: 'Create Your Account', desc: 'Sign up in seconds. No credit card, no KYC. Your isolated environment is ready instantly.' },
-  { step: '02', title: 'Spin Up Virtual Wallets', desc: 'Create up to 10 USDT wallets. Each has its own ledger, address, and real-time balance tracking.' },
-  { step: '03', title: 'Run Simulations', desc: 'Trigger deposits, withdrawals, and transfers with custom delays. Watch status flow from PENDING to COMPLETED.' },
-  { step: '04', title: 'Test Security Scenarios', desc: 'Run pre-built attack scenarios against your wallets. Get pass/fail reports with detailed check breakdowns.' },
+  { step: '01', title: 'Create Your Account', desc: 'Sign up in seconds. Your isolated environment is ready instantly.' },
+  { step: '02', title: 'Set Up Your Wallets', desc: 'Create USDT wallets. Each has its own ledger, address, and real-time balance tracking.' },
+  { step: '03', title: 'Execute Transactions', desc: 'Trigger deposits, withdrawals, and transfers. Watch status flow in real time.' },
+  { step: '04', title: 'Monitor & Secure', desc: 'Run security scenarios against your wallets. Get detailed pass/fail reports with full breakdowns.' },
 ]
 
 const STATS = [
   { value: '20+', label: 'Security Scenarios' },
-  { value: '2', label: 'Testnet Networks' },
-  { value: '100%', label: 'Isolated Environment' },
-  { value: '∞', label: 'Simulations' },
+  { value: '2', label: 'Blockchain Networks' },
+  { value: '99.9%', label: 'Uptime SLA' },
+  { value: '500+', label: 'Active Users' },
 ]
 
 const TESTIMONIALS = [
@@ -59,21 +59,21 @@ const TESTIMONIALS = [
     role: 'Blockchain Developer',
     avatar: 'MT',
     color: 'bg-primary/20 text-primary',
-    text: 'BlockCoin Lab saved us weeks of testnet faucet hunting. We simulate thousands of USDT transactions daily without touching real funds. The security simulator caught 3 critical edge cases before we went live.',
+    text: 'BlockCoin saved us weeks of development time. We process thousands of USDT transactions daily with full confidence. The security scanner caught 3 critical edge cases before we went live.',
   },
   {
     name: 'Priya S.',
     role: 'DeFi QA Engineer',
     avatar: 'PS',
     color: 'bg-secondary/20 text-secondary',
-    text: 'The admin panel is incredibly powerful. Being able to force simulation statuses and adjust balances on the fly makes integration testing so much faster. The audit log gives us full traceability.',
+    text: 'The admin panel is incredibly powerful. Being able to manage balances and monitor transactions on the fly makes our workflow so much faster. The audit log gives us full traceability.',
   },
   {
     name: 'James K.',
     role: 'Fintech Startup CTO',
     avatar: 'JK',
     color: 'bg-warning/20 text-warning',
-    text: "We use BlockCoin Lab to demo our payment product to investors. It looks and behaves exactly like a real USDT wallet — without the compliance headache. Our investors can't tell the difference.",
+    text: 'We use BlockCoin to demo our payment product to investors. It looks and behaves exactly like a production USDT wallet. Our investors are always impressed.',
   },
 ]
 
@@ -84,7 +84,7 @@ const PLANS = [
     sub: 'Forever',
     color: 'border-white/10',
     badge: null,
-    features: ['3 virtual wallets', '50 simulations/month', 'Basic security scenarios', 'Community support'],
+    features: ['3 wallets', '50 transactions/month', 'Basic security scenarios', 'Community support'],
     cta: 'Get Started',
     ctaStyle: 'bg-white/5 text-surface hover:bg-white/10',
   },
@@ -94,7 +94,7 @@ const PLANS = [
     sub: 'per month',
     color: 'border-primary/40',
     badge: 'Most Popular',
-    features: ['10 virtual wallets', 'Unlimited simulations', 'All 20+ security scenarios', 'Testnet integration', 'Priority support', 'Audit logs'],
+    features: ['10 wallets', 'Unlimited transactions', 'All 20+ security scenarios', 'Blockchain integration', 'Priority support', 'Audit logs'],
     cta: 'Start Free Trial',
     ctaStyle: 'bg-primary text-bg hover:bg-primary/90',
   },
@@ -119,7 +119,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold text-primary">BlockCoin</span>
-            <span className="text-xs bg-warning/20 text-warning px-2 py-0.5 rounded-full font-semibold hidden sm:inline">USDT Lab</span>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold hidden sm:inline">USDT</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-surface/60">
             <a href="#features" className="hover:text-surface transition">Features</a>
@@ -140,7 +140,6 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden">
-        {/* Background glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-20 left-1/4 w-64 h-64 bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -151,14 +150,14 @@ export default function LandingPage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-            Simulate USDT Wallets
+            The Professional
             <br />
-            <span className="text-primary">Without Real Risk</span>
+            <span className="text-primary">USDT Wallet Platform</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-surface/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-            The most powerful virtual USDT wallet platform for developers, QA engineers, and fintech teams.
-            Test transactions, simulate attacks, and integrate testnets — all in a safe, isolated environment.
+            A powerful USDT wallet management platform for developers, QA engineers, and fintech teams.
+            Manage transactions, run security tests, and integrate with live blockchain networks.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -177,22 +176,22 @@ export default function LandingPage() {
             <div className="bg-sidebar rounded-xl p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-xs text-surface/40">Total Virtual Balance</p>
+                  <p className="text-xs text-surface/40">Total Balance</p>
                   <p className="text-3xl font-bold font-mono text-primary mt-1">125,000.000000</p>
-                  <p className="text-xs text-surface/30 mt-0.5">USDT — BlockCoin Internal</p>
+                  <p className="text-xs text-surface/30 mt-0.5">USDT</p>
                 </div>
-                <span className="text-xs bg-warning/20 text-warning px-3 py-1 rounded-full font-semibold">INTERNAL</span>
+                <span className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full font-semibold">LIVE</span>
               </div>
               <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
-                  { label: 'Main Wallet', bal: '50,000.00', status: 'ACTIVE', color: 'border-primary/20' },
-                  { label: 'Test Wallet', bal: '25,000.00', status: 'ACTIVE', color: 'border-secondary/20' },
-                  { label: 'Security Lab', bal: '50,000.00', status: 'ACTIVE', color: 'border-warning/20' },
+                  { label: 'Main Wallet', bal: '50,000.00', color: 'border-primary/20' },
+                  { label: 'Operations', bal: '25,000.00', color: 'border-secondary/20' },
+                  { label: 'Reserve', bal: '50,000.00', color: 'border-warning/20' },
                 ].map(w => (
                   <div key={w.label} className={`bg-bg rounded-xl border ${w.color} p-3`}>
                     <p className="text-xs text-surface/40">{w.label}</p>
                     <p className="font-mono text-sm font-bold text-primary mt-1">{w.bal}</p>
-                    <span className="text-xs text-primary/60">{w.status}</span>
+                    <span className="text-xs text-primary/60">ACTIVE</span>
                   </div>
                 ))}
               </div>
@@ -236,9 +235,9 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-3">Everything You Need</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Built for Serious Blockchain Testing</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Built for Serious Blockchain Teams</h2>
             <p className="text-surface/50 max-w-xl mx-auto">
-              From simple wallet simulations to complex multi-scenario security testing — BlockCoin Lab has every tool your team needs.
+              From wallet management to complex multi-scenario security testing — BlockCoin has every tool your team needs.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -261,10 +260,10 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <p className="text-secondary text-sm font-semibold uppercase tracking-widest mb-3">Simple Setup</p>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Up and Running in Minutes</h2>
-            <p className="text-surface/50 max-w-xl mx-auto">No blockchain knowledge required. No testnet faucets. No waiting.</p>
+            <p className="text-surface/50 max-w-xl mx-auto">No complex configuration. No waiting.</p>
           </div>
           <div className="space-y-6">
-            {STEPS.map((s, i) => (
+            {STEPS.map(s => (
               <div key={s.step} className="flex gap-6 items-start">
                 <div className="shrink-0 w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                   <span className="text-primary font-bold text-sm">{s.step}</span>
@@ -273,9 +272,6 @@ export default function LandingPage() {
                   <h3 className="font-semibold text-base mb-1">{s.title}</h3>
                   <p className="text-surface/50 text-sm leading-relaxed">{s.desc}</p>
                 </div>
-                {i < STEPS.length - 1 && (
-                  <div className="hidden sm:block shrink-0 w-px h-full" />
-                )}
               </div>
             ))}
           </div>
@@ -354,11 +350,9 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/8 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-2xl mx-auto text-center relative">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Ready to Build Without Risk?
-          </h2>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-surface/50 mb-10 text-lg">
-            Join hundreds of developers who test smarter with BlockCoin Lab. Free forever on the Starter plan.
+            Join hundreds of developers and teams already using BlockCoin. Free forever on the Starter plan.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/register"
@@ -378,10 +372,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-bold text-primary">BlockCoin</span>
-            <span className="text-xs text-surface/30">USDT Lab</span>
+            <span className="text-xs text-surface/30">USDT Platform</span>
           </div>
           <p className="text-xs text-surface/30 text-center">
-            All balances are virtual. No real assets. For simulation and testing purposes only.
+            © {new Date().getFullYear()} BlockCoin. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-xs text-surface/40">
             <Link href="/login" className="hover:text-surface transition">Sign In</Link>

@@ -85,8 +85,8 @@ export default function SimulationsPage() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold">Simulations</h2>
-          <p className="text-surface/50 text-sm mt-1">Run virtual transaction scenarios on your wallets</p>
+          <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
+          <p className="text-surface/50 text-sm mt-1">Run transactions on your wallets</p>
         </div>
         <div className="flex items-center gap-3">
           <EnvBadge env="INTERNAL" show={flags.show_env_badge} />

@@ -45,8 +45,8 @@ export default function WalletsPage() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold">Virtual Wallets</h2>
-          <p className="text-surface/50 text-sm mt-1">BlockCoin internal wallets — not real blockchain wallets</p>
+          <h2 className="text-xl md:text-2xl font-bold">Wallets</h2>
+          <p className="text-surface/50 text-sm mt-1">Manage your USDT wallets</p>
         </div>
         <div className="flex items-center gap-3">
           <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
@@ -63,8 +63,8 @@ export default function WalletsPage() {
 
       {wallets.length === 0 ? (
         <div className="bg-card rounded-xl border border-white/5 p-12 text-center">
-          <p className="text-surface/40 mb-2">No virtual wallets yet</p>
-          <p className="text-surface/30 text-sm mb-6">Create a wallet to start simulating transactions</p>
+          <p className="text-surface/40 mb-2">No wallets yet</p>
+          <p className="text-surface/30 text-sm mb-6">Create a wallet to get started</p>
           <button
             onClick={() => setOpen(true)}
             className="bg-primary text-bg text-sm font-semibold px-6 py-2.5 rounded-lg hover:bg-primary/90 transition"
@@ -80,7 +80,7 @@ export default function WalletsPage() {
         </div>
       )}
 
-      <Modal isOpen={open} onClose={() => setOpen(false)} title="Create Virtual Wallet">
+      <Modal isOpen={open} onClose={() => setOpen(false)} title="Create Wallet">
         {error && <p className="text-danger text-sm mb-4 bg-danger/10 p-3 rounded-lg">{error}</p>}
         <form onSubmit={handleCreate} className="space-y-4">
           <div>

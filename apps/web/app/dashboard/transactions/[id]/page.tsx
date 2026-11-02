@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { api } from '@/services/api'
-import { StatusBadge, EnvBadge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/Badge'
 
 interface TxDetail {
   id: string
@@ -36,7 +36,7 @@ export default function TransactionDetailPage() {
   if (!tx) return <div className="p-8 text-surface/40">Loading…</div>
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 max-w-2xl">
       <button onClick={() => router.back()} className="text-sm text-surface/40 hover:text-surface mb-6">
         ← Back
       </button>
@@ -47,26 +47,20 @@ export default function TransactionDetailPage() {
             <p className="text-xs text-surface/40 mb-1">Transaction</p>
             <p className="font-mono text-xs text-surface/50 break-all">{tx.id}</p>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <EnvBadge env={tx.environment as any} />
-            <StatusBadge status={tx.status as any} />
-          </div>
+          <StatusBadge status={tx.status as any} />
         </div>
 
         <div className="text-center py-4 border-y border-white/5 mb-6">
-          <p className={`text-4xl font-bold font-mono ${
-            tx.type === 'CREDIT' ? 'text-primary' : 'text-danger'
-          }`}>
+          <p className={`text-4xl font-bold font-mono ${tx.type === 'CREDIT' ? 'text-primary' : 'text-danger'}`}>
             {tx.type === 'CREDIT' ? '+' : '-'}{tx.amountDisplay}
           </p>
-          <p className="text-surface/40 text-sm mt-1">USDT — BlockCoin Internal</p>
+          <p className="text-surface/40 text-sm mt-1">USDT</p>
         </div>
 
         <div className="space-y-3 text-sm">
           {[
             { label: 'Type', value: tx.type },
             { label: 'Status', value: tx.status },
-            { label: 'Environment', value: tx.environment },
             { label: 'From Wallet', value: tx.fromWalletId ?? '—' },
             { label: 'To Wallet', value: tx.toWalletId ?? '—' },
             { label: 'Created', value: new Date(tx.createdAt).toLocaleString() },
@@ -78,18 +72,11 @@ export default function TransactionDetailPage() {
             </div>
           ))}
         </div>
-
-        <div className="mt-4 p-3 bg-warning/5 border border-warning/20 rounded-lg">
-          <p className="text-xs text-warning">
-            ⚠ This is a BlockCoin internal virtual transaction. It is not a real blockchain transaction and cannot be verified on any blockchain explorer.
-          </p>
-        </div>
       </div>
 
-      {/* Simulation events */}
       {tx.simulation && (
         <div className="bg-card rounded-xl border border-white/5 p-6">
-          <h3 className="font-semibold mb-4">Simulation Status History</h3>
+          <h3 className="font-semibold mb-4">Status History</h3>
           {tx.simulation.description && (
             <p className="text-sm text-surface/60 mb-4">{tx.simulation.description}</p>
           )}
