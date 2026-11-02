@@ -1,0 +1,29 @@
+{
+  "name": "blockcoin-lab",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "jest --config jest.config.ts",
+    "test:unit": "jest --config jest.config.ts tests/unit",
+    "test:api": "jest --config jest.config.ts tests/api",
+    "test:integration": "jest --config jest.config.ts tests/integration",
+    "test:security": "jest --config jest.config.ts tests/security",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "db:seed": "turbo run db:seed"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "supertest": "^7.3.1",
+    "ts-jest": "^29.4.15",
+    "turbo": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}

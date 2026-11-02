@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum WalletStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+  TRANSFER
+  ADJUSTMENT
+}
+
+enum SimulationStatus {
+  CREATED
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+  CANCELLED
+}
+
+enum Environment {
+  INTERNAL
+  TESTNET
+}
+
+enum TestnetNetwork {
+  SEPOLIA
+  TRON_NILE
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          Role      @default(USER)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions         Session[]
+  virtualWallets   VirtualWallet[]
+  simulations      Simulation[]
+  adminLogs        AdminLog[]       @relation("AdminActor")
+  apiKeys          ApiKey[]
+
+  @@index([email])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshToken])
+}
+
+model VirtualWallet {
+  id          String       @id @default(cuid())
+  userId      String
+  label       String
+  address     String       @unique @default(cuid())
+  status      WalletStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ledgerAccount  LedgerAccount?
+  simulations    Simulation[]
+
+  @@index([userId])
+}
+
+model LedgerAccount {
+  id              String   @id @default(cuid())
+  virtualWalletId String   @unique
+  balanceUnits    BigInt   @default(0)
+  updatedAt       DateTime @updatedAt
+
+  virtualWallet VirtualWallet  @relation(fields: [virtualWalletId], references: [id], onDelete: Cascade)
+  entries       LedgerEntry[]
+}
+
+model LedgerEntry {
+  id              String          @id @default(cuid())
+  ledgerAccountId String
+  type            TransactionType
+  amountUnits     BigInt
+  balanceAfter    BigInt
+  description     String
+  idempotencyKey  String          @unique
+  actorId         String?
+  transactionId   String?
+  createdAt       DateTime        @default(now())
+
+  ledgerAccount LedgerAccount @relation(fields: [ledgerAccountId], references: [id])
+
+  @@index([ledgerAccountId])
+  @@index([idempotencyKey])
+}
+
+model Simulation {
+  id              String           @id @default(cuid())
+  walletId        String
+  createdById     String
+  templateId      String?
+  type            TransactionType
+  amountUnits     BigInt
+  status          SimulationStatus @default(CREATED)
+  description     String?
+  processingDelay Int              @default(0)
+  expiresAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  wallet      VirtualWallet       @relation(fields: [walletId], references: [id])
+  createdBy   User                @relation(fields: [createdById], references: [id])
+  template    SimulationTemplate? @relation(fields: [templateId], references: [id])
+  events      SimulationEvent[]
+  transaction Transaction?
+
+  @@index([walletId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model SimulationEvent {
+  id           String           @id @default(cuid())
+  simulationId String
+  fromStatus   SimulationStatus?
+  toStatus     SimulationStatus
+  note         String?
+  createdAt    DateTime         @default(now())
+
+  simulation Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  @@index([simulationId])
+}
+
+model SimulationTemplate {
+  id          String          @id @default(cuid())
+  name        String
+  type        TransactionType
+  description String?
+  defaultDelay Int            @default(0)
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+
+  simulations Simulation[]
+}
+
+model Transaction {
+  id             String      @id @default(cuid())
+  simulationId   String?     @unique
+  environment    Environment
+  type           TransactionType
+  amountUnits    BigInt
+  status         SimulationStatus
+  fromWalletId   String?
+  toWalletId     String?
+  idempotencyKey String      @unique
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  simulation Simulation? @relation(fields: [simulationId], references: [id])
+
+  @@index([fromWalletId])
+  @@index([toWalletId])
+  @@index([environment])
+}
+
+model TestnetTransaction {
+  id          String         @id @default(cuid())
+  network     TestnetNetwork
+  txHash      String         @unique
+  fromAddress String
+  toAddress   String
+  amountUnits BigInt
+  tokenSymbol String
+  contractAddress String?
+  blockNumber BigInt?
+  confirmations Int          @default(0)
+  status      String
+  userId      String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([txHash])
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  userId    String
+  keyHash   String   @unique
+  label     String
+  lastUsed  DateTime?
+  expiresAt DateTime?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  action     String
+  targetType String?
+  targetId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  actor User @relation("AdminActor", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model SecurityReport {
+  id          String   @id @default(cuid())
+  scenario    String
+  expected    String
+  actual      String
+  passed      Boolean
+  walletId    String?
+  createdAt   DateTime @default(now())
+}

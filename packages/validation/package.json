@@ -1,0 +1,11 @@
+{
+  "name": "@blockcoin/validation",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
