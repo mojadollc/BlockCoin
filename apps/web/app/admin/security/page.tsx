@@ -50,7 +50,7 @@ export default function SecurityPage() {
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
           <h2 className="text-xl md:text-2xl font-bold">Security Reports</h2>
-          <p className="text-surface/50 text-sm mt-1">Results from wallet behavior and security simulation tests.</p>
+          <p className="text-surface/50 text-sm mt-1">Results from wallet security test runs.</p>
         </div>
         <Link
           href="/admin/security-simulator"
@@ -89,7 +89,7 @@ export default function SecurityPage() {
       </div>
 
       <div className="bg-card rounded-xl border border-white/5">
-        <Table columns={columns} data={reports} emptyMessage="No security reports yet. Run scenarios in the Security Simulator." />
+        <Table columns={columns} data={reports} emptyMessage="No security reports yet. Run a test above." />
         <Pagination page={page} limit={20} total={total} onPage={setPage} />
       </div>
     </div>

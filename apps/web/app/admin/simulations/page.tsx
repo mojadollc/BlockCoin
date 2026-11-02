@@ -97,12 +97,12 @@ export default function AdminSimulationsPage() {
   return (
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h2 className="text-xl md:text-2xl font-bold">Simulations</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
         <button
           onClick={() => setCreateOpen(true)}
           className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
         >
-          + Create Simulation
+          + Create Transaction
         </button>
       </div>
 
@@ -118,7 +118,7 @@ export default function AdminSimulationsPage() {
 
       <div className="bg-card rounded-xl border border-white/5">
         {sims.length === 0 ? (
-          <p className="p-8 text-center text-surface/40">No simulations</p>
+          <p className="p-8 text-center text-surface/40">No transactions</p>
         ) : (
           <div className="divide-y divide-white/5">
             {sims.map(sim => (
@@ -162,7 +162,7 @@ export default function AdminSimulationsPage() {
       </div>
 
       {/* Create modal */}
-      <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Create Simulation">
+      <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Create Transaction">
         {error && <p className="text-danger text-sm mb-4 bg-danger/10 p-3 rounded-lg">{error}</p>}
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
@@ -209,13 +209,13 @@ export default function AdminSimulationsPage() {
             </div>
           </div>
           <button type="submit" className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition">
-            Create Simulation
+            Create Transaction
           </button>
         </form>
       </Modal>
 
       {/* Force status modal */}
-      <Modal isOpen={!!forceOpen} onClose={() => setForceOpen(null)} title="Force Simulation Status">
+      <Modal isOpen={!!forceOpen} onClose={() => setForceOpen(null)} title="Force Transaction Status">
         {msg && <p className={`text-sm mb-4 p-3 rounded-lg ${msg.includes('forced') ? 'bg-primary/10 text-primary' : 'bg-danger/10 text-danger'}`}>{msg}</p>}
         <form onSubmit={handleForce} className="space-y-4">
           <div>

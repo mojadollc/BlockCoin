@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { api } from '@/services/api'
-import { StatusBadge, EnvBadge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/Badge'
 import { Pagination } from '@/components/ui/Pagination'
 import Link from 'next/link'
 
@@ -36,7 +36,6 @@ export default function TransactionsPage() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
         <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
-        <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
       </div>
 
       <div className="bg-card rounded-xl border border-white/5">

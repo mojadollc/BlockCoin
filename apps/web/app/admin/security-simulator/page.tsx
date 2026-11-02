@@ -102,9 +102,9 @@ export default function SecuritySimulatorPage() {
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6 md:mb-8">
-        <h2 className="text-xl md:text-2xl font-bold">Security Simulator</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Security Testing</h2>
         <p className="text-surface/50 text-sm mt-1">
-          Test wallet interface behavior under controlled scenarios. All tests run within BlockCoin's internal environment.
+          Test wallet behavior under controlled scenarios.
         </p>
       </div>
 
@@ -247,7 +247,7 @@ export default function SecuritySimulatorPage() {
                     <span>Report ID: {result.reportId.slice(0, 12)}…</span>
                     {result.simulationId && (
                       <Link href={`/dashboard/simulations/${result.simulationId}`} className="text-secondary hover:underline">
-                        View simulation →
+                        View transaction →
                       </Link>
                     )}
                   </div>
@@ -281,7 +281,7 @@ export default function SecuritySimulatorPage() {
 
         <div className="bg-card rounded-xl border border-white/5">
           {reports.length === 0 ? (
-            <p className="p-8 text-center text-surface/40">No reports yet. Run a scenario above.</p>
+            <p className="p-8 text-center text-surface/40">No reports yet. Run a test above.</p>
           ) : (
             <div className="divide-y divide-white/5">
               {reports.map(r => (

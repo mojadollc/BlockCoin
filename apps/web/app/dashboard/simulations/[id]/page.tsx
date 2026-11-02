@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { api } from '@/services/api'
-import { StatusBadge, EnvBadge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/Badge'
 
 interface SimEvent {
   id: string
@@ -88,7 +88,6 @@ export default function SimulationDetailPage() {
             <p className="font-mono text-xs text-surface/50">{sim.id}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
             <StatusBadge status={sim.status as any} />
           </div>
         </div>

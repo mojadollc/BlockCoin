@@ -62,7 +62,7 @@ export default function AdminTemplatesPage() {
   return (
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h2 className="text-xl md:text-2xl font-bold">Simulation Templates</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Transaction Templates</h2>
         <button
           onClick={() => setOpen(true)}
           className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"

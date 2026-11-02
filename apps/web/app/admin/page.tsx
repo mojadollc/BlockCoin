@@ -2,19 +2,15 @@
 import { useEffect, useState } from 'react'
 import { api } from '@/services/api'
 import { StatCard } from '@/components/ui/StatCard'
-import { EnvBadge } from '@/components/ui/Badge'
 
 interface DashboardData {
-  stats: { totalUsers: number; activeUsers: number; totalWallets: number; totalSimulations: number }
+  stats: { totalUsers: number; activeUsers: number; totalWallets: number; totalTransactions: number }
   recentLogs: Array<{ id: string; action: string; createdAt: string; actor: { email: string } }>
-  simsByStatus: Array<{ status: string; _count: { status: number } }>
+  txsByStatus: Array<{ status: string; _count: { status: number } }>
 }
-
-import { useUIFlags } from '@/hooks/useUIFlags'
 
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
-  const flags = useUIFlags()
 
   useEffect(() => {
     api.get<DashboardData>('/api/v1/admin/dashboard').then(setData).catch(() => {})
@@ -27,26 +23,25 @@ export default function AdminDashboard() {
           <h2 className="text-xl md:text-2xl font-bold">Dashboard</h2>
           <p className="text-surface/50 text-sm mt-1">BlockCoin USDT Platform — Control Panel</p>
         </div>
-        <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
         <StatCard label="Total Users" value={data?.stats.totalUsers ?? '—'} color="text-primary" />
         <StatCard label="Active Users" value={data?.stats.activeUsers ?? '—'} color="text-secondary" sub="Currently active" />
-        <StatCard label="Virtual Wallets" value={data?.stats.totalWallets ?? '—'} color="text-warning" />
-        <StatCard label="Simulations" value={data?.stats.totalSimulations ?? '—'} color="text-surface" />
+        <StatCard label="Wallets" value={data?.stats.totalWallets ?? '—'} color="text-warning" />
+        <StatCard label="Transactions" value={data?.stats.totalTransactions ?? '—'} color="text-surface" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card rounded-xl border border-white/5">
           <div className="p-4 border-b border-white/5">
-            <h3 className="font-semibold">Simulations by Status</h3>
+            <h3 className="font-semibold">Transactions by Status</h3>
           </div>
           <div className="p-4 space-y-2">
-            {data?.simsByStatus.length === 0 && (
-              <p className="text-surface/40 text-sm">No simulations yet</p>
+            {data?.txsByStatus.length === 0 && (
+              <p className="text-surface/40 text-sm">No transactions yet</p>
             )}
-            {data?.simsByStatus.map(s => (
+            {data?.txsByStatus.map(s => (
               <div key={s.status} className="flex justify-between text-sm">
                 <span className="text-surface/60">{s.status}</span>
                 <span className="font-medium">{s._count.status}</span>

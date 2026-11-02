@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback } from 'react'
 import { api } from '@/services/api'
 import { WalletCard } from '@/components/ui/WalletCard'
 import { Modal } from '@/components/ui/Modal'
-import { EnvBadge } from '@/components/ui/Badge'
 
 interface Wallet {
   id: string
@@ -49,7 +48,6 @@ export default function WalletsPage() {
           <p className="text-surface/50 text-sm mt-1">Manage your USDT wallets</p>
         </div>
         <div className="flex items-center gap-3">
-          <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
           {wallets.length < 10 && (
             <button
               onClick={() => setOpen(true)}

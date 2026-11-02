@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { api } from '@/services/api'
-import { StatusBadge, EnvBadge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/Badge'
 import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import Link from 'next/link'
@@ -86,15 +86,14 @@ export default function SimulationsPage() {
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
           <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
-          <p className="text-surface/50 text-sm mt-1">Run transactions on your wallets</p>
+          <p className="text-surface/50 text-sm mt-1">Manage and execute transactions on your wallets</p>
         </div>
         <div className="flex items-center gap-3">
-          <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
           <button
             onClick={() => setOpen(true)}
             className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
           >
-            + New Simulation
+            + New Transaction
           </button>
         </div>
       </div>
@@ -116,7 +115,7 @@ export default function SimulationsPage() {
 
       <div className="bg-card rounded-xl border border-white/5">
         {sims.length === 0 ? (
-          <p className="p-8 text-center text-surface/40">No simulations yet</p>
+          <p className="p-8 text-center text-surface/40">No transactions yet</p>
         ) : (
           <div className="divide-y divide-white/5">
             {sims.map(sim => (
@@ -169,7 +168,7 @@ export default function SimulationsPage() {
       </div>
 
       {/* Create modal */}
-      <Modal isOpen={open} onClose={() => setOpen(false)} title="New Simulation">
+      <Modal isOpen={open} onClose={() => setOpen(false)} title="New Transaction">
         {error && <p className="text-danger text-sm mb-4 bg-danger/10 p-3 rounded-lg">{error}</p>}
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
@@ -221,7 +220,7 @@ export default function SimulationsPage() {
           </p>
           )}
           <button type="submit" className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition">
-            Start Simulation
+            Submit Transaction
           </button>
         </form>
       </Modal>

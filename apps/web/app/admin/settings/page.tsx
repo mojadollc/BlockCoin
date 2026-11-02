@@ -32,18 +32,18 @@ const ENV_GROUPS = [
 const UI_NOTICE_FLAGS: { flag: keyof UIFlags; label: string; description: string }[] = [
   {
     flag: 'show_env_badge',
-    label: 'INTERNAL ENVIRONMENT badge',
-    description: 'Shows the yellow "INTERNAL ENVIRONMENT" badge on all dashboard pages.',
+    label: 'Environment badge',
+    description: 'Shows the environment badge on dashboard pages.',
   },
   {
     flag: 'show_wallet_notice',
-    label: 'Virtual wallet disclaimer',
-    description: '⚠ This is a BlockCoin virtual wallet. Balances are simulated and not real USDT.',
+    label: 'Wallet notice',
+    description: 'Shows an informational notice when creating a wallet.',
   },
   {
     flag: 'show_simulation_notice',
-    label: 'Simulation status notice',
-    description: '⚠ This is a simulated transaction. Status: CREATED → PENDING → PROCESSING → COMPLETED',
+    label: 'Transaction notice',
+    description: 'Shows an informational notice when creating a transaction.',
   },
 ]
 

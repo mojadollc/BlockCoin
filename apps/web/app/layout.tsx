@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'BlockCoin USDT Lab',
-  description: 'Private Wallet Simulation & Security Testing Platform',
+  title: 'BlockCoin',
+  description: 'Professional USDT Wallet Platform',
 }
 
 export const viewport: Viewport = {
