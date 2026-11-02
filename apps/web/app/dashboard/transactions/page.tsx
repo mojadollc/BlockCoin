@@ -16,10 +16,13 @@ interface Tx {
   createdAt: string
 }
 
+import { useUIFlags } from '@/hooks/useUIFlags'
+
 export default function TransactionsPage() {
   const [txs, setTxs] = useState<Tx[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
+  const flags = useUIFlags()
 
   const load = useCallback(() => {
     api.get<{ items: Tx[]; total: number }>(`/api/v1/transactions?page=${page}&limit=20`)
@@ -33,7 +36,7 @@ export default function TransactionsPage() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
         <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
-        <EnvBadge env="INTERNAL" />
+        <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
       </div>
 
       <div className="bg-card rounded-xl border border-white/5">

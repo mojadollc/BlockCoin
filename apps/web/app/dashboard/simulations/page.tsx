@@ -19,6 +19,8 @@ interface Simulation {
   wallet: { label: string }
 }
 
+import { useUIFlags } from '@/hooks/useUIFlags'
+
 export default function SimulationsPage() {
   const [sims, setSims] = useState<Simulation[]>([])
   const [total, setTotal] = useState(0)
@@ -32,6 +34,7 @@ export default function SimulationsPage() {
     description: '', processingDelay: 0, expiresInSeconds: '', templateId: '',
   })
   const [error, setError] = useState('')
+  const flags = useUIFlags()
 
   const load = useCallback(() => {
     const params = new URLSearchParams({ page: String(page), limit: '20' })
@@ -86,7 +89,7 @@ export default function SimulationsPage() {
           <p className="text-surface/50 text-sm mt-1">Run virtual transaction scenarios on your wallets</p>
         </div>
         <div className="flex items-center gap-3">
-          <EnvBadge env="INTERNAL" />
+          <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
           <button
             onClick={() => setOpen(true)}
             className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
@@ -212,9 +215,11 @@ export default function SimulationsPage() {
                 className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2 text-surface focus:outline-none focus:border-primary" />
             </div>
           </div>
+          {flags.show_simulation_notice && (
           <p className="text-xs text-warning bg-warning/10 p-2 rounded">
             ⚠ This is a simulated transaction. Status: CREATED → PENDING → PROCESSING → COMPLETED
           </p>
+          )}
           <button type="submit" className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition">
             Start Simulation
           </button>

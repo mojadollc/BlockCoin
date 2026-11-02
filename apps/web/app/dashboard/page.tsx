@@ -24,10 +24,13 @@ interface Tx {
   createdAt: string
 }
 
+import { useUIFlags } from '@/hooks/useUIFlags'
+
 export default function DashboardPage() {
   const { user } = useAuth()
   const [wallets, setWallets] = useState<Wallet[]>([])
   const [txs, setTxs] = useState<Tx[]>([])
+  const flags = useUIFlags()
 
   const loadWallets = useCallback(() => {
     api.get<Wallet[]>('/api/v1/wallets').then(setWallets).catch(() => {})
@@ -50,7 +53,7 @@ export default function DashboardPage() {
           <h2 className="text-xl md:text-2xl font-bold">Welcome, {user?.firstName}</h2>
           <p className="text-surface/50 text-sm mt-1">Your BlockCoin virtual wallet dashboard</p>
         </div>
-        <EnvBadge env="INTERNAL" />
+        <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
       </div>
 
       {/* Summary */}

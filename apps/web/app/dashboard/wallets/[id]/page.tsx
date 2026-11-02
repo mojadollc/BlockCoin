@@ -26,6 +26,8 @@ interface Entry {
 
 type Action = 'deposit' | 'withdraw' | 'transfer' | null
 
+import { useUIFlags } from '@/hooks/useUIFlags'
+
 export default function WalletDetailPage() {
   const { id } = useParams<{ id: string }>()
   const searchParams = useSearchParams()
@@ -39,6 +41,7 @@ export default function WalletDetailPage() {
   const [form, setForm] = useState({ amountDisplay: '', description: '', toWalletId: '' })
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
+  const flags = useUIFlags()
 
   const loadWallet = useCallback(() => {
     api.get<Wallet>(`/api/v1/wallets/${id}`).then(setWallet).catch(() => router.push('/dashboard/wallets'))
@@ -99,7 +102,7 @@ export default function WalletDetailPage() {
             <p className="text-xs font-mono text-surface/30 mt-1">{wallet.address}</p>
           </div>
           <div className="flex items-center gap-2">
-            <EnvBadge env="INTERNAL" />
+            <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               wallet.status === 'ACTIVE' ? 'bg-primary/20 text-primary' : 'bg-danger/20 text-danger'
             }`}>{wallet.status}</span>

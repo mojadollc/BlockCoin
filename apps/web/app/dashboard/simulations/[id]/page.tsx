@@ -37,11 +37,14 @@ const STATUS_COLORS: Record<string, string> = {
   CANCELLED: 'bg-white/10 text-surface/40',
 }
 
+import { useUIFlags } from '@/hooks/useUIFlags'
+
 export default function SimulationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const [sim, setSim] = useState<SimDetail | null>(null)
   const [cancelling, setCancelling] = useState(false)
+  const flags = useUIFlags()
 
   const load = useCallback(() => {
     api.get<SimDetail>(`/api/v1/simulations/${id}`)
@@ -85,7 +88,7 @@ export default function SimulationDetailPage() {
             <p className="font-mono text-xs text-surface/50">{sim.id}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <EnvBadge env="INTERNAL" />
+            <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
             <StatusBadge status={sim.status as any} />
           </div>
         </div>

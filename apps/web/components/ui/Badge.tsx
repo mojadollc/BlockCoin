@@ -18,7 +18,8 @@ export function StatusBadge({ status }: { status: SimulationStatus }) {
   )
 }
 
-export function EnvBadge({ env }: { env: Environment }) {
+export function EnvBadge({ env, show = true }: { env: Environment; show?: boolean }) {
+  if (!show) return null
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
       env === 'INTERNAL' ? 'bg-warning/20 text-warning' : 'bg-secondary/20 text-secondary'

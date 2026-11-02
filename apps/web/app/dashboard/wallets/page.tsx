@@ -13,11 +13,14 @@ interface Wallet {
   address: string
 }
 
+import { useUIFlags } from '@/hooks/useUIFlags'
+
 export default function WalletsPage() {
   const [wallets, setWallets] = useState<Wallet[]>([])
   const [open, setOpen] = useState(false)
   const [label, setLabel] = useState('')
   const [error, setError] = useState('')
+  const flags = useUIFlags()
 
   const load = useCallback(() => {
     api.get<Wallet[]>('/api/v1/wallets').then(setWallets).catch(() => {})
@@ -46,7 +49,7 @@ export default function WalletsPage() {
           <p className="text-surface/50 text-sm mt-1">BlockCoin internal wallets — not real blockchain wallets</p>
         </div>
         <div className="flex items-center gap-3">
-          <EnvBadge env="INTERNAL" />
+          <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
           {wallets.length < 10 && (
             <button
               onClick={() => setOpen(true)}
@@ -90,9 +93,11 @@ export default function WalletsPage() {
               required maxLength={100}
             />
           </div>
+          {flags.show_wallet_notice && (
           <p className="text-xs text-warning bg-warning/10 p-3 rounded-lg">
             ⚠ This is a BlockCoin virtual wallet. Balances are simulated and not real USDT.
           </p>
+          )}
           <button
             type="submit"
             className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition"

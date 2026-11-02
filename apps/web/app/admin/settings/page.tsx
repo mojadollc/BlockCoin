@@ -1,11 +1,12 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { api } from '@/services/api'
+import { UIFlags } from '@/hooks/useUIFlags'
 
 interface EnvEntry { value: string; isSecret: boolean }
 type EnvMap = Record<string, EnvEntry>
 
-const GROUPS = [
+const ENV_GROUPS = [
   {
     label: 'Testnet — Ethereum Sepolia',
     color: 'text-secondary',
@@ -28,13 +29,37 @@ const GROUPS = [
   },
 ]
 
-function EnvRow({
-  envKey, entry, onSave,
-}: {
-  envKey: string
-  entry: EnvEntry
-  onSave: (key: string, value: string) => Promise<void>
-}) {
+const UI_NOTICE_FLAGS: { flag: keyof UIFlags; label: string; description: string }[] = [
+  {
+    flag: 'show_env_badge',
+    label: 'INTERNAL ENVIRONMENT badge',
+    description: 'Shows the yellow "INTERNAL ENVIRONMENT" badge on all dashboard pages.',
+  },
+  {
+    flag: 'show_wallet_notice',
+    label: 'Virtual wallet disclaimer',
+    description: '⚠ This is a BlockCoin virtual wallet. Balances are simulated and not real USDT.',
+  },
+  {
+    flag: 'show_simulation_notice',
+    label: 'Simulation status notice',
+    description: '⚠ This is a simulated transaction. Status: CREATED → PENDING → PROCESSING → COMPLETED',
+  },
+]
+
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors ${checked ? 'bg-primary' : 'bg-white/10'}`}
+    >
+      <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0'}`} />
+    </button>
+  )
+}
+
+function EnvRow({ envKey, entry, onSave }: { envKey: string; entry: EnvEntry; onSave: (key: string, value: string) => Promise<void> }) {
   const [editing, setEditing] = useState(false)
   const [val, setVal] = useState(entry.value)
   const [show, setShow] = useState(false)
@@ -48,11 +73,6 @@ function EnvRow({
     setSaved(true)
     setEditing(false)
     setTimeout(() => setSaved(false), 2000)
-  }
-
-  function handleCancel() {
-    setVal(entry.value)
-    setEditing(false)
   }
 
   const displayVal = entry.isSecret && !show
@@ -71,14 +91,12 @@ function EnvRow({
             </button>
           )}
           {!editing && (
-            <button onClick={() => { setEditing(true); setVal(entry.value) }}
-              className="text-xs text-secondary hover:underline">
+            <button onClick={() => { setEditing(true); setVal(entry.value) }} className="text-xs text-secondary hover:underline">
               Edit
             </button>
           )}
         </div>
       </div>
-
       {editing ? (
         <div className="flex gap-2 mt-1">
           <input
@@ -88,14 +106,12 @@ function EnvRow({
             autoFocus
             className="flex-1 bg-sidebar border border-white/10 rounded-lg px-3 py-1.5 text-sm text-surface font-mono focus:outline-none focus:border-primary min-w-0"
           />
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="text-xs bg-primary text-bg font-semibold px-3 py-1.5 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition shrink-0"
-          >
+          <button onClick={handleSave} disabled={saving}
+            className="text-xs bg-primary text-bg font-semibold px-3 py-1.5 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition shrink-0">
             {saving ? '…' : 'Save'}
           </button>
-          <button onClick={handleCancel} className="text-xs text-surface/40 hover:text-surface px-2 transition shrink-0">
+          <button onClick={() => { setVal(entry.value); setEditing(false) }}
+            className="text-xs text-surface/40 hover:text-surface px-2 transition shrink-0">
             Cancel
           </button>
         </div>
@@ -110,15 +126,17 @@ function EnvRow({
 
 export default function SettingsPage() {
   const [envKeys, setEnvKeys] = useState<EnvMap>({})
+  const [flags, setFlags] = useState<UIFlags>({ show_wallet_notice: true, show_simulation_notice: true, show_env_badge: true })
   const [error, setError] = useState('')
 
   const load = useCallback(() => {
     api.get<EnvMap>('/api/v1/admin/env-keys').then(setEnvKeys).catch(() => {})
+    api.get<UIFlags>('/api/v1/admin/ui-flags').then(setFlags).catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
-  async function handleSave(key: string, value: string) {
+  async function handleEnvSave(key: string, value: string) {
     setError('')
     try {
       await api.post('/api/v1/admin/env-keys', { key, value })
@@ -128,48 +146,74 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleFlagToggle(flag: keyof UIFlags, value: boolean) {
+    setError('')
+    try {
+      await api.post('/api/v1/admin/ui-flags', { flag, value })
+      setFlags(prev => ({ ...prev, [flag]: value }))
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update')
+    }
+  }
+
   return (
-    <div className="p-4 md:p-8 max-w-2xl">
-      <div className="mb-6">
-        <h2 className="text-xl md:text-2xl font-bold">Environment Settings</h2>
-        <p className="text-surface/50 text-sm mt-1">
-          Manage <span className="font-mono text-surface/70">.env</span> keys. Changes apply immediately and persist to disk.
-        </p>
+    <div className="p-4 md:p-8 max-w-2xl space-y-8">
+      <div>
+        <h2 className="text-xl md:text-2xl font-bold">Settings</h2>
+        <p className="text-surface/50 text-sm mt-1">Manage UI notices and environment configuration.</p>
       </div>
 
       {error && (
-        <div className="bg-danger/10 border border-danger/20 text-danger text-sm p-3 rounded-lg mb-6">
+        <div className="bg-danger/10 border border-danger/20 text-danger text-sm p-3 rounded-lg">
           {error}
         </div>
       )}
 
-      <div className="bg-warning/10 border border-warning/20 rounded-xl p-4 mb-6">
-        <p className="text-xs text-warning font-semibold mb-1">⚠ Caution</p>
-        <p className="text-xs text-surface/60">
-          Changing JWT secrets will invalidate all active sessions. Changing API URLs requires a server restart to take full effect. All changes are recorded in the audit log.
-        </p>
+      {/* UI Notices */}
+      <div>
+        <h3 className="text-sm font-semibold text-surface/70 uppercase tracking-wider mb-3">UI Notices & Badges</h3>
+        <div className="bg-card rounded-xl border border-white/5 divide-y divide-white/5">
+          {UI_NOTICE_FLAGS.map(({ flag, label, description }) => (
+            <div key={flag} className="flex items-start justify-between gap-4 px-5 py-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">{label}</p>
+                <p className="text-xs text-surface/40 mt-0.5 leading-relaxed">{description}</p>
+              </div>
+              <Toggle checked={flags[flag]} onChange={v => handleFlagToggle(flag, v)} />
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="space-y-4">
-        {GROUPS.map(group => (
-          <div key={group.label} className="bg-card rounded-xl border border-white/5">
-            <div className="px-5 py-3 border-b border-white/5">
-              <h3 className={`text-sm font-semibold ${group.color}`}>{group.label}</h3>
+      {/* Env keys */}
+      <div>
+        <h3 className="text-sm font-semibold text-surface/70 uppercase tracking-wider mb-3">Environment Keys</h3>
+        <div className="bg-warning/10 border border-warning/20 rounded-xl p-4 mb-4">
+          <p className="text-xs text-warning font-semibold mb-1">⚠ Caution</p>
+          <p className="text-xs text-surface/60">
+            Changing JWT secrets will invalidate all active sessions. Changing API URLs requires a server restart. All changes are recorded in the audit log.
+          </p>
+        </div>
+        <div className="space-y-4">
+          {ENV_GROUPS.map(group => (
+            <div key={group.label} className="bg-card rounded-xl border border-white/5">
+              <div className="px-5 py-3 border-b border-white/5">
+                <h4 className={`text-sm font-semibold ${group.color}`}>{group.label}</h4>
+              </div>
+              <div className="px-5">
+                {group.keys.map(key =>
+                  envKeys[key] ? (
+                    <EnvRow key={key} envKey={key} entry={envKeys[key]} onSave={handleEnvSave} />
+                  ) : (
+                    <div key={key} className="py-3 border-b border-white/5 last:border-0">
+                      <span className="font-mono text-xs text-surface/30">{key} — Loading…</span>
+                    </div>
+                  )
+                )}
+              </div>
             </div>
-            <div className="px-5">
-              {group.keys.map(key => (
-                envKeys[key] ? (
-                  <EnvRow key={key} envKey={key} entry={envKeys[key]} onSave={handleSave} />
-                ) : (
-                  <div key={key} className="py-3 border-b border-white/5 last:border-0">
-                    <span className="font-mono text-xs text-surface/30">{key}</span>
-                    <p className="text-xs text-surface/20 mt-0.5">Loading…</p>
-                  </div>
-                )
-              ))}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )

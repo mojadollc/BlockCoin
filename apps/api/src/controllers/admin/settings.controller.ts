@@ -22,6 +22,9 @@ const MANAGEABLE_KEYS = [
 const SECRET_KEYS = ['JWT_SECRET', 'REFRESH_TOKEN_SECRET']
 const ALL_EDITABLE = [...MANAGEABLE_KEYS, ...SECRET_KEYS]
 
+const UI_FLAGS = ['show_wallet_notice', 'show_simulation_notice', 'show_env_badge'] as const
+type UIFlag = typeof UI_FLAGS[number]
+
 function envFilePath() {
   return path.resolve(process.cwd(), '../../.env')
 }
@@ -125,6 +128,53 @@ export async function updateEnvKey(req: AuthRequest, res: Response): Promise<voi
       },
     })
     ok(res, { key, updated: true })
+  } catch {
+    serverError(res)
+  }
+}
+
+// UI flags — readable by anyone (no auth), writable by admin only
+export async function getUIFlags(_req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const rows = await prisma.systemSetting.findMany({
+      where: { key: { in: [...UI_FLAGS] } },
+    })
+    const map = Object.fromEntries(rows.map(r => [r.key, r.value]))
+    // default all to 'true' if not set
+    const flags: Record<UIFlag, boolean> = {
+      show_wallet_notice: (map['show_wallet_notice'] ?? 'true') === 'true',
+      show_simulation_notice: (map['show_simulation_notice'] ?? 'true') === 'true',
+      show_env_badge: (map['show_env_badge'] ?? 'true') === 'true',
+    }
+    ok(res, flags)
+  } catch {
+    serverError(res)
+  }
+}
+
+export async function updateUIFlag(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const { flag, value } = req.body
+    if (!UI_FLAGS.includes(flag as UIFlag)) {
+      badRequest(res, 'Unknown flag')
+      return
+    }
+    const strVal = String(value) === 'true' ? 'true' : 'false'
+    await prisma.systemSetting.upsert({
+      where: { key: flag },
+      update: { value: strVal },
+      create: { key: flag, value: strVal },
+    })
+    await prisma.adminLog.create({
+      data: {
+        actorId: req.user!.sub,
+        action: 'UPDATE_UI_FLAG',
+        targetType: 'UIFlag',
+        targetId: flag,
+        metadata: { flag, value: strVal },
+      },
+    })
+    ok(res, { flag, value: strVal === 'true' })
   } catch {
     serverError(res)
   }

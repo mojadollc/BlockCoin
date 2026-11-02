@@ -10,8 +10,11 @@ interface DashboardData {
   simsByStatus: Array<{ status: string; _count: { status: number } }>
 }
 
+import { useUIFlags } from '@/hooks/useUIFlags'
+
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
+  const flags = useUIFlags()
 
   useEffect(() => {
     api.get<DashboardData>('/api/v1/admin/dashboard').then(setData).catch(() => {})
@@ -24,7 +27,7 @@ export default function AdminDashboard() {
           <h2 className="text-xl md:text-2xl font-bold">Admin Dashboard</h2>
           <p className="text-surface/50 text-sm mt-1">BlockCoin USDT Lab — Control Panel</p>
         </div>
-        <EnvBadge env="INTERNAL" />
+        <EnvBadge env="INTERNAL" show={flags.show_env_badge} />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
