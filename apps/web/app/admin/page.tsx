@@ -4,9 +4,9 @@ import { api } from '@/services/api'
 import { StatCard } from '@/components/ui/StatCard'
 
 interface DashboardData {
-  stats: { totalUsers: number; activeUsers: number; totalWallets: number; totalTransactions: number }
+  stats: { totalUsers: number; activeUsers: number; totalWallets: number; totalSimulations: number }
   recentLogs: Array<{ id: string; action: string; createdAt: string; actor: { email: string } }>
-  txsByStatus: Array<{ status: string; _count: { status: number } }>
+  simsByStatus: Array<{ status: string; _count: { status: number } }>
 }
 
 export default function AdminDashboard() {
@@ -29,19 +29,19 @@ export default function AdminDashboard() {
         <StatCard label="Total Users" value={data?.stats.totalUsers ?? '—'} color="text-primary" />
         <StatCard label="Active Users" value={data?.stats.activeUsers ?? '—'} color="text-secondary" sub="Currently active" />
         <StatCard label="Wallets" value={data?.stats.totalWallets ?? '—'} color="text-warning" />
-        <StatCard label="Transactions" value={data?.stats.totalTransactions ?? '—'} color="text-surface" />
+        <StatCard label="Simulations" value={data?.stats.totalSimulations ?? '—'} color="text-surface" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card rounded-xl border border-white/5">
           <div className="p-4 border-b border-white/5">
-            <h3 className="font-semibold">Transactions by Status</h3>
+            <h3 className="font-semibold">Simulations by Status</h3>
           </div>
           <div className="p-4 space-y-2">
-            {data?.txsByStatus.length === 0 && (
-              <p className="text-surface/40 text-sm">No transactions yet</p>
+            {data?.simsByStatus.length === 0 && (
+              <p className="text-surface/40 text-sm">No simulations yet</p>
             )}
-            {data?.txsByStatus.map(s => (
+            {data?.simsByStatus.map(s => (
               <div key={s.status} className="flex justify-between text-sm">
                 <span className="text-surface/60">{s.status}</span>
                 <span className="font-medium">{s._count.status}</span>
