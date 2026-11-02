@@ -2,7 +2,7 @@ apps:
   - name: BlockCoin-web
     cwd: apps/web
     script: node_modules/.bin/next
-    args: start -p 3000
+    args: start -p 3005
     env:
       NODE_ENV: production
 
