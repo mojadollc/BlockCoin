@@ -18,7 +18,7 @@ export function useUIFlags(): UIFlags {
   const [flags, setFlags] = useState<UIFlags>(DEFAULT)
 
   useEffect(() => {
-    api.get<UIFlags>('/api/v1/ui-flags').then(setFlags).catch(() => {})
+    api.get<UIFlags>('/api/v1/admin/ui-flags').then(setFlags).catch(() => setFlags(DEFAULT))
   }, [])
 
   return flags

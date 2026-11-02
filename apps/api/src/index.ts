@@ -14,25 +14,31 @@ import walletRoutes from './routes/wallets.routes'
 import transactionRoutes from './routes/transactions.routes'
 import simulationRoutes from './routes/simulations.routes'
 import testnetRoutes from './routes/testnet.routes'
+import { authenticate } from './middleware/auth'
 import { getUIFlags } from './controllers/admin/settings.controller'
 
 const app = express()
 const httpServer = createServer(app)
 
+const ALLOWED_ORIGINS = [
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3005',
+  'http://localhost:3005',
+  'http://localhost:3000',
+]
+
 export const io = new SocketServer(httpServer, {
-  cors: { origin: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', credentials: true },
+  cors: { origin: ALLOWED_ORIGINS, credentials: true },
 })
 
 app.set('trust proxy', 1)
 app.use(helmet())
-app.use(cors({ origin: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', credentials: true }))
+app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }))
 app.use(cookieParser())
 app.use(express.json())
 
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100, standardHeaders: true, legacyHeaders: false }))
 
-// Public — no auth required
-app.get('/api/v1/ui-flags', getUIFlags)
+app.get('/api/v1/admin/ui-flags', authenticate, getUIFlags)
 
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/profile', profileRoutes)
