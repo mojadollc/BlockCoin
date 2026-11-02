@@ -131,7 +131,7 @@ export default function SettingsPage() {
 
   const load = useCallback(() => {
     api.get<EnvMap>('/api/v1/admin/env-keys').then(setEnvKeys).catch(() => {})
-    api.get<UIFlags>('/api/v1/admin/ui-flags').then(setFlags).catch(() => {})
+    api.get<UIFlags>('/api/v1/ui-flags').then(setFlags).catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])

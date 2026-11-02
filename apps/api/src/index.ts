@@ -14,7 +14,6 @@ import walletRoutes from './routes/wallets.routes'
 import transactionRoutes from './routes/transactions.routes'
 import simulationRoutes from './routes/simulations.routes'
 import testnetRoutes from './routes/testnet.routes'
-import { authenticate } from './middleware/auth'
 import { getUIFlags } from './controllers/admin/settings.controller'
 
 const app = express()
@@ -32,6 +31,9 @@ app.use(express.json())
 
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100, standardHeaders: true, legacyHeaders: false }))
 
+// Public — no auth required
+app.get('/api/v1/ui-flags', getUIFlags)
+
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/profile', profileRoutes)
 app.use('/api/v1/admin', adminRoutes)
@@ -40,7 +42,6 @@ app.use('/api/v1/transactions', transactionRoutes)
 app.use('/api/v1/simulations', simulationRoutes)
 app.use('/api/v1/testnet', testnetRoutes)
 
-app.get('/api/v1/admin/ui-flags', authenticate, getUIFlags)
 app.get('/health', (_req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }))
 
 io.on('connection', (socket) => {
