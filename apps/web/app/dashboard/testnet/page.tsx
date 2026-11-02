@@ -20,6 +20,30 @@ interface TestnetTx {
 
 const NETWORKS = [
   {
+    id: 'eth-mainnet',
+    label: 'Ethereum Mainnet',
+    icon: '⟠',
+    color: 'text-primary',
+    bg: 'bg-primary/10',
+    border: 'border-primary/20',
+    explorer: 'https://etherscan.io/tx/',
+    badge: 'MAINNET',
+    badgeColor: 'bg-danger/20 text-danger',
+    readOnly: true,
+  },
+  {
+    id: 'tron-mainnet',
+    label: 'TRON Mainnet',
+    icon: '◈',
+    color: 'text-danger',
+    bg: 'bg-danger/10',
+    border: 'border-danger/20',
+    explorer: 'https://tronscan.org/#/transaction/',
+    badge: 'MAINNET',
+    badgeColor: 'bg-danger/20 text-danger',
+    readOnly: true,
+  },
+  {
     id: 'sepolia',
     label: 'Ethereum Sepolia',
     icon: '⟠',
@@ -27,6 +51,9 @@ const NETWORKS = [
     bg: 'bg-secondary/10',
     border: 'border-secondary/20',
     explorer: 'https://sepolia.etherscan.io/tx/',
+    badge: 'TESTNET',
+    badgeColor: 'bg-secondary/20 text-secondary',
+    readOnly: false,
   },
   {
     id: 'tron-nile',
@@ -36,6 +63,9 @@ const NETWORKS = [
     bg: 'bg-warning/10',
     border: 'border-warning/20',
     explorer: 'https://nile.tronscan.org/#/transaction/',
+    badge: 'TESTNET',
+    badgeColor: 'bg-warning/20 text-warning',
+    readOnly: false,
   },
 ]
 
@@ -87,11 +117,16 @@ export default function TestnetPage() {
               <span className={`text-2xl ${net.color}`}>{net.icon}</span>
               <div>
                 <h3 className="font-semibold">{net.label}</h3>
-                <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">Live</span>
+                <div className="flex gap-1.5 mt-0.5">
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${net.badgeColor}`}>{net.badge}</span>
+                  {net.readOnly && <span className="text-xs bg-surface/10 text-surface/50 px-2 py-0.5 rounded-full">Read-only</span>}
+                </div>
               </div>
             </div>
             <p className="text-sm text-surface/50">
-              Connect a testnet wallet to read balances, submit real testnet transactions, and verify on-chain.
+              {net.readOnly
+                ? 'Check real wallet balances and verify on-chain transactions. No transfers.'
+                : 'Connect a testnet wallet to read balances, submit real testnet transactions, and verify on-chain.'}
             </p>
             <p className={`text-sm font-medium mt-3 ${net.color}`}>Open →</p>
           </Link>

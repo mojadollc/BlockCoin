@@ -4,6 +4,8 @@ import { ok, badRequest, notFound, serverError } from '../utils/response'
 import { AuthRequest } from '../middleware/auth'
 import * as sepolia from '../services/sepolia.service'
 import * as tron from '../services/tron.service'
+import * as ethMainnet from '../services/eth-mainnet.service'
+import * as tronMainnet from '../services/tron-mainnet.service'
 import { z } from 'zod'
 
 // ── Network info ─────────────────────────────────────────────────────────────
@@ -11,14 +13,11 @@ import { z } from 'zod'
 export async function getNetworkInfo(req: AuthRequest, res: Response): Promise<void> {
   const { network } = req.params
   try {
-    if (network === 'sepolia') {
-      const info = await sepolia.getNetworkInfo()
-      ok(res, info)
-    } else if (network === 'tron-nile') {
-      ok(res, tron.getNetworkInfo())
-    } else {
-      badRequest(res, 'Unknown network. Use: sepolia | tron-nile')
-    }
+    if (network === 'sepolia') ok(res, await sepolia.getNetworkInfo())
+    else if (network === 'tron-nile') ok(res, tron.getNetworkInfo())
+    else if (network === 'eth-mainnet') ok(res, await ethMainnet.getNetworkInfo())
+    else if (network === 'tron-mainnet') ok(res, tronMainnet.getNetworkInfo())
+    else badRequest(res, 'Unknown network. Use: sepolia | tron-nile | eth-mainnet | tron-mainnet')
   } catch (e: unknown) {
     badRequest(res, e instanceof Error ? e.message : 'Failed to get network info')
   }
@@ -27,13 +26,11 @@ export async function getNetworkInfo(req: AuthRequest, res: Response): Promise<v
 export async function getTokenInfo(req: AuthRequest, res: Response): Promise<void> {
   const { network } = req.params
   try {
-    if (network === 'sepolia') {
-      ok(res, await sepolia.getTokenInfo())
-    } else if (network === 'tron-nile') {
-      ok(res, await tron.getTokenInfo())
-    } else {
-      badRequest(res, 'Unknown network')
-    }
+    if (network === 'sepolia') ok(res, await sepolia.getTokenInfo())
+    else if (network === 'tron-nile') ok(res, await tron.getTokenInfo())
+    else if (network === 'eth-mainnet') ok(res, await ethMainnet.getTokenInfo())
+    else if (network === 'tron-mainnet') ok(res, await tronMainnet.getTokenInfo())
+    else badRequest(res, 'Unknown network')
   } catch (e: unknown) {
     badRequest(res, e instanceof Error ? e.message : 'Failed to get token info')
   }
@@ -48,13 +45,11 @@ export async function getWalletBalance(req: AuthRequest, res: Response): Promise
   if (!address) { badRequest(res, 'address query param required'); return }
 
   try {
-    if (network === 'sepolia') {
-      ok(res, await sepolia.getWalletBalance(address))
-    } else if (network === 'tron-nile') {
-      ok(res, await tron.getWalletBalance(address))
-    } else {
-      badRequest(res, 'Unknown network')
-    }
+    if (network === 'sepolia') ok(res, await sepolia.getWalletBalance(address))
+    else if (network === 'tron-nile') ok(res, await tron.getWalletBalance(address))
+    else if (network === 'eth-mainnet') ok(res, await ethMainnet.getWalletBalance(address))
+    else if (network === 'tron-mainnet') ok(res, await tronMainnet.getWalletBalance(address))
+    else badRequest(res, 'Unknown network')
   } catch (e: unknown) {
     badRequest(res, e instanceof Error ? e.message : 'Failed to get balance')
   }
@@ -124,13 +119,11 @@ export async function getReceipt(req: AuthRequest, res: Response): Promise<void>
   try {
     let receipt: sepolia.TxReceipt | tron.TronTxReceipt
 
-    if (network === 'sepolia') {
-      receipt = await sepolia.getTransactionReceipt(txHash)
-    } else if (network === 'tron-nile') {
-      receipt = await tron.getTransactionReceipt(txHash)
-    } else {
-      badRequest(res, 'Unknown network'); return
-    }
+    if (network === 'sepolia') receipt = await sepolia.getTransactionReceipt(txHash)
+    else if (network === 'tron-nile') receipt = await tron.getTransactionReceipt(txHash)
+    else if (network === 'eth-mainnet') receipt = await ethMainnet.getTransactionReceipt(txHash)
+    else if (network === 'tron-mainnet') receipt = await tronMainnet.getTransactionReceipt(txHash)
+    else { badRequest(res, 'Unknown network'); return }
 
     // Update our DB record if we have one
     const dbNetwork = network === 'sepolia' ? 'SEPOLIA' : 'TRON_NILE'
