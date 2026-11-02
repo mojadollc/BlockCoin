@@ -27,8 +27,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl">
-      <h2 className="text-2xl font-bold mb-6">System Settings</h2>
+    <div className="p-4 md:p-8 max-w-2xl">
+      <h2 className="text-xl md:text-2xl font-bold mb-6">System Settings</h2>
 
       <div className="bg-card rounded-xl border border-white/5 p-6 mb-6">
         <h3 className="font-semibold mb-4">Current Settings</h3>

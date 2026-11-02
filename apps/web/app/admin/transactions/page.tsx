@@ -43,8 +43,8 @@ export default function AdminTransactionsPage() {
   ]
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-6">Transactions</h2>
+    <div className="p-4 md:p-8">
+      <h2 className="text-xl md:text-2xl font-bold mb-6">Transactions</h2>
 
       <div className="bg-card rounded-xl border border-white/5">
         <div className="p-4 border-b border-white/5 flex gap-3">

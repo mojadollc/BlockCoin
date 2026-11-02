@@ -100,15 +100,15 @@ export default function SecuritySimulatorPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold">Security Simulator</h2>
+    <div className="p-4 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <h2 className="text-xl md:text-2xl font-bold">Security Simulator</h2>
         <p className="text-surface/50 text-sm mt-1">
           Test wallet interface behavior under controlled scenarios. All tests run within BlockCoin's internal environment.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
         {/* Scenario picker */}
         <div className="xl:col-span-1">
           <div className="bg-card rounded-xl border border-white/5">
@@ -175,7 +175,7 @@ export default function SecuritySimulatorPage() {
                 </div>
 
                 <form onSubmit={handleRun} className="space-y-4 border-t border-white/5 pt-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm text-surface/60 mb-1">Target Wallet</label>
                       <select
@@ -285,7 +285,7 @@ export default function SecuritySimulatorPage() {
           ) : (
             <div className="divide-y divide-white/5">
               {reports.map(r => (
-                <div key={r.id} className="px-6 py-4 flex items-start justify-between gap-4">
+                <div key={r.id} className="px-4 py-4 flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
                     <span className={`mt-0.5 text-sm shrink-0 ${r.passed ? 'text-primary' : 'text-danger'}`}>
                       {r.passed ? '✓' : '✗'}

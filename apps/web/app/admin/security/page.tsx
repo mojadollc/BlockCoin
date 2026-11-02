@@ -46,10 +46,10 @@ export default function SecurityPage() {
     : null
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-bold">Security Reports</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Security Reports</h2>
           <p className="text-surface/50 text-sm mt-1">Results from wallet behavior and security simulation tests.</p>
         </div>
         <Link
@@ -61,7 +61,7 @@ export default function SecurityPage() {
       </div>
 
       {passRate !== null && (
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-card rounded-xl border border-white/5 p-4">
             <p className="text-sm text-surface/50">Total Reports</p>
             <p className="text-2xl font-bold text-surface mt-1">{total}</p>

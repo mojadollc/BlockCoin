@@ -79,10 +79,10 @@ export default function SimulationsPage() {
   const STATUS_OPTIONS = ['', 'CREATED', 'PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'EXPIRED', 'CANCELLED']
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-bold">Simulations</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Simulations</h2>
           <p className="text-surface/50 text-sm mt-1">Run virtual transaction scenarios on your wallets</p>
         </div>
         <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export default function SimulationsPage() {
         ) : (
           <div className="divide-y divide-white/5">
             {sims.map(sim => (
-              <div key={sim.id} className="px-6 py-4 flex items-center justify-between">
+              <div key={sim.id} className="px-4 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-4">
                   <span className={`w-9 h-9 rounded-full flex items-center justify-center text-sm ${
                     sim.type === 'CREDIT' ? 'bg-primary/20 text-primary' :

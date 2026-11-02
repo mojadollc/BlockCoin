@@ -38,8 +38,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="p-8 max-w-xl space-y-6">
-      <h2 className="text-2xl font-bold">Profile</h2>
+    <div className="p-4 md:p-8 max-w-xl space-y-6">
+      <h2 className="text-xl md:text-2xl font-bold">Profile</h2>
 
       <div className="bg-card rounded-xl border border-white/5 p-6">
         <h3 className="font-semibold mb-4">Account Details</h3>

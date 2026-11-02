@@ -41,8 +41,8 @@ export default function AuditLogsPage() {
   ]
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-6">Audit Logs</h2>
+    <div className="p-4 md:p-8">
+      <h2 className="text-xl md:text-2xl font-bold mb-2">Audit Logs</h2>
       <p className="text-surface/50 text-sm mb-6">Immutable record of all administrative actions.</p>
 
       <div className="bg-card rounded-xl border border-white/5">

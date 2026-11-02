@@ -39,10 +39,10 @@ export default function WalletsPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-bold">Virtual Wallets</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Virtual Wallets</h2>
           <p className="text-surface/50 text-sm mt-1">BlockCoin internal wallets — not real blockchain wallets</p>
         </div>
         <div className="flex items-center gap-3">
@@ -70,7 +70,7 @@ export default function WalletsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {wallets.map(w => (
             <WalletCard key={w.id} wallet={w} onRefresh={load} />
           ))}

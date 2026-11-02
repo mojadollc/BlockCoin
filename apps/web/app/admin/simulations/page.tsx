@@ -95,9 +95,9 @@ export default function AdminSimulationsPage() {
   const STATUS_OPTIONS = ['', 'CREATED', 'PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'EXPIRED', 'CANCELLED']
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Simulations</h2>
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h2 className="text-xl md:text-2xl font-bold">Simulations</h2>
         <button
           onClick={() => setCreateOpen(true)}
           className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
@@ -122,7 +122,7 @@ export default function AdminSimulationsPage() {
         ) : (
           <div className="divide-y divide-white/5">
             {sims.map(sim => (
-              <div key={sim.id} className="px-6 py-4 flex items-center justify-between">
+              <div key={sim.id} className="px-4 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-4">
                   <span className={`w-9 h-9 rounded-full flex items-center justify-center text-sm ${sim.type === 'CREDIT' ? 'bg-primary/20 text-primary' : 'bg-danger/20 text-danger'}`}>
                     {sim.type === 'CREDIT' ? '↓' : '↑'}

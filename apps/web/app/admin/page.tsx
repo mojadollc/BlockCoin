@@ -18,16 +18,16 @@ export default function AdminDashboard() {
   }, [])
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-6 md:mb-8">
         <div>
-          <h2 className="text-2xl font-bold">Admin Dashboard</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Admin Dashboard</h2>
           <p className="text-surface/50 text-sm mt-1">BlockCoin USDT Lab — Control Panel</p>
         </div>
         <EnvBadge env="INTERNAL" />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
         <StatCard label="Total Users" value={data?.stats.totalUsers ?? '—'} color="text-primary" />
         <StatCard label="Active Users" value={data?.stats.activeUsers ?? '—'} color="text-secondary" sub="Currently active" />
         <StatCard label="Virtual Wallets" value={data?.stats.totalWallets ?? '—'} color="text-warning" />

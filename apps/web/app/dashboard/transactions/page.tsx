@@ -30,9 +30,9 @@ export default function TransactionsPage() {
   useEffect(() => { load() }, [load])
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Transactions</h2>
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+        <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
         <EnvBadge env="INTERNAL" />
       </div>
 
@@ -45,7 +45,7 @@ export default function TransactionsPage() {
               <Link
                 key={tx.id}
                 href={`/dashboard/transactions/${tx.id}`}
-                className="flex items-center justify-between px-6 py-4 hover:bg-white/2 transition"
+                className="flex items-center justify-between px-4 py-3 hover:bg-white/2 transition"
               >
                 <div className="flex items-center gap-4">
                   <span className={`w-9 h-9 rounded-full flex items-center justify-center text-base ${

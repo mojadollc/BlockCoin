@@ -66,17 +66,17 @@ export default function TestnetPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-6 md:mb-8">
         <div>
-          <h2 className="text-2xl font-bold">Testnet</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Testnet</h2>
           <p className="text-surface/50 text-sm mt-1">Real blockchain testnet operations — separate from virtual wallets</p>
         </div>
         <EnvBadge env="TESTNET" />
       </div>
 
       {/* Network cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         {NETWORKS.map(net => (
           <Link
             key={net.id}
@@ -129,7 +129,7 @@ export default function TestnetPage() {
             {txs.map(tx => {
               const net = NETWORKS.find(n => n.id === tx.network.toLowerCase().replace('_', '-'))
               return (
-                <div key={tx.id} className="px-6 py-4">
+                <div key={tx.id} className="px-4 py-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <span className={`text-lg ${net?.color ?? 'text-surface/60'}`}>{net?.icon ?? '◈'}</span>

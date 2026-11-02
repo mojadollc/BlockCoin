@@ -44,17 +44,17 @@ export default function DashboardPage() {
   }, 0n)
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-6 md:mb-8">
         <div>
-          <h2 className="text-2xl font-bold">Welcome, {user?.firstName}</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Welcome, {user?.firstName}</h2>
           <p className="text-surface/50 text-sm mt-1">Your BlockCoin virtual wallet dashboard</p>
         </div>
         <EnvBadge env="INTERNAL" />
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl p-6 border border-white/5">
           <p className="text-sm text-surface/50">Total Virtual Balance</p>
           <p className="text-3xl font-bold font-mono text-primary mt-2">
@@ -96,7 +96,7 @@ export default function DashboardPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
           {wallets.slice(0, 3).map(w => (
             <WalletCard key={w.id} wallet={w} onRefresh={loadWallets} />
           ))}
@@ -120,7 +120,7 @@ export default function DashboardPage() {
               <Link
                 key={tx.id}
                 href={`/dashboard/transactions/${tx.id}`}
-                className="flex items-center justify-between px-6 py-4 hover:bg-white/2 transition"
+                className="flex items-center justify-between px-4 py-3 hover:bg-white/2 transition"
               >
                 <div className="flex items-center gap-3">
                   <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
