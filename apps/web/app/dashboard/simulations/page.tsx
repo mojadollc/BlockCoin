@@ -48,7 +48,6 @@ export default function SimulationsPage() {
 
   useEffect(() => {
     api.get<Wallet[]>('/api/v1/wallets').then(w => setWallets(w.filter(x => x.status === 'ACTIVE'))).catch(() => {})
-    api.get<Template[]>('/api/v1/admin/templates').catch(() => {})
   }, [])
 
   async function handleCreate(e: React.FormEvent) {

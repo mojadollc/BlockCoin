@@ -17,7 +17,7 @@ export async function listTransactions(req: AuthRequest, res: Response): Promise
     })
     const walletIds = wallets.map(w => w.id)
 
-    const where = {
+    const where = walletIds.length === 0 ? { id: 'none' } : {
       OR: [
         { fromWalletId: { in: walletIds } },
         { toWalletId: { in: walletIds } },
@@ -39,6 +39,7 @@ export async function listTransactions(req: AuthRequest, res: Response): Promise
 
     const mapped = items.map(t => ({
       ...t,
+      amountUnits: t.amountUnits.toString(),
       amountDisplay: unitsToDisplay(t.amountUnits),
     }))
 
@@ -73,7 +74,7 @@ export async function getTransaction(req: AuthRequest, res: Response): Promise<v
 
     if (!owns) { forbidden(res); return }
 
-    ok(res, { ...tx, amountDisplay: unitsToDisplay(tx.amountUnits) })
+    ok(res, { ...tx, amountUnits: tx.amountUnits.toString(), amountDisplay: unitsToDisplay(tx.amountUnits) })
   } catch {
     serverError(res)
   }
