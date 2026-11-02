@@ -20,30 +20,6 @@ interface TestnetTx {
 
 const NETWORKS = [
   {
-    id: 'eth-mainnet',
-    label: 'Ethereum Mainnet',
-    icon: '⟠',
-    color: 'text-primary',
-    bg: 'bg-primary/10',
-    border: 'border-primary/20',
-    explorer: 'https://etherscan.io/tx/',
-    badge: 'MAINNET',
-    badgeColor: 'bg-danger/20 text-danger',
-    readOnly: true,
-  },
-  {
-    id: 'tron-mainnet',
-    label: 'TRON Mainnet',
-    icon: '◈',
-    color: 'text-danger',
-    bg: 'bg-danger/10',
-    border: 'border-danger/20',
-    explorer: 'https://tronscan.org/#/transaction/',
-    badge: 'MAINNET',
-    badgeColor: 'bg-danger/20 text-danger',
-    readOnly: true,
-  },
-  {
     id: 'sepolia',
     label: 'Ethereum Sepolia',
     icon: '⟠',
