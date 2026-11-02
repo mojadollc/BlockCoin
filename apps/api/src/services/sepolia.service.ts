@@ -61,7 +61,7 @@ export interface TxReceipt {
 function getProvider(): ethers.JsonRpcProvider {
   const rpcUrl = process.env.SEPOLIA_RPC_URL
   if (!rpcUrl) throw new Error('SEPOLIA_RPC_URL not configured')
-  return new ethers.JsonRpcProvider(rpcUrl)
+  return new ethers.JsonRpcProvider(rpcUrl, undefined, { staticNetwork: true })
 }
 
 function getContractAddress(): string {
