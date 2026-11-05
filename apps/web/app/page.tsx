@@ -3,39 +3,33 @@ import Link from 'next/link'
 const FEATURES = [
   {
     icon: '◈',
-    color: 'text-primary bg-primary/10',
     title: 'USDT Wallets',
     desc: 'Create and manage multiple USDT wallets per account. Full ledger tracking, real-time balance updates, and instant transaction history.',
+    accent: 'primary',
   },
   {
     icon: '⚙',
-    color: 'text-secondary bg-secondary/10',
     title: 'Transaction Engine',
     desc: 'Execute CREDIT, DEBIT, and TRANSFER operations with configurable processing, expiry timers, and real-time status tracking.',
+    accent: 'secondary',
   },
   {
     icon: '🛡',
-    color: 'text-warning bg-warning/10',
     title: 'Security Testing',
     desc: 'Run 20+ security scenarios against your wallets. Identify vulnerabilities before they become problems.',
+    accent: 'warning',
   },
   {
     icon: '⛓',
-    color: 'text-secondary bg-secondary/10',
     title: 'Blockchain Integration',
     desc: 'Connect to Ethereum Sepolia and TRON Nile networks. Submit on-chain transactions and verify them on public explorers.',
+    accent: 'secondary',
   },
   {
     icon: '📋',
-    color: 'text-primary bg-primary/10',
     title: 'Immutable Audit Logs',
     desc: 'Every action, balance change, and transaction is permanently recorded. Full accountability with actor tracking.',
-  },
-  {
-    icon: '⊞',
-    color: 'text-warning bg-warning/10',
-    title: 'Admin Control Panel',
-    desc: 'Manage users, wallets, and transactions from a powerful dashboard. Adjust balances, monitor activity, and run security reports.',
+    accent: 'primary',
   },
 ]
 
@@ -58,80 +52,73 @@ const TESTIMONIALS = [
     name: 'Marcus T.',
     role: 'Blockchain Developer',
     avatar: 'MT',
-    color: 'bg-primary/20 text-primary',
     text: 'BlockCoin saved us weeks of development time. We process thousands of USDT transactions daily with full confidence. The security scanner caught 3 critical edge cases before we went live.',
   },
   {
     name: 'Priya S.',
     role: 'DeFi QA Engineer',
     avatar: 'PS',
-    color: 'bg-secondary/20 text-secondary',
-    text: 'The admin panel is incredibly powerful. Being able to manage balances and monitor transactions on the fly makes our workflow so much faster. The audit log gives us full traceability.',
+    text: 'The platform is incredibly powerful. Being able to manage balances and monitor transactions on the fly makes our workflow so much faster. The audit log gives us full traceability.',
   },
   {
     name: 'James K.',
     role: 'Fintech Startup CTO',
     avatar: 'JK',
-    color: 'bg-warning/20 text-warning',
     text: 'We use BlockCoin to demo our payment product to investors. It looks and behaves exactly like a production USDT wallet. Our investors are always impressed.',
   },
 ]
 
 const PLANS = [
   {
-    name: 'Starter',
-    price: 'Free',
-    sub: 'Forever',
-    color: 'border-white/10',
-    badge: null,
-    features: ['3 wallets', '50 transactions/month', 'Basic security scenarios', 'Community support'],
-    cta: 'Get Started',
-    ctaStyle: 'bg-white/5 text-surface hover:bg-white/10',
-  },
-  {
     name: 'Pro',
     price: '$29',
     sub: 'per month',
-    color: 'border-primary/40',
     badge: 'Most Popular',
     features: ['10 wallets', 'Unlimited transactions', 'All 20+ security scenarios', 'Blockchain integration', 'Priority support', 'Audit logs'],
     cta: 'Start Free Trial',
-    ctaStyle: 'bg-primary text-bg hover:bg-primary/90',
+    highlight: true,
   },
   {
     name: 'Enterprise',
     price: 'Custom',
     sub: 'contact us',
-    color: 'border-white/10',
     badge: null,
     features: ['Unlimited wallets', 'Custom scenarios', 'Dedicated environment', 'SLA guarantee', 'White-label option', 'API access'],
     cta: 'Contact Sales',
-    ctaStyle: 'bg-white/5 text-surface hover:bg-white/10',
+    highlight: false,
   },
 ]
 
+const accentBg: Record<string, string> = {
+  primary: 'bg-primary/10 text-primary',
+  secondary: 'bg-secondary/10 text-secondary',
+  warning: 'bg-warning/10 text-warning',
+}
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-bg text-surface">
+    <div className="min-h-screen bg-bg text-surface overflow-x-hidden">
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-bg/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-bg/70 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-bg text-xs font-black">B</span>
+            </div>
+            <span className="text-base font-bold tracking-tight">BlockCoin</span>
+          </div>
+          <div className="hidden md:flex items-center gap-8 text-sm text-surface/50">
+            <a href="#features" className="hover:text-surface transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-surface transition-colors">How It Works</a>
+            <a href="#pricing" className="hover:text-surface transition-colors">Pricing</a>
+            <a href="#testimonials" className="hover:text-surface transition-colors">Reviews</a>
+          </div>
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-primary">BlockCoin</span>
-            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold hidden sm:inline">USDT</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-sm text-surface/60">
-            <a href="#features" className="hover:text-surface transition">Features</a>
-            <a href="#how-it-works" className="hover:text-surface transition">How It Works</a>
-            <a href="#pricing" className="hover:text-surface transition">Pricing</a>
-            <a href="#testimonials" className="hover:text-surface transition">Reviews</a>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-surface/70 hover:text-surface transition px-3 py-1.5">
+            <Link href="/login" className="text-sm text-surface/60 hover:text-surface transition-colors px-4 py-2 rounded-lg hover:bg-white/5">
               Sign In
             </Link>
-            <Link href="/register" className="text-sm bg-primary text-bg font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition">
+            <Link href="/register" className="text-sm bg-primary text-bg font-bold px-5 py-2 rounded-lg hover:bg-primary/90 transition-colors">
               Get Started
             </Link>
           </div>
@@ -139,77 +126,92 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-20 left-1/4 w-64 h-64 bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative pt-36 pb-28 px-5 flex flex-col items-center text-center overflow-hidden">
+        {/* Background glows */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-primary/8 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-40 left-1/4 w-72 h-72 bg-secondary/6 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-40 right-1/4 w-72 h-72 bg-warning/4 rounded-full blur-[80px] pointer-events-none" />
 
-        <div className="max-w-4xl mx-auto text-center relative">
+        <div className="relative max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-xs font-semibold px-4 py-2 rounded-full mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             Trusted by 500+ blockchain developers worldwide
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-            The Professional
-            <br />
-            <span className="text-primary">USDT Wallet Platform</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[1.05] tracking-tight mb-6">
+            The Professional<br />
+            <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #00C89B 0%, #2684FF 100%)' }}>
+              USDT Platform
+            </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-surface/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-            A powerful USDT wallet management platform for developers, QA engineers, and fintech teams.
-            Manage transactions, run security tests, and integrate with live blockchain networks.
+          <p className="text-lg text-surface/50 max-w-xl mx-auto mb-10 leading-relaxed">
+            Wallet management, transaction processing, security testing, and live blockchain integration — all in one platform.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-20">
             <Link href="/register"
-              className="w-full sm:w-auto bg-primary text-bg font-bold px-8 py-3.5 rounded-xl hover:bg-primary/90 transition text-base">
-              Start Free — No Card Required
+              className="w-full sm:w-auto bg-primary text-bg font-bold px-8 py-3.5 rounded-xl hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/20 text-sm">
+              Get Started Free
             </Link>
             <a href="#how-it-works"
-              className="w-full sm:w-auto bg-white/5 border border-white/10 text-surface font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition text-base">
+              className="w-full sm:w-auto bg-white/5 border border-white/8 text-surface/80 font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors text-sm">
               See How It Works →
             </a>
           </div>
 
-          {/* Hero mockup */}
-          <div className="bg-card border border-white/10 rounded-2xl p-1 shadow-2xl max-w-3xl mx-auto">
-            <div className="bg-sidebar rounded-xl p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <p className="text-xs text-surface/40">Total Balance</p>
-                  <p className="text-3xl font-bold font-mono text-primary mt-1">125,000.000000</p>
-                  <p className="text-xs text-surface/30 mt-0.5">USDT</p>
+          {/* Dashboard mockup */}
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-primary/20 to-secondary/10 blur-sm" />
+            <div className="relative bg-card border border-white/8 rounded-2xl overflow-hidden shadow-2xl">
+              {/* Mockup top bar */}
+              <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5 bg-sidebar/60">
+                <span className="w-2.5 h-2.5 rounded-full bg-danger/60" />
+                <span className="w-2.5 h-2.5 rounded-full bg-warning/60" />
+                <span className="w-2.5 h-2.5 rounded-full bg-primary/60" />
+                <span className="ml-3 text-xs text-surface/20 font-mono">blockcoin.app/dashboard</span>
+              </div>
+              <div className="p-5 sm:p-7">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <p className="text-xs text-surface/30 mb-1">Total Portfolio</p>
+                    <p className="text-4xl font-black font-mono text-primary tracking-tight">125,000.00</p>
+                    <p className="text-xs text-surface/30 mt-1">USDT</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="text-xs bg-primary/15 text-primary px-3 py-1 rounded-full font-semibold border border-primary/20">● LIVE</span>
+                    <span className="text-xs text-primary/60 font-mono">+12.4% this week</span>
+                  </div>
                 </div>
-                <span className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full font-semibold">LIVE</span>
-              </div>
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                {[
-                  { label: 'Main Wallet', bal: '50,000.00', color: 'border-primary/20' },
-                  { label: 'Operations', bal: '25,000.00', color: 'border-secondary/20' },
-                  { label: 'Reserve', bal: '50,000.00', color: 'border-warning/20' },
-                ].map(w => (
-                  <div key={w.label} className={`bg-bg rounded-xl border ${w.color} p-3`}>
-                    <p className="text-xs text-surface/40">{w.label}</p>
-                    <p className="font-mono text-sm font-bold text-primary mt-1">{w.bal}</p>
-                    <span className="text-xs text-primary/60">ACTIVE</span>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-2">
-                {[
-                  { type: 'CREDIT', amount: '+10,000.000000', status: 'COMPLETED', color: 'text-primary', icon: '↓' },
-                  { type: 'DEBIT', amount: '-5,000.000000', status: 'PROCESSING', color: 'text-warning', icon: '↑' },
-                  { type: 'CREDIT', amount: '+25,000.000000', status: 'PENDING', color: 'text-secondary', icon: '↓' },
-                ].map((tx, i) => (
-                  <div key={i} className="flex items-center justify-between bg-bg/50 rounded-lg px-3 py-2">
-                    <div className="flex items-center gap-3">
-                      <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${tx.type === 'CREDIT' ? 'bg-primary/20 text-primary' : 'bg-warning/20 text-warning'}`}>{tx.icon}</span>
-                      <span className="text-xs text-surface/60">{tx.type}</span>
+                <div className="grid grid-cols-3 gap-3 mb-5">
+                  {[
+                    { label: 'Main Wallet', bal: '50,000.00', color: 'border-primary/20 bg-primary/5' },
+                    { label: 'Operations', bal: '25,000.00', color: 'border-secondary/20 bg-secondary/5' },
+                    { label: 'Reserve', bal: '50,000.00', color: 'border-warning/20 bg-warning/5' },
+                  ].map(w => (
+                    <div key={w.label} className={`rounded-xl border ${w.color} p-3`}>
+                      <p className="text-xs text-surface/40 mb-1">{w.label}</p>
+                      <p className="font-mono text-sm font-bold text-surface">{w.bal}</p>
+                      <p className="text-xs text-primary/50 mt-0.5">USDT</p>
                     </div>
-                    <span className={`font-mono text-xs font-semibold ${tx.color}`}>{tx.amount} USDT</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${tx.status === 'COMPLETED' ? 'bg-primary/20 text-primary' : tx.status === 'PROCESSING' ? 'bg-secondary/20 text-secondary' : 'bg-warning/20 text-warning'}`}>{tx.status}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { type: 'CREDIT', amount: '+10,000.00', status: 'COMPLETED', statusColor: 'bg-primary/15 text-primary border-primary/20', icon: '↓', iconBg: 'bg-primary/15 text-primary' },
+                    { type: 'DEBIT', amount: '-5,000.00', status: 'PROCESSING', statusColor: 'bg-secondary/15 text-secondary border-secondary/20', icon: '↑', iconBg: 'bg-warning/15 text-warning' },
+                    { type: 'CREDIT', amount: '+25,000.00', status: 'PENDING', statusColor: 'bg-warning/15 text-warning border-warning/20', icon: '↓', iconBg: 'bg-primary/15 text-primary' },
+                  ].map((tx, i) => (
+                    <div key={i} className="flex items-center justify-between bg-sidebar/40 rounded-xl px-4 py-2.5 border border-white/4">
+                      <div className="flex items-center gap-3">
+                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${tx.iconBg}`}>{tx.icon}</span>
+                        <span className="text-xs text-surface/50 font-medium">{tx.type}</span>
+                      </div>
+                      <span className="font-mono text-xs font-bold text-surface">{tx.amount} USDT</span>
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${tx.statusColor}`}>{tx.status}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -217,13 +219,13 @@ export default function LandingPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-12 border-y border-white/5 bg-sidebar/30">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <section className="py-14 border-y border-white/5">
+        <div className="max-w-4xl mx-auto px-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {STATS.map(s => (
               <div key={s.label}>
-                <p className="text-3xl sm:text-4xl font-bold text-primary">{s.value}</p>
-                <p className="text-sm text-surface/50 mt-1">{s.label}</p>
+                <p className="text-4xl font-black text-primary tabular-nums">{s.value}</p>
+                <p className="text-xs text-surface/40 mt-1.5 uppercase tracking-wider">{s.label}</p>
               </div>
             ))}
           </div>
@@ -231,23 +233,27 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-24 px-4 sm:px-6">
+      <section id="features" className="py-28 px-5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-3">Everything You Need</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Built for Serious Blockchain Teams</h2>
-            <p className="text-surface/50 max-w-xl mx-auto">
-              From wallet management to complex multi-scenario security testing — BlockCoin has every tool your team needs.
+            <p className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">Platform Features</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Built for Serious Blockchain Teams</h2>
+            <p className="text-surface/40 max-w-lg mx-auto text-sm leading-relaxed">
+              From wallet management to complex multi-scenario security testing — every tool your team needs.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map(f => (
-              <div key={f.title} className="bg-card border border-white/5 rounded-2xl p-6 hover:border-white/10 transition group">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-4 ${f.color}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {FEATURES.map((f, i) => (
+              <div key={f.title}
+                className="group relative bg-card border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/20">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg mb-5 ${accentBg[f.accent]}`}>
                   {f.icon}
                 </div>
-                <h3 className="font-semibold text-base mb-2 group-hover:text-primary transition">{f.title}</h3>
-                <p className="text-sm text-surface/50 leading-relaxed">{f.desc}</p>
+                <h3 className="font-bold text-sm mb-2 group-hover:text-primary transition-colors">{f.title}</h3>
+                <p className="text-xs text-surface/40 leading-relaxed">{f.desc}</p>
+                {i === 0 && (
+                  <div className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                )}
               </div>
             ))}
           </div>
@@ -255,48 +261,57 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 px-4 sm:px-6 bg-sidebar/20">
-        <div className="max-w-4xl mx-auto">
+      <section id="how-it-works" className="py-28 px-5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-sidebar/0 via-sidebar/30 to-sidebar/0 pointer-events-none" />
+        <div className="max-w-4xl mx-auto relative">
           <div className="text-center mb-16">
-            <p className="text-secondary text-sm font-semibold uppercase tracking-widest mb-3">Simple Setup</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Up and Running in Minutes</h2>
-            <p className="text-surface/50 max-w-xl mx-auto">No complex configuration. No waiting.</p>
+            <p className="text-secondary text-xs font-bold uppercase tracking-[0.2em] mb-4">Simple Setup</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Up and Running in Minutes</h2>
+            <p className="text-surface/40 max-w-sm mx-auto text-sm">No complex configuration. No waiting.</p>
           </div>
-          <div className="space-y-6">
-            {STEPS.map(s => (
-              <div key={s.step} className="flex gap-6 items-start">
-                <div className="shrink-0 w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <span className="text-primary font-bold text-sm">{s.step}</span>
+          <div className="relative">
+            {/* Connector line */}
+            <div className="absolute left-7 top-7 bottom-7 w-px bg-gradient-to-b from-primary/30 via-secondary/20 to-transparent hidden sm:block" />
+            <div className="space-y-5">
+              {STEPS.map((s, i) => (
+                <div key={s.step} className="flex gap-5 items-start group">
+                  <div className="relative shrink-0 w-14 h-14 rounded-2xl bg-card border border-white/8 flex items-center justify-center group-hover:border-primary/30 transition-colors">
+                    <span className="text-primary font-black text-sm">{s.step}</span>
+                  </div>
+                  <div className="flex-1 bg-card border border-white/5 rounded-2xl p-5 group-hover:border-white/10 transition-colors">
+                    <h3 className="font-bold text-sm mb-1.5">{s.title}</h3>
+                    <p className="text-surface/40 text-xs leading-relaxed">{s.desc}</p>
+                  </div>
                 </div>
-                <div className="flex-1 pt-1">
-                  <h3 className="font-semibold text-base mb-1">{s.title}</h3>
-                  <p className="text-surface/50 text-sm leading-relaxed">{s.desc}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-24 px-4 sm:px-6">
+      <section id="testimonials" className="py-28 px-5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-warning text-sm font-semibold uppercase tracking-widest mb-3">Trusted by Teams</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">What Developers Are Saying</h2>
+            <p className="text-warning text-xs font-bold uppercase tracking-[0.2em] mb-4">Trusted by Teams</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">What Developers Are Saying</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map(t => (
-              <div key={t.name} className="bg-card border border-white/5 rounded-2xl p-6 flex flex-col gap-4">
-                <div className="flex text-warning text-sm">{'★★★★★'}</div>
-                <p className="text-sm text-surface/70 leading-relaxed flex-1">"{t.text}"</p>
-                <div className="flex items-center gap-3 pt-2 border-t border-white/5">
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold ${t.color}`}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={t.name} className="bg-card border border-white/5 rounded-2xl p-6 flex flex-col gap-5 hover:border-white/10 transition-colors">
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <span key={j} className="text-warning text-sm">★</span>
+                  ))}
+                </div>
+                <p className="text-sm text-surface/60 leading-relaxed flex-1">"{t.text}"</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-black ${i === 0 ? 'bg-primary/20 text-primary' : i === 1 ? 'bg-secondary/20 text-secondary' : 'bg-warning/20 text-warning'}`}>
                     {t.avatar}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold">{t.name}</p>
-                    <p className="text-xs text-surface/40">{t.role}</p>
+                    <p className="text-sm font-bold">{t.name}</p>
+                    <p className="text-xs text-surface/30">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -306,39 +321,45 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-24 px-4 sm:px-6 bg-sidebar/20">
-        <div className="max-w-5xl mx-auto">
+      <section id="pricing" className="py-28 px-5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-sidebar/0 via-sidebar/30 to-sidebar/0 pointer-events-none" />
+        <div className="max-w-3xl mx-auto relative">
           <div className="text-center mb-16">
-            <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-3">Simple Pricing</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Start Free, Scale When Ready</h2>
-            <p className="text-surface/50 max-w-xl mx-auto">No hidden fees. Cancel anytime.</p>
+            <p className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">Pricing</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Simple, Transparent Pricing</h2>
+            <p className="text-surface/40 max-w-sm mx-auto text-sm">No hidden fees. Cancel anytime.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {PLANS.map(p => (
-              <div key={p.name} className={`bg-card border ${p.color} rounded-2xl p-6 flex flex-col relative`}>
-                {p.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-bg text-xs font-bold px-4 py-1 rounded-full">
-                    {p.badge}
+              <div key={p.name} className={`relative rounded-2xl p-px ${p.highlight ? 'bg-gradient-to-b from-primary/40 to-secondary/20' : 'bg-white/5'}`}>
+                <div className="bg-card rounded-2xl p-7 flex flex-col h-full">
+                  {p.badge && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-bg text-xs font-black px-4 py-1 rounded-full">
+                      {p.badge}
+                    </span>
+                  )}
+                  <div className="mb-7">
+                    <p className="text-xs text-surface/40 font-semibold uppercase tracking-wider mb-3">{p.name}</p>
+                    <div className="flex items-end gap-1.5">
+                      <span className="text-5xl font-black tracking-tight">{p.price}</span>
+                      <span className="text-surface/30 text-sm mb-1.5">{p.sub}</span>
+                    </div>
                   </div>
-                )}
-                <div className="mb-6">
-                  <p className="text-sm text-surface/50 font-medium mb-1">{p.name}</p>
-                  <div className="flex items-end gap-1">
-                    <span className="text-4xl font-bold">{p.price}</span>
-                    <span className="text-surface/40 text-sm mb-1">{p.sub}</span>
-                  </div>
+                  <ul className="space-y-3 flex-1 mb-8">
+                    {p.features.map(f => (
+                      <li key={f} className="flex items-center gap-2.5 text-sm text-surface/60">
+                        <span className="text-primary shrink-0 font-bold">✓</span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/register"
+                    className={`text-center font-bold py-3 rounded-xl transition-all text-sm ${p.highlight
+                      ? 'bg-primary text-bg hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20'
+                      : 'bg-white/5 border border-white/10 text-surface hover:bg-white/10'}`}>
+                    {p.cta}
+                  </Link>
                 </div>
-                <ul className="space-y-3 flex-1 mb-8">
-                  {p.features.map(f => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-surface/70">
-                      <span className="text-primary shrink-0">✓</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/register" className={`text-center font-semibold py-2.5 rounded-xl transition text-sm ${p.ctaStyle}`}>
-                  {p.cta}
-                </Link>
               </div>
             ))}
           </div>
@@ -346,21 +367,20 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-4 sm:px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/8 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-2xl mx-auto text-center relative">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-surface/50 mb-10 text-lg">
-            Join hundreds of developers and teams already using BlockCoin. Free forever on the Starter plan.
+      <section className="py-28 px-5 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-primary/6 rounded-full blur-[100px] pointer-events-none" />
+        <div className="max-w-xl mx-auto text-center relative">
+          <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Ready to Get Started?</h2>
+          <p className="text-surface/40 mb-10 text-sm leading-relaxed">
+            Join hundreds of developers and teams already using BlockCoin to manage USDT at scale.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/register"
-              className="w-full sm:w-auto bg-primary text-bg font-bold px-10 py-4 rounded-xl hover:bg-primary/90 transition text-base">
-              Create Free Account
+              className="w-full sm:w-auto bg-primary text-bg font-black px-10 py-4 rounded-xl hover:bg-primary/90 transition-all hover:shadow-xl hover:shadow-primary/20 text-sm">
+              Create Your Account
             </Link>
             <Link href="/login"
-              className="w-full sm:w-auto border border-white/10 text-surface font-semibold px-10 py-4 rounded-xl hover:bg-white/5 transition text-base">
+              className="w-full sm:w-auto border border-white/10 text-surface/70 font-semibold px-10 py-4 rounded-xl hover:bg-white/5 transition-colors text-sm">
               Sign In
             </Link>
           </div>
@@ -368,18 +388,21 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-10 px-4 sm:px-6">
+      <footer className="border-t border-white/5 py-10 px-5">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-primary">BlockCoin</span>
-            <span className="text-xs text-surface/30">USDT Platform</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
+              <span className="text-bg text-xs font-black">B</span>
+            </div>
+            <span className="font-bold text-sm">BlockCoin</span>
+            <span className="text-xs text-surface/20">USDT Platform</span>
           </div>
-          <p className="text-xs text-surface/30 text-center">
+          <p className="text-xs text-surface/20">
             © {new Date().getFullYear()} BlockCoin. All rights reserved.
           </p>
-          <div className="flex items-center gap-6 text-xs text-surface/40">
-            <Link href="/login" className="hover:text-surface transition">Sign In</Link>
-            <Link href="/register" className="hover:text-surface transition">Register</Link>
+          <div className="flex items-center gap-6 text-xs text-surface/30">
+            <Link href="/login" className="hover:text-surface transition-colors">Sign In</Link>
+            <Link href="/register" className="hover:text-surface transition-colors">Register</Link>
           </div>
         </div>
       </footer>
