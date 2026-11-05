@@ -8,7 +8,7 @@ const USER_NAV = [
   { href: '/dashboard', label: 'Dashboard', icon: '⊞' },
   { href: '/dashboard/wallets', label: 'Wallets', icon: '◈' },
   { href: '/dashboard/transactions', label: 'Transactions', icon: '⇄' },
-  { href: '/dashboard/simulations', label: 'Simulations', icon: '⚙' },
+  { href: '/dashboard/simulations', label: 'Payments', icon: '⚙' },
   { href: '/dashboard/profile', label: 'Profile', icon: '◉' },
 ]
 
@@ -17,7 +17,7 @@ const ADMIN_NAV = [
   { href: '/admin/users', label: 'Users', icon: '◉' },
   { href: '/admin/wallets', label: 'Wallets', icon: '◈' },
   { href: '/admin/transactions', label: 'Transactions', icon: '⇄' },
-  { href: '/admin/simulations', label: 'Simulations', icon: '⚙' },
+  { href: '/admin/simulations', label: 'Payments', icon: '⚙' },
   { href: '/admin/templates', label: 'Templates', icon: '☰' },
   { href: '/admin/security-simulator', label: 'Security Simulator', icon: '🛡' },
   { href: '/admin/audit-logs', label: 'Audit Logs', icon: '📋' },
