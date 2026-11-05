@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { api } from '@/services/api'
+import { PasswordInput } from '@/components/ui/PasswordInput'
 import { Table } from '@/components/ui/Table'
 import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
@@ -122,8 +123,7 @@ export default function AdminUsersPage() {
           ))}
           <div>
             <label className="block text-sm text-surface/60 mb-1">Password</label>
-            <input
-              type="password"
+            <PasswordInput
               value={form.password}
               onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
               className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2 text-surface focus:outline-none focus:border-primary"

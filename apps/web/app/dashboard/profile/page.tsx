@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { api } from '@/services/api'
+import { PasswordInput } from '@/components/ui/PasswordInput'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -77,8 +78,7 @@ export default function ProfilePage() {
         <form onSubmit={handlePassword} className="space-y-4">
           <div>
             <label className="block text-sm text-surface/60 mb-1">Current Password</label>
-            <input
-              type="password"
+            <PasswordInput
               value={pwForm.currentPassword}
               onChange={e => setPwForm(p => ({ ...p, currentPassword: e.target.value }))}
               className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2.5 text-surface focus:outline-none focus:border-primary"
@@ -87,12 +87,12 @@ export default function ProfilePage() {
           </div>
           <div>
             <label className="block text-sm text-surface/60 mb-1">New Password</label>
-            <input
-              type="password"
+            <PasswordInput
               value={pwForm.newPassword}
               onChange={e => setPwForm(p => ({ ...p, newPassword: e.target.value }))}
               className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2.5 text-surface focus:outline-none focus:border-primary"
-              required minLength={8}
+              required
+              minLength={8}
             />
           </div>
           <button type="submit" className="bg-primary text-bg font-semibold px-6 py-2.5 rounded-lg hover:bg-primary/90 transition">

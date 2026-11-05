@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/services/api'
+import { PasswordInput } from '@/components/ui/PasswordInput'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -41,8 +42,7 @@ export default function LoginPage() {
         </div>
         <div>
           <label className="block text-sm text-surface/70 mb-1">Password</label>
-          <input
-            type="password"
+          <PasswordInput
             value={form.password}
             onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
             className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2.5 text-surface focus:outline-none focus:border-primary"

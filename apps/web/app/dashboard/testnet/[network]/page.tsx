@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { api } from '@/services/api'
 import { EnvBadge } from '@/components/ui/Badge'
+import { PasswordInput } from '@/components/ui/PasswordInput'
 
 interface NetworkInfo {
   network: string
@@ -241,8 +242,7 @@ export default function NetworkPage() {
           <form onSubmit={handleSend} className="space-y-4">
             <div>
               <label className="block text-sm text-surface/60 mb-1">Private Key (not stored)</label>
-              <input
-                type="password"
+              <PasswordInput
                 value={sendForm.privateKey}
                 onChange={e => setSendForm(f => ({ ...f, privateKey: e.target.value }))}
                 placeholder="Your testnet wallet private key"

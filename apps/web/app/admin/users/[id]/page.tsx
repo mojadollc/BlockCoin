@@ -5,6 +5,7 @@ import { api } from '@/services/api'
 import { StatusBadge } from '@/components/ui/Badge'
 import { unitsToDisplay } from '@blockcoin/shared'
 import { Modal } from '@/components/ui/Modal'
+import { PasswordInput } from '@/components/ui/PasswordInput'
 
 interface UserDetail {
   id: string
@@ -123,12 +124,12 @@ export default function UserDetailPage() {
         <form onSubmit={handleReset} className="space-y-4">
           <div>
             <label className="block text-sm text-surface/60 mb-1">New Password</label>
-            <input
-              type="password"
+            <PasswordInput
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2 text-surface focus:outline-none focus:border-primary"
-              required minLength={8}
+              required
+              minLength={8}
             />
           </div>
           <button type="submit" className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition">
