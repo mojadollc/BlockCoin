@@ -1,6 +1,7 @@
 'use client'
 import { useAuth } from '@/hooks/useAuth'
 import { Sidebar } from '@/components/ui/Sidebar'
+import { MobileNav } from '@/components/ui/MobileNav'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth()
@@ -18,7 +19,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen bg-bg">
       <Sidebar user={user} onLogout={logout} />
-      <main className="flex-1 overflow-auto pt-14 md:pt-0">{children}</main>
+      <main className="flex-1 overflow-auto pb-20 md:pb-0">{children}</main>
+      <MobileNav user={user} />
     </div>
   )
 }

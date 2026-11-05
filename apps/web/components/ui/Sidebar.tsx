@@ -89,7 +89,7 @@ export function Sidebar({ user, onLogout }: { user: AuthUser; onLogout: () => vo
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-sidebar border-b border-white/5">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 bg-sidebar border-b border-white/5" style={{ paddingTop: 'max(12px, env(safe-area-inset-top))', paddingBottom: '12px' }}>
         <Link href="/" className="text-base font-bold text-primary hover:text-primary/80 transition-colors">BlockCoin</Link>
         <button onClick={() => setOpen(true)} className="text-surface/70 hover:text-surface p-1" aria-label="Open menu">
           <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
