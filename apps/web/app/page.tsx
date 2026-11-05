@@ -50,21 +50,21 @@ const STATS = [
 const TESTIMONIALS = [
   {
     name: 'Marcus T.',
-    role: 'Blockchain Developer',
+    role: 'Business Owner',
     avatar: 'MT',
-    text: 'BlockCoin saved us weeks of development time. We process thousands of USDT transactions daily with full confidence. The security scanner caught 3 critical edge cases before we went live.',
+    text: 'BlockCoin made managing our USDT payments incredibly simple. We handle thousands of transactions every day and everything runs smoothly. The real-time balance tracking gives us full peace of mind.',
   },
   {
     name: 'Priya S.',
-    role: 'DeFi QA Engineer',
+    role: 'E-commerce Entrepreneur',
     avatar: 'PS',
-    text: 'The platform is incredibly powerful. Being able to manage balances and monitor transactions on the fly makes our workflow so much faster. The audit log gives us full traceability.',
+    text: 'I was up and running within minutes. Managing multiple wallets and tracking every transaction in one place has completely transformed how I handle my finances. Highly recommend.',
   },
   {
     name: 'James K.',
-    role: 'Fintech Startup CTO',
+    role: 'Crypto Investor',
     avatar: 'JK',
-    text: 'We use BlockCoin to demo our payment product to investors. It looks and behaves exactly like a production USDT wallet. Our investors are always impressed.',
+    text: 'The platform is clean, fast, and reliable. I can monitor all my USDT wallets and transaction history in real time. It feels like a professional banking experience for crypto.',
   },
 ]
 
@@ -135,7 +135,7 @@ export default function LandingPage() {
         <div className="relative max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-xs font-semibold px-4 py-2 rounded-full mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Trusted by 500+ blockchain developers worldwide
+            Trusted by 500+ customers worldwide
           </div>
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[1.05] tracking-tight mb-6">
@@ -146,7 +146,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-lg text-surface/50 max-w-xl mx-auto mb-10 leading-relaxed">
-            Wallet management, transaction processing, security testing, and live blockchain integration — all in one platform.
+            Send, receive, and manage USDT across multiple wallets with real-time tracking, full transaction history, and live blockchain integration.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-20">
@@ -237,9 +237,9 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">Platform Features</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Built for Serious Blockchain Teams</h2>
+            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Everything You Need to Manage USDT</h2>
             <p className="text-surface/40 max-w-lg mx-auto text-sm leading-relaxed">
-              From wallet management to complex multi-scenario security testing — every tool your team needs.
+              From wallet creation to live blockchain transactions — every tool your team needs, in one place.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -293,8 +293,8 @@ export default function LandingPage() {
       <section id="testimonials" className="py-28 px-5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-warning text-xs font-bold uppercase tracking-[0.2em] mb-4">Trusted by Teams</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">What Developers Are Saying</h2>
+            <p className="text-warning text-xs font-bold uppercase tracking-[0.2em] mb-4">Customer Feedback</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">What Our Customers Are Saying</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {TESTIMONIALS.map((t, i) => (
@@ -372,7 +372,7 @@ export default function LandingPage() {
         <div className="max-w-xl mx-auto text-center relative">
           <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Ready to Get Started?</h2>
           <p className="text-surface/40 mb-10 text-sm leading-relaxed">
-            Join hundreds of developers and teams already using BlockCoin to manage USDT at scale.
+            Join hundreds of customers already using BlockCoin to manage USDT at scale.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/register"
