@@ -46,7 +46,7 @@ export function WalletCard({ wallet, onRefresh }: Props) {
           className="flex-1 text-center text-xs py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition">
           Manage
         </Link>
-        <Link href={`/dashboard/wallets/${wallet.id}?action=deposit`}
+        <Link href={`/dashboard/deposits?walletId=${wallet.id}`}
           className="flex-1 text-center text-xs py-2 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition">
           Deposit
         </Link>
