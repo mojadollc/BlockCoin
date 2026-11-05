@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { api } from '@/services/api'
 
 interface Wallet { id: string; label: string; status: string }
@@ -27,10 +28,11 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default function DepositsPage() {
+  const searchParams = useSearchParams()
   const [addresses, setAddresses] = useState<DepositAddresses | null>(null)
   const [wallets, setWallets] = useState<Wallet[]>([])
   const [deposits, setDeposits] = useState<DepositRequest[]>([])
-  const [form, setForm] = useState({ walletId: '', network: 'TRON_TRC20', txHash: '', amountDisplay: '' })
+  const [form, setForm] = useState({ walletId: searchParams.get('walletId') ?? '', network: 'TRON_TRC20', txHash: '', amountDisplay: '' })
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)

@@ -115,7 +115,13 @@ export default function WalletDetailPage() {
 
         {wallet.status === 'ACTIVE' && (
           <div className="flex gap-3">
-            {(['deposit', 'withdraw', 'transfer'] as const).map(a => (
+            <button
+              onClick={() => router.push(`/dashboard/deposits?walletId=${id}`)}
+              className="px-5 py-2 rounded-lg text-sm font-medium transition bg-white/5 text-surface/60 hover:bg-white/10"
+            >
+              Deposit
+            </button>
+            {(['withdraw', 'transfer'] as const).map(a => (
               <button
                 key={a}
                 onClick={() => { setAction(a); setMsg('') }}
