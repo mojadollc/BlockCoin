@@ -42,18 +42,24 @@ export function WalletCard({ wallet, onRefresh }: Props) {
       <div className="text-xs text-surface/30 font-mono truncate">{wallet.address}</div>
 
       <div className="flex gap-2 pt-2 border-t border-white/5">
-        <Link href={`/dashboard/wallets/${wallet.id}`}
-          className="flex-1 text-center text-xs py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition">
-          Manage
-        </Link>
-        <Link href={`/dashboard/deposits?walletId=${wallet.id}`}
-          className="flex-1 text-center text-xs py-2 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition">
-          Deposit
-        </Link>
-        <Link href={`/dashboard/wallets/${wallet.id}?action=withdraw`}
-          className="flex-1 text-center text-xs py-2 rounded-lg bg-white/5 text-surface/60 hover:bg-white/10 transition">
-          Withdraw
-        </Link>
+        {wallet.status === 'ACTIVE' ? (
+          <>
+            <Link href={`/dashboard/wallets/${wallet.id}`}
+              className="flex-1 text-center text-xs py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition">
+              Manage
+            </Link>
+            <Link href={`/dashboard/deposits?walletId=${wallet.id}`}
+              className="flex-1 text-center text-xs py-2 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition">
+              Deposit
+            </Link>
+            <Link href={`/dashboard/wallets/${wallet.id}?action=withdraw`}
+              className="flex-1 text-center text-xs py-2 rounded-lg bg-white/5 text-surface/60 hover:bg-white/10 transition">
+              Withdraw
+            </Link>
+          </>
+        ) : (
+          <p className="text-xs text-danger/60 w-full text-center py-2">Wallet suspended</p>
+        )}
       </div>
     </div>
   )
