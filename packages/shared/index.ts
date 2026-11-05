@@ -3,7 +3,7 @@ export type PermissionLevel = 'READ' | 'WRITE'
 
 export const PERMISSION_FEATURES = [
   'users', 'wallets', 'transactions', 'payments',
-  'security', 'audit_logs', 'settings', 'templates',
+  'security', 'audit_logs', 'settings', 'templates', 'deposits',
 ] as const
 export type PermissionFeature = typeof PERMISSION_FEATURES[number]
 export type WalletStatus = 'ACTIVE' | 'SUSPENDED' | 'CLOSED'
