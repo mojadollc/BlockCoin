@@ -142,6 +142,7 @@ export default function AdminUsersPage() {
               className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2 text-surface focus:outline-none focus:border-primary"
             >
               <option value="USER">USER</option>
+              <option value="SUB_ADMIN">SUB_ADMIN</option>
               <option value="ADMIN">ADMIN</option>
             </select>
           </div>

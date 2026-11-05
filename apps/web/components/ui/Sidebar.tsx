@@ -1,33 +1,47 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AuthUser } from '@blockcoin/shared'
+import { api } from '@/services/api'
 
 const USER_NAV = [
-  { href: '/dashboard', label: 'Dashboard', icon: '⊞' },
-  { href: '/dashboard/wallets', label: 'Wallets', icon: '◈' },
-  { href: '/dashboard/transactions', label: 'Transactions', icon: '⇄' },
-  { href: '/dashboard/simulations', label: 'Payments', icon: '⚙' },
-  { href: '/dashboard/profile', label: 'Profile', icon: '◉' },
+  { href: '/dashboard', label: 'Dashboard', icon: '⊞', feature: null },
+  { href: '/dashboard/wallets', label: 'Wallets', icon: '◈', feature: null },
+  { href: '/dashboard/transactions', label: 'Transactions', icon: '⇄', feature: null },
+  { href: '/dashboard/simulations', label: 'Payments', icon: '⚙', feature: null },
+  { href: '/dashboard/profile', label: 'Profile', icon: '◉', feature: null },
 ]
 
 const ADMIN_NAV = [
-  { href: '/admin', label: 'Dashboard', icon: '⊞' },
-  { href: '/admin/users', label: 'Users', icon: '◉' },
-  { href: '/admin/wallets', label: 'Wallets', icon: '◈' },
-  { href: '/admin/transactions', label: 'Transactions', icon: '⇄' },
-  { href: '/admin/simulations', label: 'Payments', icon: '⚙' },
-  { href: '/admin/templates', label: 'Templates', icon: '☰' },
-  { href: '/admin/security-simulator', label: 'Security Simulator', icon: '🛡' },
-  { href: '/admin/audit-logs', label: 'Audit Logs', icon: '📋' },
-  { href: '/admin/security', label: 'Reports', icon: '📊' },
-  { href: '/admin/settings', label: 'Settings', icon: '⚙' },
+  { href: '/admin', label: 'Dashboard', icon: '⊞', feature: null },
+  { href: '/admin/users', label: 'Users', icon: '◉', feature: 'users' },
+  { href: '/admin/wallets', label: 'Wallets', icon: '◈', feature: 'wallets' },
+  { href: '/admin/transactions', label: 'Transactions', icon: '⇄', feature: 'transactions' },
+  { href: '/admin/simulations', label: 'Payments', icon: '⚙', feature: 'payments' },
+  { href: '/admin/templates', label: 'Templates', icon: '☰', feature: 'templates' },
+  { href: '/admin/security-simulator', label: 'Security Testing', icon: '🛡', feature: 'security' },
+  { href: '/admin/audit-logs', label: 'Audit Logs', icon: '📋', feature: 'audit_logs' },
+  { href: '/admin/security', label: 'Reports', icon: '📊', feature: 'security' },
+  { href: '/admin/settings', label: 'Settings', icon: '⚙', feature: 'settings' },
 ]
 
 function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () => void; onNav?: () => void }) {
   const pathname = usePathname()
-  const nav = user.role === 'ADMIN' ? ADMIN_NAV : USER_NAV
+  const [allowedFeatures, setAllowedFeatures] = useState<string[]>([])
+
+  useEffect(() => {
+    if (user.role === 'SUB_ADMIN') {
+      api.get<Array<{ feature: string; level: string }>>(`/api/v1/admin/users/${user.id}/permissions`)
+        .then(perms => setAllowedFeatures(perms.map(p => p.feature)))
+        .catch(() => {})
+    }
+  }, [user.id, user.role])
+
+  const baseNav = user.role === 'USER' ? USER_NAV : ADMIN_NAV
+  const nav = user.role === 'SUB_ADMIN'
+    ? baseNav.filter(item => item.feature === null || allowedFeatures.includes(item.feature))
+    : baseNav
 
   return (
     <>

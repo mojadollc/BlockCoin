@@ -9,7 +9,13 @@ datasource db {
 
 enum Role {
   ADMIN
+  SUB_ADMIN
   USER
+}
+
+enum PermissionLevel {
+  READ
+  WRITE
 }
 
 enum WalletStatus {
@@ -56,11 +62,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  sessions         Session[]
-  virtualWallets   VirtualWallet[]
-  simulations      Simulation[]
-  adminLogs        AdminLog[]       @relation("AdminActor")
-  apiKeys          ApiKey[]
+  sessions            Session[]
+  virtualWallets      VirtualWallet[]
+  simulations         Simulation[]
+  adminLogs           AdminLog[]            @relation("AdminActor")
+  apiKeys             ApiKey[]
+  subAdminPermissions SubAdminPermission[]
 
   @@index([email])
 }
@@ -211,6 +218,18 @@ model TestnetTransaction {
 
   @@index([userId])
   @@index([txHash])
+}
+
+model SubAdminPermission {
+  id       String          @id @default(cuid())
+  userId   String
+  feature  String
+  level    PermissionLevel
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature])
+  @@index([userId])
 }
 
 model ApiKey {

@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import { verifyAccess } from '../utils/jwt'
 import { unauthorized, forbidden } from '../utils/response'
-import { Role, TokenPayload } from '@blockcoin/shared'
+import { Role, PermissionFeature, PermissionLevel, TokenPayload } from '@blockcoin/shared'
+import { prisma } from '../utils/prisma'
 
 export interface AuthRequest extends Request {
   user?: TokenPayload
@@ -25,6 +26,24 @@ export function requireRole(...roles: Role[]) {
       forbidden(res)
       return
     }
+    next()
+  }
+}
+
+/** Allow ADMIN always. Allow SUB_ADMIN only if they have the required permission level. */
+export function requirePermission(feature: PermissionFeature, level: PermissionLevel = 'READ') {
+  return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.user) { unauthorized(res); return }
+    if (req.user.role === 'ADMIN') { next(); return }
+    if (req.user.role !== 'SUB_ADMIN') { forbidden(res); return }
+
+    const perm = await prisma.subAdminPermission.findUnique({
+      where: { userId_feature: { userId: req.user.sub, feature } },
+    })
+
+    if (!perm) { forbidden(res); return }
+    if (level === 'WRITE' && perm.level !== 'WRITE') { forbidden(res); return }
+
     next()
   }
 }

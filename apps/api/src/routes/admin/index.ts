@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { authenticate, requireRole } from '../../middleware/auth'
+import { authenticate, requireRole, requirePermission } from '../../middleware/auth'
 import { getDashboard } from '../../controllers/admin/dashboard.controller'
 import {
   listUsers, getUser, createUser, updateUser,
@@ -20,81 +20,82 @@ import {
   adminListSimulations, adminGetSimulation, adminCreateSimulation,
   adminCancelSim, adminForceStatus,
 } from '../../controllers/admin/simulations.controller'
+import { getSubAdminPermissions, setSubAdminPermissions } from '../../controllers/admin/permissions.controller'
 import { validate } from '../../middleware/validate'
 import { AdjustBalanceSchema, CreateTemplateSchema, CreateSimulationSchema } from '@blockcoin/validation'
 import { z } from 'zod'
 
 const router = Router()
-router.use(authenticate, requireRole('ADMIN'))
 
-// Dashboard
+// All admin routes require authentication + ADMIN or SUB_ADMIN role
+router.use(authenticate, requireRole('ADMIN', 'SUB_ADMIN'))
+
+// Dashboard — all admin/sub-admin can see
 router.get('/dashboard', getDashboard)
 
-// Users
-router.get('/users', listUsers)
-router.get('/users/:id', getUser)
-router.post('/users', validate(z.object({
+// Users — feature: users
+router.get('/users', requirePermission('users', 'READ'), listUsers)
+router.get('/users/:id', requirePermission('users', 'READ'), getUser)
+router.post('/users', requireRole('ADMIN'), validate(z.object({
   email: z.string().email(),
   password: z.string().min(8),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  role: z.enum(['ADMIN', 'USER']).optional(),
+  role: z.enum(['ADMIN', 'SUB_ADMIN', 'USER']).optional(),
 })), createUser)
-router.put('/users/:id', validate(z.object({
+router.put('/users/:id', requirePermission('users', 'WRITE'), validate(z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
-  role: z.enum(['ADMIN', 'USER']).optional(),
+  role: z.enum(['ADMIN', 'SUB_ADMIN', 'USER']).optional(),
   isActive: z.boolean().optional(),
 })), updateUser)
-router.post('/users/:id/suspend', suspendUser)
-router.post('/users/:id/activate', activateUser)
-router.post('/users/:id/reset-password', resetUserPassword)
+router.post('/users/:id/suspend', requirePermission('users', 'WRITE'), suspendUser)
+router.post('/users/:id/activate', requirePermission('users', 'WRITE'), activateUser)
+router.post('/users/:id/reset-password', requirePermission('users', 'WRITE'), resetUserPassword)
 
-// Wallets
-router.get('/wallets', listWallets)
-router.post('/wallets/:id/adjust', validate(AdjustBalanceSchema), adjustBalance)
-router.post('/wallets/:id/suspend', suspendWallet)
-router.post('/wallets/:id/activate', activateWallet)
+// Sub-admin permissions — ADMIN only
+router.get('/users/:id/permissions', requireRole('ADMIN'), getSubAdminPermissions)
+router.post('/users/:id/permissions', requireRole('ADMIN'), setSubAdminPermissions)
 
-// Transactions
-router.get('/transactions', listTransactions)
-router.get('/ledger', listLedgerEntries)
+// Wallets — feature: wallets
+router.get('/wallets', requirePermission('wallets', 'READ'), listWallets)
+router.post('/wallets/:id/adjust', requirePermission('wallets', 'WRITE'), validate(AdjustBalanceSchema), adjustBalance)
+router.post('/wallets/:id/suspend', requirePermission('wallets', 'WRITE'), suspendWallet)
+router.post('/wallets/:id/activate', requirePermission('wallets', 'WRITE'), activateWallet)
 
-// Templates
-router.get('/templates', listTemplates)
-router.post('/templates', validate(CreateTemplateSchema), createTemplate)
-router.put('/templates/:id', updateTemplate)
-router.delete('/templates/:id', deleteTemplate)
+// Transactions — feature: transactions
+router.get('/transactions', requirePermission('transactions', 'READ'), listTransactions)
+router.get('/ledger', requirePermission('transactions', 'READ'), listLedgerEntries)
 
-// Audit logs
-router.get('/audit-logs', listAuditLogs)
+// Templates — feature: templates
+router.get('/templates', requirePermission('templates', 'READ'), listTemplates)
+router.post('/templates', requirePermission('templates', 'WRITE'), validate(CreateTemplateSchema), createTemplate)
+router.put('/templates/:id', requirePermission('templates', 'WRITE'), updateTemplate)
+router.delete('/templates/:id', requirePermission('templates', 'WRITE'), deleteTemplate)
 
-// Settings
-router.get('/settings', getSettings)
-router.post('/settings', upsertSetting)
+// Audit logs — feature: audit_logs
+router.get('/audit-logs', requirePermission('audit_logs', 'READ'), listAuditLogs)
 
-// Env key management
-router.get('/env-keys', getEnvKeys)
-router.post('/env-keys', updateEnvKey)
+// Settings — feature: settings (ADMIN only for writes)
+router.get('/settings', requirePermission('settings', 'READ'), getSettings)
+router.post('/settings', requirePermission('settings', 'WRITE'), upsertSetting)
+router.get('/env-keys', requireRole('ADMIN'), getEnvKeys)
+router.post('/env-keys', requireRole('ADMIN'), updateEnvKey)
+router.post('/ui-flags', requirePermission('settings', 'WRITE'), updateUIFlag)
 
-// UI flags (write only — read is on public route)
-router.post('/ui-flags', updateUIFlag)
+// Payments/Simulations — feature: payments
+router.get('/simulations', requirePermission('payments', 'READ'), adminListSimulations)
+router.post('/simulations', requirePermission('payments', 'WRITE'), validate(CreateSimulationSchema), adminCreateSimulation)
+router.get('/simulations/:id', requirePermission('payments', 'READ'), adminGetSimulation)
+router.post('/simulations/:id/cancel', requirePermission('payments', 'WRITE'), adminCancelSim)
+router.post('/simulations/:id/force-status', requirePermission('payments', 'WRITE'), adminForceStatus)
 
-// Simulations
-router.get('/simulations', adminListSimulations)
-router.post('/simulations', validate(CreateSimulationSchema), adminCreateSimulation)
-router.get('/simulations/:id', adminGetSimulation)
-router.post('/simulations/:id/cancel', adminCancelSim)
-router.post('/simulations/:id/force-status', adminForceStatus)
-
-// Security simulator
-router.get('/security/scenarios', listScenarios)
-router.post('/security/run', runScenario)
-router.get('/security/reports', listReports)
-router.get('/security/reports/:id', getReport)
-router.delete('/security/reports/:id', deleteReport)
-
-// Security reports (legacy)
-router.get('/security-reports', getSecurityReports)
+// Security — feature: security
+router.get('/security/scenarios', requirePermission('security', 'READ'), listScenarios)
+router.post('/security/run', requirePermission('security', 'WRITE'), runScenario)
+router.get('/security/reports', requirePermission('security', 'READ'), listReports)
+router.get('/security/reports/:id', requirePermission('security', 'READ'), getReport)
+router.delete('/security/reports/:id', requirePermission('security', 'WRITE'), deleteReport)
+router.get('/security-reports', requirePermission('security', 'READ'), getSecurityReports)
 
 export default router
