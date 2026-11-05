@@ -6,6 +6,8 @@ import fs from 'fs'
 import path from 'path'
 
 const MANAGEABLE_KEYS = [
+  'DEPOSIT_ETH_ADDRESS',
+  'DEPOSIT_TRON_ADDRESS',
   'SEPOLIA_RPC_URL',
   'SEPOLIA_USDT_CONTRACT',
   'TRON_NILE_URL',

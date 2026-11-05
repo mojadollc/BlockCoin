@@ -8,24 +8,34 @@ type EnvMap = Record<string, EnvEntry>
 
 const ENV_GROUPS = [
   {
+    label: 'Deposit Addresses (Your Real USDT Wallets)',
+    color: 'text-primary',
+    keys: ['DEPOSIT_ETH_ADDRESS', 'DEPOSIT_TRON_ADDRESS'],
+    description: 'Customers send real USDT to these addresses. Set these to your own wallet addresses.',
+  },
+  {
     label: 'Testnet — Ethereum Sepolia',
     color: 'text-secondary',
     keys: ['SEPOLIA_RPC_URL', 'SEPOLIA_USDT_CONTRACT'],
+    description: null,
   },
   {
     label: 'Testnet — TRON Nile',
     color: 'text-warning',
     keys: ['TRON_NILE_URL', 'TRON_NILE_API_KEY', 'TRON_NILE_USDT_CONTRACT'],
+    description: null,
   },
   {
     label: 'JWT / Auth',
     color: 'text-danger',
     keys: ['JWT_SECRET', 'JWT_EXPIRES_IN', 'REFRESH_TOKEN_SECRET', 'REFRESH_TOKEN_EXPIRES_IN'],
+    description: null,
   },
   {
     label: 'API & Web',
     color: 'text-primary',
     keys: ['API_PORT', 'API_URL', 'NODE_ENV', 'NEXT_PUBLIC_API_URL', 'NEXT_PUBLIC_WS_URL'],
+    description: null,
   },
 ]
 
@@ -199,6 +209,9 @@ export default function SettingsPage() {
             <div key={group.label} className="bg-card rounded-xl border border-white/5">
               <div className="px-5 py-3 border-b border-white/5">
                 <h4 className={`text-sm font-semibold ${group.color}`}>{group.label}</h4>
+                {group.description && (
+                  <p className="text-xs text-surface/40 mt-0.5">{group.description}</p>
+                )}
               </div>
               <div className="px-5">
                 {group.keys.map(key =>
