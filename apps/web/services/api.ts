@@ -7,7 +7,13 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers: { 'Content-Type': 'application/json', ...options.headers },
   })
 
-  const json = await res.json()
+  let json: any
+  try {
+    json = await res.json()
+  } catch {
+    throw new Error(res.status === 429 ? 'Too many requests, please slow down.' : `Server error (${res.status})`)
+  }
+
   if (!res.ok || !json.success) {
     throw new Error(json.error ?? 'Request failed')
   }

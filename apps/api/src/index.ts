@@ -37,7 +37,26 @@ app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }))
 app.use(cookieParser())
 app.use(express.json())
 
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100, standardHeaders: true, legacyHeaders: false }))
+const rateLimitHandler = (_req: any, res: any) => {
+  res.status(429).json({ success: false, error: 'Too many requests, please try again later.' })
+}
+
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+}))
+
+// Looser limit for auth endpoints to prevent logout loops
+app.use('/api/v1/auth', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+}))
 
 app.get('/api/v1/admin/ui-flags', authenticate, getUIFlags)
 
