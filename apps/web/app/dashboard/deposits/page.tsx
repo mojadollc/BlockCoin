@@ -188,7 +188,7 @@ export default function DepositsPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-surface/60 mb-1">Amount (USDT)</label>
+            <label className="block text-sm text-surface/60 mb-1">Amount that you send (USDT)</label>
             <input
               value={form.amountDisplay}
               onChange={e => setForm(f => ({ ...f, amountDisplay: e.target.value }))}
