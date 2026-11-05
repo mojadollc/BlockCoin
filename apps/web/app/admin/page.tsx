@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '@/services/api'
 import { StatCard } from '@/components/ui/StatCard'
+import { ShimmerStats, ShimmerRows } from '@/components/ui/Shimmer'
 
 interface DashboardData {
   stats: { totalUsers: number; activeUsers: number; totalWallets: number; totalSimulations: number }
@@ -11,9 +12,10 @@ interface DashboardData {
 
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get<DashboardData>('/api/v1/admin/dashboard').then(setData).catch(() => {})
+    api.get<DashboardData>('/api/v1/admin/dashboard').then(setData).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
   return (
@@ -25,12 +27,14 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {loading ? <ShimmerStats count={4} /> : (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
         <StatCard label="Total Users" value={data?.stats.totalUsers ?? '—'} color="text-primary" />
         <StatCard label="Active Users" value={data?.stats.activeUsers ?? '—'} color="text-secondary" sub="Currently active" />
         <StatCard label="Wallets" value={data?.stats.totalWallets ?? '—'} color="text-warning" />
         <StatCard label="Simulations" value={data?.stats.totalSimulations ?? '—'} color="text-surface" />
       </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card rounded-xl border border-white/5">
@@ -38,10 +42,9 @@ export default function AdminDashboard() {
             <h3 className="font-semibold">Simulations by Status</h3>
           </div>
           <div className="p-4 space-y-2">
-            {data?.simsByStatus.length === 0 && (
+            {loading ? <ShimmerRows rows={4} /> : data?.simsByStatus.length === 0 ? (
               <p className="text-surface/40 text-sm">No simulations yet</p>
-            )}
-            {data?.simsByStatus.map(s => (
+            ) : data?.simsByStatus.map(s => (
               <div key={s.status} className="flex justify-between text-sm">
                 <span className="text-surface/60">{s.status}</span>
                 <span className="font-medium">{s._count.status}</span>
@@ -55,10 +58,9 @@ export default function AdminDashboard() {
             <h3 className="font-semibold">Recent Admin Activity</h3>
           </div>
           <div className="divide-y divide-white/5">
-            {data?.recentLogs.length === 0 && (
+            {loading ? <ShimmerRows rows={5} /> : data?.recentLogs.length === 0 ? (
               <p className="p-4 text-surface/40 text-sm">No activity yet</p>
-            )}
-            {data?.recentLogs.map(log => (
+            ) : data?.recentLogs.map(log => (
               <div key={log.id} className="px-4 py-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-primary font-medium">{log.action}</span>

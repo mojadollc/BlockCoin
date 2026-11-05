@@ -4,6 +4,7 @@ import { api } from '@/services/api'
 import { StatusBadge } from '@/components/ui/Badge'
 import { Pagination } from '@/components/ui/Pagination'
 import Link from 'next/link'
+import { ShimmerRows } from '@/components/ui/Shimmer'
 
 interface Tx {
   id: string
@@ -22,12 +23,15 @@ export default function TransactionsPage() {
   const [txs, setTxs] = useState<Tx[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
   const flags = useUIFlags()
 
   const load = useCallback(() => {
+    setLoading(true)
     api.get<{ items: Tx[]; total: number }>(`/api/v1/transactions?page=${page}&limit=20`)
       .then(d => { setTxs(d.items); setTotal(d.total) })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [page])
 
   useEffect(() => { load() }, [load])
@@ -39,7 +43,7 @@ export default function TransactionsPage() {
       </div>
 
       <div className="bg-card rounded-xl border border-white/5">
-        {txs.length === 0 ? (
+        {loading ? <ShimmerRows rows={8} /> : txs.length === 0 ? (
           <p className="p-8 text-center text-surface/40">No transactions yet</p>
         ) : (
           <div className="divide-y divide-white/5">

@@ -5,6 +5,7 @@ import { Table } from '@/components/ui/Table'
 import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import { unitsToDisplay } from '@blockcoin/shared'
+import { ShimmerTable } from '@/components/ui/Shimmer'
 
 interface Wallet {
   id: string
@@ -22,11 +23,14 @@ export default function AdminWalletsPage() {
   const [adjustWallet, setAdjustWallet] = useState<Wallet | null>(null)
   const [form, setForm] = useState({ amountDisplay: '', type: 'CREDIT', description: '' })
   const [msg, setMsg] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const load = useCallback(() => {
+    setLoading(true)
     api.get<{ items: Wallet[]; total: number }>(`/api/v1/admin/wallets?page=${page}&limit=20`)
       .then(d => { setWallets(d.items); setTotal(d.total) })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [page])
 
   useEffect(() => { load() }, [load])
@@ -81,7 +85,7 @@ export default function AdminWalletsPage() {
       <h2 className="text-xl md:text-2xl font-bold mb-6">Virtual Wallets</h2>
 
       <div className="bg-card rounded-xl border border-white/5">
-        <Table columns={columns} data={wallets} emptyMessage="No wallets found" />
+        {loading ? <ShimmerTable rows={8} /> : <Table columns={columns} data={wallets} emptyMessage="No wallets found" />}
         <Pagination page={page} limit={20} total={total} onPage={setPage} />
       </div>
 

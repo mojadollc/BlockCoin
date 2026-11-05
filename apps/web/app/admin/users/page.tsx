@@ -6,6 +6,7 @@ import { Table } from '@/components/ui/Table'
 import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import Link from 'next/link'
+import { ShimmerTable } from '@/components/ui/Shimmer'
 
 interface User {
   id: string
@@ -26,13 +27,16 @@ export default function AdminUsersPage() {
   const [createOpen, setCreateOpen] = useState(false)
   const [form, setForm] = useState({ email: '', password: '', firstName: '', lastName: '', role: 'USER' })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const load = useCallback(() => {
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (search) params.set('search', search)
+    setLoading(true)
     api.get<{ items: User[]; total: number }>(`/api/v1/admin/users?${params}`)
       .then(d => { setUsers(d.items); setTotal(d.total) })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [page, search])
 
   useEffect(() => { load() }, [load])
@@ -103,7 +107,7 @@ export default function AdminUsersPage() {
             className="bg-sidebar border border-white/10 rounded-lg px-4 py-2 text-sm text-surface w-full max-w-sm focus:outline-none focus:border-primary"
           />
         </div>
-        <Table columns={columns} data={users} emptyMessage="No users found" />
+        {loading ? <ShimmerTable rows={8} /> : <Table columns={columns} data={users} emptyMessage="No users found" />}
         <Pagination page={page} limit={20} total={total} onPage={setPage} />
       </div>
 

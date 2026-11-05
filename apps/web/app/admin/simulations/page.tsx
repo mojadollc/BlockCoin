@@ -5,6 +5,7 @@ import { StatusBadge } from '@/components/ui/Badge'
 import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import Link from 'next/link'
+import { ShimmerRows } from '@/components/ui/Shimmer'
 
 interface Wallet { id: string; label: string; user: { email: string } }
 interface Simulation {
@@ -36,13 +37,16 @@ export default function AdminSimulationsPage() {
   })
   const [error, setError] = useState('')
   const [msg, setMsg] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const load = useCallback(() => {
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (statusFilter) params.set('status', statusFilter)
+    setLoading(true)
     api.get<{ items: Simulation[]; total: number }>(`/api/v1/admin/simulations?${params}`)
       .then(d => { setSims(d.items); setTotal(d.total) })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [page, statusFilter])
 
   useEffect(() => { load() }, [load])
@@ -117,7 +121,7 @@ export default function AdminSimulationsPage() {
       </div>
 
       <div className="bg-card rounded-xl border border-white/5">
-        {sims.length === 0 ? (
+        {loading ? <ShimmerRows rows={6} /> : sims.length === 0 ? (
           <p className="p-8 text-center text-surface/40">No transactions</p>
         ) : (
           <div className="divide-y divide-white/5">

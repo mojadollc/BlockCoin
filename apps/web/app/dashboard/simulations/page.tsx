@@ -5,6 +5,7 @@ import { StatusBadge } from '@/components/ui/Badge'
 import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import Link from 'next/link'
+import { ShimmerRows } from '@/components/ui/Shimmer'
 
 interface Wallet { id: string; label: string; status: string }
 interface Template { id: string; name: string; type: string; defaultDelay: number }
@@ -29,6 +30,7 @@ export default function SimulationsPage() {
   const [templates, setTemplates] = useState<Template[]>([])
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState('')
+  const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({
     walletId: '', type: 'CREDIT', amountDisplay: '',
     description: '', processingDelay: 0, expiresInSeconds: '', templateId: '',
@@ -39,9 +41,11 @@ export default function SimulationsPage() {
   const load = useCallback(() => {
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (status) params.set('status', status)
+    setLoading(true)
     api.get<{ items: Simulation[]; total: number }>(`/api/v1/simulations?${params}`)
       .then(d => { setSims(d.items); setTotal(d.total) })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [page, status])
 
   useEffect(() => { load() }, [load])
@@ -113,7 +117,7 @@ export default function SimulationsPage() {
       </div>
 
       <div className="bg-card rounded-xl border border-white/5">
-        {sims.length === 0 ? (
+        {loading ? <ShimmerRows rows={6} /> : sims.length === 0 ? (
           <p className="p-8 text-center text-surface/40">No transactions yet</p>
         ) : (
           <div className="divide-y divide-white/5">

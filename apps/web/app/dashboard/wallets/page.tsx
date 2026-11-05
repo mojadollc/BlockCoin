@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { api } from '@/services/api'
 import { WalletCard } from '@/components/ui/WalletCard'
 import { Modal } from '@/components/ui/Modal'
+import { ShimmerCards } from '@/components/ui/Shimmer'
 
 interface Wallet {
   id: string
@@ -19,10 +20,12 @@ export default function WalletsPage() {
   const [open, setOpen] = useState(false)
   const [label, setLabel] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
   const flags = useUIFlags()
 
   const load = useCallback(() => {
-    api.get<Wallet[]>('/api/v1/wallets').then(setWallets).catch(() => {})
+    setLoading(true)
+    api.get<Wallet[]>('/api/v1/wallets').then(setWallets).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
   useEffect(() => { load() }, [load])
@@ -59,7 +62,7 @@ export default function WalletsPage() {
         </div>
       </div>
 
-      {wallets.length === 0 ? (
+      {loading ? <ShimmerCards count={3} /> : wallets.length === 0 ? (
         <div className="bg-card rounded-xl border border-white/5 p-12 text-center">
           <p className="text-surface/40 mb-2">No wallets yet</p>
           <p className="text-surface/30 text-sm mb-6">Create a wallet to get started</p>

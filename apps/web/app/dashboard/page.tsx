@@ -5,6 +5,7 @@ import { api } from '@/services/api'
 import { WalletCard } from '@/components/ui/WalletCard'
 import Link from 'next/link'
 import { unitsToDisplay } from '@blockcoin/shared'
+import { ShimmerCards, ShimmerRows, ShimmerStats } from '@/components/ui/Shimmer'
 
 interface Wallet {
   id: string
@@ -26,14 +27,20 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const [wallets, setWallets] = useState<Wallet[]>([])
   const [txs, setTxs] = useState<Tx[]>([])
+  const [loading, setLoading] = useState(true)
 
   const loadWallets = useCallback(() => {
     api.get<Wallet[]>('/api/v1/wallets').then(setWallets).catch(() => {})
   }, [])
 
   useEffect(() => {
-    loadWallets()
-    api.get<{ items: Tx[] }>('/api/v1/transactions?limit=5').then(d => setTxs(d.items)).catch(() => {})
+    setLoading(true)
+    Promise.all([
+      api.get<Wallet[]>('/api/v1/wallets'),
+      api.get<{ items: Tx[] }>('/api/v1/transactions?limit=5'),
+    ]).then(([w, t]) => { setWallets(w); setTxs(t.items) })
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [loadWallets])
 
   const totalBalance = wallets.reduce((sum, w) => {
@@ -48,6 +55,7 @@ export default function DashboardPage() {
         <p className="text-surface/50 text-sm mt-1">Your BlockCoin wallet dashboard</p>
       </div>
 
+      {loading ? <ShimmerStats count={3} /> : (
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-card rounded-xl p-6 border border-white/5">
           <p className="text-sm text-surface/50">Total Balance</p>
@@ -65,13 +73,14 @@ export default function DashboardPage() {
           <p className="text-xs text-surface/40 mt-1">last 5 shown</p>
         </div>
       </div>
+      )}
 
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold">Wallets</h3>
         <Link href="/dashboard/wallets" className="text-sm text-primary hover:underline">View all →</Link>
       </div>
 
-      {wallets.length === 0 ? (
+      {loading ? <div className="mb-8"><ShimmerCards count={3} /></div> : wallets.length === 0 ? (
         <div className="bg-card rounded-xl border border-white/5 p-8 text-center mb-8">
           <p className="text-surface/40 mb-4">No wallets yet</p>
           <Link href="/dashboard/wallets"
@@ -93,7 +102,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="bg-card rounded-xl border border-white/5">
-        {txs.length === 0 ? (
+        {loading ? <ShimmerRows rows={5} /> : txs.length === 0 ? (
           <p className="p-6 text-surface/40 text-sm">No transactions yet</p>
         ) : (
           <div className="divide-y divide-white/5">

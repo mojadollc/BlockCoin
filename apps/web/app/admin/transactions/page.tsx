@@ -5,6 +5,7 @@ import { Table } from '@/components/ui/Table'
 import { Pagination } from '@/components/ui/Pagination'
 import { StatusBadge } from '@/components/ui/Badge'
 import { unitsToDisplay } from '@blockcoin/shared'
+import { ShimmerTable } from '@/components/ui/Shimmer'
 
 interface Tx {
   id: string
@@ -20,13 +21,16 @@ export default function AdminTransactionsPage() {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [env, setEnv] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const load = useCallback(() => {
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (env) params.set('environment', env)
+    setLoading(true)
     api.get<{ items: Tx[]; total: number }>(`/api/v1/admin/transactions?${params}`)
       .then(d => { setTxs(d.items); setTotal(d.total) })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [page, env])
 
   useEffect(() => { load() }, [load])
@@ -48,7 +52,7 @@ export default function AdminTransactionsPage() {
       <div className="bg-card rounded-xl border border-white/5">
         <div className="p-4 border-b border-white/5 flex gap-3">
         </div>
-        <Table columns={columns} data={txs} emptyMessage="No transactions" />
+        {loading ? <ShimmerTable rows={8} /> : <Table columns={columns} data={txs} emptyMessage="No transactions" />}
         <Pagination page={page} limit={20} total={total} onPage={setPage} />
       </div>
     </div>
