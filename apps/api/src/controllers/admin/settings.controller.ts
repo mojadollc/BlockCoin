@@ -93,14 +93,19 @@ export async function upsertSetting(req: AuthRequest, res: Response): Promise<vo
   }
 }
 
+const DB_BACKED_KEYS = ['DEPOSIT_ETH_ADDRESS', 'DEPOSIT_TRON_ADDRESS']
+
 export async function getEnvKeys(req: AuthRequest, res: Response): Promise<void> {
   try {
     const filePath = envFilePath()
     const fileVals = fs.existsSync(filePath) ? parseEnv(fs.readFileSync(filePath, 'utf8')) : {}
+    // Also read DB-backed keys from SystemSetting
+    const dbRows = await prisma.systemSetting.findMany({ where: { key: { in: DB_BACKED_KEYS } } })
+    const dbVals = Object.fromEntries(dbRows.map(r => [r.key, r.value]))
     const result: Record<string, { value: string; isSecret: boolean }> = {}
     for (const key of ALL_EDITABLE) {
       result[key] = {
-        value: fileVals[key] ?? process.env[key] ?? '',
+        value: dbVals[key] ?? fileVals[key] ?? process.env[key] ?? '',
         isSecret: SECRET_KEYS.includes(key),
       }
     }
@@ -120,6 +125,14 @@ export async function updateEnvKey(req: AuthRequest, res: Response): Promise<voi
     const filePath = envFilePath()
     writeEnvKey(filePath, key, String(value))
     process.env[key] = String(value)
+    // Also persist deposit address keys to DB so they're readable without restart
+    if (DB_BACKED_KEYS.includes(key)) {
+      await prisma.systemSetting.upsert({
+        where: { key },
+        update: { value: String(value) },
+        create: { key, value: String(value) },
+      })
+    }
     await prisma.adminLog.create({
       data: {
         actorId: req.user!.sub,

@@ -3,14 +3,23 @@ import { prisma } from '../utils/prisma'
 import { ok, created, badRequest, notFound, forbidden, serverError } from '../utils/response'
 import { AuthRequest } from '../middleware/auth'
 
-// Your master deposit addresses — set these in .env
-const DEPOSIT_ADDRESSES = {
-  ETH_ERC20: process.env.DEPOSIT_ETH_ADDRESS ?? '',
-  TRON_TRC20: process.env.DEPOSIT_TRON_ADDRESS ?? '',
+async function getAddresses() {
+  const rows = await prisma.systemSetting.findMany({
+    where: { key: { in: ['DEPOSIT_ETH_ADDRESS', 'DEPOSIT_TRON_ADDRESS'] } },
+  })
+  const map = Object.fromEntries(rows.map(r => [r.key, r.value]))
+  return {
+    ETH_ERC20: map['DEPOSIT_ETH_ADDRESS'] || process.env.DEPOSIT_ETH_ADDRESS || '',
+    TRON_TRC20: map['DEPOSIT_TRON_ADDRESS'] || process.env.DEPOSIT_TRON_ADDRESS || '',
+  }
 }
 
 export async function getDepositAddresses(_req: AuthRequest, res: Response): Promise<void> {
-  ok(res, DEPOSIT_ADDRESSES)
+  try {
+    ok(res, await getAddresses())
+  } catch {
+    serverError(res)
+  }
 }
 
 export async function submitDeposit(req: AuthRequest, res: Response): Promise<void> {
@@ -20,6 +29,11 @@ export async function submitDeposit(req: AuthRequest, res: Response): Promise<vo
 
     if (!['ETH_ERC20', 'TRON_TRC20'].includes(network)) {
       badRequest(res, 'Invalid network'); return
+    }
+
+    const addresses = await getAddresses()
+    if (!addresses[network as keyof typeof addresses]) {
+      badRequest(res, 'Deposit address not configured for this network'); return
     }
 
     const wallet = await prisma.virtualWallet.findUnique({ where: { id: walletId } })
