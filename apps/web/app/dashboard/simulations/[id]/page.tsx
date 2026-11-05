@@ -103,7 +103,9 @@ export default function SimulationDetailPage() {
           {[
             { label: 'Wallet', value: sim.wallet.label },
             { label: 'Type', value: sim.type },
-            { label: 'Description', value: sim.description ?? '—' },
+            { label: 'Description', value: sim.description
+                ? sim.description.replace(/\[Security Test\]\s*/i, '').replace(/scenario/i, '').replace(/Security test forced failure/i, 'Failure').trim()
+                : '—' },
             { label: 'Processing Delay', value: `${sim.processingDelay}s` },
             { label: 'Template', value: sim.template?.name ?? '—' },
             { label: 'Expires At', value: sim.expiresAt ? new Date(sim.expiresAt).toLocaleString() : '—' },
@@ -158,7 +160,7 @@ export default function SimulationDetailPage() {
                     {ev.toStatus}
                   </span>
                 </div>
-                {ev.note && <p className="text-xs text-surface/40 mt-0.5">{ev.note}</p>}
+                {ev.note && <p className="text-xs text-surface/40 mt-0.5">{ev.note.replace(/Security test forced failure/i, 'Failure').replace(/\[Security Test\]\s*/i, '').trim()}</p>}
                 <p className="text-xs text-surface/30 mt-0.5">{new Date(ev.createdAt).toLocaleString()}</p>
               </div>
             </div>

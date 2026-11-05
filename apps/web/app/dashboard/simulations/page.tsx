@@ -91,14 +91,7 @@ export default function SimulationsPage() {
           <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
           <p className="text-surface/50 text-sm mt-1">Manage and execute transactions on your wallets</p>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setOpen(true)}
-            className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
-          >
-            + New Transaction
-          </button>
-        </div>
+
       </div>
 
       {/* Filter */}
@@ -137,7 +130,9 @@ export default function SimulationsPage() {
                       <StatusBadge status={sim.status as any} />
                     </div>
                     <p className="text-xs text-surface/40 mt-0.5">
-                      {sim.description ?? sim.type} · {new Date(sim.createdAt).toLocaleString()}
+                      {sim.description
+                        ? sim.description.replace(/\[Security Test\]\s*/i, '').replace(/scenario/i, '').trim()
+                        : sim.type} · {new Date(sim.createdAt).toLocaleString()}
                     </p>
                     {sim.expiresAt && (
                       <p className="text-xs text-warning mt-0.5">
