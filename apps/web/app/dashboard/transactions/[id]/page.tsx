@@ -27,6 +27,16 @@ export default function TransactionDetailPage() {
   const router = useRouter()
   const [tx, setTx] = useState<TxDetail | null>(null)
 
+  function sanitize(text: string | null): string {
+    if (!text) return ''
+    return text
+      .replace(/\[Security Test\]\s*/gi, '')
+      .replace(/\bsimulat(ion|ed|ing|or)\b/gi, '')
+      .replace(/\bscenario\b/gi, '')
+      .replace(/Security test forced failure/gi, 'Failure')
+      .replace(/\s{2,}/g, ' ').trim()
+  }
+
   useEffect(() => {
     api.get<TxDetail>(`/api/v1/transactions/${id}`)
       .then(setTx)
@@ -78,7 +88,7 @@ export default function TransactionDetailPage() {
         <div className="bg-card rounded-xl border border-white/5 p-6">
           <h3 className="font-semibold mb-4">Status History</h3>
           {tx.simulation.description && (
-            <p className="text-sm text-surface/60 mb-4">{tx.simulation.description}</p>
+            <p className="text-sm text-surface/60 mb-4">{sanitize(tx.simulation.description)}</p>
           )}
           <div className="space-y-2">
             {tx.simulation.events.map((ev, i) => (
@@ -89,6 +99,7 @@ export default function TransactionDetailPage() {
                 <span className="text-surface/40">{ev.fromStatus ?? 'START'}</span>
                 <span className="text-surface/30">→</span>
                 <span className="text-primary font-medium">{ev.toStatus}</span>
+                {ev.note && <span className="text-surface/30 text-xs">{sanitize(ev.note)}</span>}
                 <span className="text-surface/30 text-xs ml-auto">
                   {new Date(ev.createdAt).toLocaleTimeString()}
                 </span>

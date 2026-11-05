@@ -39,6 +39,16 @@ const STATUS_COLORS: Record<string, string> = {
 
 import { useUIFlags } from '@/hooks/useUIFlags'
 
+function sanitize(text: string | null): string {
+  if (!text) return '—'
+  return text
+    .replace(/\[Security Test\]\s*/gi, '')
+    .replace(/\bsimulat(ion|ed|ing|or)\b/gi, '')
+    .replace(/\bscenario\b/gi, '')
+    .replace(/Security test forced failure/gi, 'Failure')
+    .replace(/\s{2,}/g, ' ').trim() || '—'
+}
+
 export default function SimulationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
@@ -103,12 +113,8 @@ export default function SimulationDetailPage() {
           {[
             { label: 'Wallet', value: sim.wallet.label },
             { label: 'Type', value: sim.type },
-            { label: 'Description', value: sim.description
-                ? sim.description.replace(/\[Security Test\]\s*/i, '').replace(/scenario/i, '').replace(/Security test forced failure/i, 'Failure').trim()
-                : '—' },
+            { label: 'Description', value: sanitize(sim.description) },
             { label: 'Processing Delay', value: `${sim.processingDelay}s` },
-            { label: 'Template', value: sim.template?.name ?? '—' },
-            { label: 'Expires At', value: sim.expiresAt ? new Date(sim.expiresAt).toLocaleString() : '—' },
             { label: 'Completed At', value: sim.completedAt ? new Date(sim.completedAt).toLocaleString() : '—' },
             { label: 'Created', value: new Date(sim.createdAt).toLocaleString() },
           ].map(row => (
@@ -160,7 +166,7 @@ export default function SimulationDetailPage() {
                     {ev.toStatus}
                   </span>
                 </div>
-                {ev.note && <p className="text-xs text-surface/40 mt-0.5">{ev.note.replace(/Security test forced failure/i, 'Failure').replace(/\[Security Test\]\s*/i, '').trim()}</p>}
+                {ev.note && <p className="text-xs text-surface/40 mt-0.5">{sanitize(ev.note)}</p>}
                 <p className="text-xs text-surface/30 mt-0.5">{new Date(ev.createdAt).toLocaleString()}</p>
               </div>
             </div>

@@ -131,7 +131,12 @@ export default function SimulationsPage() {
                     </div>
                     <p className="text-xs text-surface/40 mt-0.5">
                       {sim.description
-                        ? sim.description.replace(/\[Security Test\]\s*/i, '').replace(/scenario/i, '').trim()
+                        ? sim.description
+                            .replace(/\[Security Test\]\s*/gi, '')
+                            .replace(/\bsimulat(ion|ed|ing|or)\b/gi, '')
+                            .replace(/\bscenario\b/gi, '')
+                            .replace(/Security test forced failure/gi, 'Failure')
+                            .replace(/\s{2,}/g, ' ').trim() || sim.type
                         : sim.type} · {new Date(sim.createdAt).toLocaleString()}
                     </p>
                     {sim.expiresAt && (
