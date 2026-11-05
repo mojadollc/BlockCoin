@@ -22,7 +22,12 @@ export async function listTransactions(req: AuthRequest, res: Response): Promise
       prisma.transaction.count({ where }),
     ])
 
-    ok(res, { items, total, page, limit })
+    const mapped = items.map(t => ({
+      ...t,
+      amountUnits: t.amountUnits.toString(),
+    }))
+
+    ok(res, { items: mapped, total, page, limit })
   } catch {
     serverError(res)
   }
@@ -43,7 +48,13 @@ export async function listLedgerEntries(req: AuthRequest, res: Response): Promis
       prisma.ledgerEntry.count(),
     ])
 
-    ok(res, { items, total, page, limit })
+    const mappedEntries = items.map(e => ({
+      ...e,
+      amountUnits: e.amountUnits.toString(),
+      balanceAfter: e.balanceAfter.toString(),
+    }))
+
+    ok(res, { items: mappedEntries, total, page, limit })
   } catch {
     serverError(res)
   }

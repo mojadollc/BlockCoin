@@ -32,7 +32,11 @@ export async function adminListSimulations(req: AuthRequest, res: Response): Pro
       prisma.simulation.count({ where }),
     ])
 
-    const mapped = items.map(s => ({ ...s, amountDisplay: unitsToDisplay(s.amountUnits) }))
+    const mapped = items.map(s => ({
+      ...s,
+      amountUnits: s.amountUnits.toString(),
+      amountDisplay: unitsToDisplay(s.amountUnits),
+    }))
     ok(res, { items: mapped, total, page, limit })
   } catch {
     serverError(res)
@@ -52,7 +56,7 @@ export async function adminGetSimulation(req: AuthRequest, res: Response): Promi
       },
     })
     if (!sim) { notFound(res); return }
-    ok(res, { ...sim, amountDisplay: unitsToDisplay(sim.amountUnits) })
+    ok(res, { ...sim, amountUnits: sim.amountUnits.toString(), amountDisplay: unitsToDisplay(sim.amountUnits) })
   } catch {
     serverError(res)
   }
@@ -87,7 +91,7 @@ export async function adminCreateSimulation(req: AuthRequest, res: Response): Pr
       },
     })
 
-    created(res, { ...sim, amountDisplay: unitsToDisplay(sim.amountUnits) })
+    created(res, { ...sim, amountUnits: sim.amountUnits.toString(), amountDisplay: unitsToDisplay(sim.amountUnits) })
   } catch (e: unknown) {
     badRequest(res, e instanceof Error ? e.message : 'Failed')
   }
