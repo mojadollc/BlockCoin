@@ -2,9 +2,8 @@ import { Response } from 'express'
 import { prisma } from '../../utils/prisma'
 import { ok, badRequest, notFound, serverError } from '../../utils/response'
 import { AuthRequest } from '../../middleware/auth'
-import { displayToUnits, unitsToDisplay } from '@blockcoin/shared'
+import { displayToUnits } from '@blockcoin/shared'
 import { ensureLedgerAccount, ledgerCreditDebit } from '../../services/ledger.service'
-import { v4 as uuidv4 } from 'uuid'
 import { io } from '../../index'
 
 export async function adminListDeposits(req: AuthRequest, res: Response): Promise<void> {
@@ -49,53 +48,68 @@ export async function approveDeposit(req: AuthRequest, res: Response): Promise<v
 
     await ensureLedgerAccount(prisma, deposit.walletId)
 
-    const result = await ledgerCreditDebit({
-      prisma,
-      walletId: deposit.walletId,
-      type: 'CREDIT',
-      amountUnits,
-      description: `Real USDT deposit (${deposit.network}) — tx: ${deposit.txHash.slice(0, 16)}…`,
-      actorId: req.user!.sub,
-      idempotencyKey: `deposit:${deposit.id}`,
-    })
-
-    await prisma.$transaction([
-      prisma.transaction.create({
-        data: {
-          environment: 'INTERNAL',
+    // Run ledger credit + deposit status update + audit log atomically
+    let balanceAfterDisplay: string
+    try {
+      const result = await prisma.$transaction(async (tx) => {
+        // Credit the ledger inside the transaction
+        const ledgerResult = await ledgerCreditDebit({
+          prisma: tx as unknown as typeof prisma,
+          walletId: deposit.walletId,
           type: 'CREDIT',
           amountUnits,
-          status: 'COMPLETED',
-          toWalletId: deposit.walletId,
-          idempotencyKey: `tx:deposit:${deposit.id}`,
-        },
-      }),
-      prisma.depositRequest.update({
-        where: { id },
-        data: {
-          status: 'APPROVED',
-          adminNote: adminNote ?? null,
-          reviewedBy: req.user!.sub,
-          reviewedAt: new Date(),
-        },
-      }),
-      prisma.adminLog.create({
-        data: {
+          description: `USDT deposit (${deposit.network}) — tx: ${deposit.txHash.slice(0, 16)}…`,
           actorId: req.user!.sub,
-          action: 'APPROVE_DEPOSIT',
-          targetType: 'DepositRequest',
-          targetId: id,
-          metadata: { txHash: deposit.txHash, amountDisplay: deposit.amountDisplay, network: deposit.network },
-        },
-      }),
-    ])
+          idempotencyKey: `deposit:${deposit.id}`,
+        })
+
+        await tx.transaction.create({
+          data: {
+            environment: 'INTERNAL',
+            type: 'CREDIT',
+            amountUnits,
+            status: 'COMPLETED',
+            toWalletId: deposit.walletId,
+            idempotencyKey: `tx:deposit:${deposit.id}`,
+          },
+        })
+
+        await tx.depositRequest.update({
+          where: { id },
+          data: {
+            status: 'APPROVED',
+            adminNote: adminNote ?? null,
+            reviewedBy: req.user!.sub,
+            reviewedAt: new Date(),
+          },
+        })
+
+        await tx.adminLog.create({
+          data: {
+            actorId: req.user!.sub,
+            action: 'APPROVE_DEPOSIT',
+            targetType: 'DepositRequest',
+            targetId: id,
+            metadata: { txHash: deposit.txHash, amountDisplay: deposit.amountDisplay, network: deposit.network },
+          },
+        })
+
+        return ledgerResult
+      })
+
+      balanceAfterDisplay = result.balanceAfterDisplay
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Unknown error'
+      if (msg === 'Insufficient balance') { badRequest(res, msg); return }
+      throw e
+    }
 
     io.to(`wallet:${deposit.walletId}`).emit('balance:update', {
       walletId: deposit.walletId,
-      balanceDisplay: result.balanceAfterDisplay,
+      balanceDisplay: balanceAfterDisplay,
     })
 
-    ok(res, { balanceAfterDisplay: result.balanceAfterDisplay })
+    ok(res, { balanceAfterDisplay })
   } catch (e) {
     serverError(res)
   }

@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { api } from '@/services/api'
 
 interface DepositRequest {
@@ -25,155 +25,261 @@ const EXPLORER_URL: Record<string, (hash: string) => string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  PENDING: 'bg-warning/20 text-warning',
+  PENDING:  'bg-warning/20 text-warning',
   APPROVED: 'bg-primary/20 text-primary',
   REJECTED: 'bg-danger/20 text-danger',
 }
 
-export default function AdminDepositsPage() {
-  const [deposits, setDeposits] = useState<DepositRequest[]>([])
-  const [filter, setFilter] = useState('PENDING')
-  const [total, setTotal] = useState(0)
-  const [actionId, setActionId] = useState<string | null>(null)
-  const [note, setNote] = useState('')
-  const [msg, setMsg] = useState('')
+const STATUS_ICONS: Record<string, string> = {
+  PENDING:  '🕐',
+  APPROVED: '✅',
+  REJECTED: '❌',
+}
 
-  const load = useCallback(() => {
-    api.get<{ items: DepositRequest[]; total: number }>(`/api/v1/admin/deposits?status=${filter}&limit=50`)
-      .then(d => { setDeposits(d.items); setTotal(d.total) })
-      .catch(() => {})
+export default function AdminDepositsPage() {
+  const [deposits, setDeposits]     = useState<DepositRequest[]>([])
+  const [filter, setFilter]         = useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING')
+  const [counts, setCounts]         = useState<Record<string, number>>({ PENDING: 0, APPROVED: 0, REJECTED: 0 })
+  const [loadError, setLoadError]   = useState('')
+  const [actionId, setActionId]     = useState<string | null>(null)
+  const [notes, setNotes]           = useState<Record<string, string>>({})
+  const [actionMsg, setActionMsg]   = useState<Record<string, { ok: boolean; text: string }>>({})
+  const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({})
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoadError('')
+    try {
+      // Load current filter + always refresh pending count
+      const [filtered, pending] = await Promise.all([
+        api.get<{ items: DepositRequest[]; total: number }>(
+          `/api/v1/admin/deposits?status=${filter}&limit=50`
+        ),
+        filter !== 'PENDING'
+          ? api.get<{ total: number }>('/api/v1/admin/deposits?status=PENDING&limit=1')
+          : Promise.resolve(null),
+      ])
+      setDeposits(filtered.items)
+      setCounts(prev => ({
+        ...prev,
+        [filter]: filtered.total,
+        ...(pending ? { PENDING: pending.total } : { PENDING: filtered.total }),
+      }))
+    } catch {
+      if (!silent) setLoadError('Failed to load deposits. Check your connection or permissions.')
+    }
   }, [filter])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load()
+    intervalRef.current = setInterval(() => load(true), 30_000)
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  }, [load])
 
   async function handleAction(id: string, action: 'approve' | 'reject') {
-    setMsg('')
+    setActionLoading(prev => ({ ...prev, [id]: true }))
+    setActionMsg(prev => ({ ...prev, [id]: { ok: false, text: '' } }))
     try {
-      await api.post(`/api/v1/admin/deposits/${id}/${action}`, { adminNote: note })
-      setMsg(`Deposit ${action}d successfully`)
+      await api.post(`/api/v1/admin/deposits/${id}/${action}`, { adminNote: notes[id] ?? '' })
+      setActionMsg(prev => ({
+        ...prev,
+        [id]: { ok: true, text: action === 'approve' ? '✅ Approved — balance credited' : '❌ Deposit rejected' },
+      }))
       setActionId(null)
-      setNote('')
-      load()
+      setNotes(prev => { const n = { ...prev }; delete n[id]; return n })
+      // Refresh after short delay so the success message is visible
+      setTimeout(() => load(), 800)
     } catch (err: unknown) {
-      setMsg(err instanceof Error ? err.message : 'Action failed')
+      setActionMsg(prev => ({
+        ...prev,
+        [id]: { ok: false, text: err instanceof Error ? err.message : 'Action failed' },
+      }))
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: false }))
     }
   }
 
+  const tabs = (['PENDING', 'APPROVED', 'REJECTED'] as const)
+
   return (
-    <div className="p-6 md:p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-6 md:p-8 max-w-4xl">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6 gap-4">
         <div>
           <h2 className="text-xl font-bold">Deposit Requests</h2>
-          <p className="text-surface/50 text-sm mt-1">{total} total</p>
+          <p className="text-surface/50 text-sm mt-1">
+            Review and approve customer USDT deposits
+          </p>
         </div>
-        <div className="flex gap-2">
-          {(['PENDING', 'APPROVED', 'REJECTED'] as const).map(s => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                filter === s ? 'bg-primary text-bg' : 'bg-white/5 text-surface/60 hover:bg-white/10'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+        <button
+          onClick={() => load()}
+          className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 text-surface/60 rounded-lg transition"
+        >
+          ↻ Refresh
+        </button>
       </div>
 
-      {msg && (
-        <p className={`text-sm mb-4 p-3 rounded-lg ${
-          msg.includes('successfully') ? 'bg-primary/10 text-primary' : 'bg-danger/10 text-danger'
-        }`}>{msg}</p>
+      {/* Tabs with counts */}
+      <div className="flex gap-2 mb-6">
+        {tabs.map(s => (
+          <button
+            key={s}
+            onClick={() => setFilter(s)}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition ${
+              filter === s ? 'bg-primary text-bg' : 'bg-white/5 text-surface/60 hover:bg-white/10'
+            }`}
+          >
+            {STATUS_ICONS[s]} {s}
+            {counts[s] > 0 && (
+              <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+                filter === s
+                  ? 'bg-bg/20 text-bg'
+                  : s === 'PENDING' ? 'bg-warning/20 text-warning' : 'bg-white/10 text-surface/50'
+              }`}>
+                {counts[s]}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Load error */}
+      {loadError && (
+        <div className="bg-danger/10 border border-danger/20 text-danger text-sm rounded-xl p-4 mb-4 flex items-center gap-3">
+          <span>⚠️</span>
+          <span>{loadError}</span>
+          <button onClick={() => load()} className="ml-auto text-xs underline">Retry</button>
+        </div>
       )}
 
-      {deposits.length === 0 ? (
-        <div className="bg-card rounded-xl border border-white/5 p-12 text-center">
-          <p className="text-surface/40">No {filter.toLowerCase()} deposits</p>
+      {/* Empty state */}
+      {!loadError && deposits.length === 0 && (
+        <div className="bg-card rounded-xl border border-white/5 p-16 text-center">
+          <p className="text-4xl mb-3">{filter === 'PENDING' ? '🎉' : '📭'}</p>
+          <p className="text-surface/50 font-medium">
+            {filter === 'PENDING' ? 'No pending deposits — all caught up!' : `No ${filter.toLowerCase()} deposits`}
+          </p>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {deposits.map(d => (
-            <div key={d.id} className="bg-card rounded-xl border border-white/5 p-5">
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[d.status]}`}>{d.status}</span>
-                    <span className="text-xs bg-white/5 px-2 py-0.5 rounded-full text-surface/60">{NETWORK_LABELS[d.network]}</span>
+      )}
+
+      {/* Deposit cards */}
+      <div className="space-y-4">
+        {deposits.map(d => {
+          const msg = actionMsg[d.id]
+          const isLoading = actionLoading[d.id]
+          const isOpen = actionId === d.id
+
+          return (
+            <div key={d.id} className="bg-card rounded-xl border border-white/5 overflow-hidden">
+              {/* Card header */}
+              <div className="p-5">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[d.status]}`}>
+                        {STATUS_ICONS[d.status]} {d.status}
+                      </span>
+                      <span className="text-xs bg-white/5 px-2 py-0.5 rounded-full text-surface/60">
+                        {NETWORK_LABELS[d.network] ?? d.network}
+                      </span>
+                    </div>
+                    <p className="font-semibold">{d.user.firstName} {d.user.lastName}</p>
+                    <p className="text-xs text-surface/40">{d.user.email}</p>
                   </div>
-                  <p className="font-semibold">{d.user.firstName} {d.user.lastName}</p>
-                  <p className="text-xs text-surface/40">{d.user.email}</p>
+                  <div className="text-right shrink-0">
+                    <p className="text-2xl font-bold font-mono text-primary">${d.amountDisplay}</p>
+                    <p className="text-xs text-surface/40">USDT</p>
+                    <p className="text-xs text-surface/30 mt-1">{new Date(d.createdAt).toLocaleString()}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold font-mono text-primary">{d.amountDisplay} USDT</p>
-                  <p className="text-xs text-surface/40">{new Date(d.createdAt).toLocaleString()}</p>
+
+                {/* Wallet + TxHash row */}
+                <div className="bg-sidebar rounded-lg p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-surface/40">Wallet</span>
+                    <span className="text-xs text-surface/70 font-medium">{d.wallet.label}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-surface/40 shrink-0">TxHash</span>
+                    <code className="text-xs font-mono text-surface/60 truncate flex-1">{d.txHash}</code>
+                    <a
+                      href={EXPLORER_URL[d.network]?.(d.txHash)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 text-xs bg-primary/10 text-primary px-2 py-1 rounded hover:bg-primary/20 transition font-medium"
+                    >
+                      Verify ↗
+                    </a>
+                  </div>
                 </div>
+
+                {/* Existing admin note (approved/rejected) */}
+                {d.adminNote && (
+                  <p className="text-xs text-warning mt-3 bg-warning/5 border border-warning/20 rounded-lg px-3 py-2">
+                    📝 Admin note: {d.adminNote}
+                  </p>
+                )}
+
+                {/* Per-card action message */}
+                {msg?.text && (
+                  <p className={`text-sm mt-3 p-3 rounded-lg ${
+                    msg.ok ? 'bg-primary/10 text-primary' : 'bg-danger/10 text-danger'
+                  }`}>{msg.text}</p>
+                )}
               </div>
 
-              <div className="bg-sidebar rounded-lg p-3 mb-3">
-                <p className="text-xs text-surface/40 mb-1">Wallet: {d.wallet.label}</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-xs font-mono text-surface/60 truncate flex-1">TxHash: {d.txHash}</p>
-                  <a
-                    href={EXPLORER_URL[d.network]?.(d.txHash)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 text-xs text-primary hover:underline"
-                  >
-                    Verify ↗
-                  </a>
-                </div>
-              </div>
-
-              {d.adminNote && (
-                <p className="text-xs text-warning mb-3">Note: {d.adminNote}</p>
-              )}
-
+              {/* Action panel — PENDING only */}
               {d.status === 'PENDING' && (
-                <>
-                  {actionId === d.id ? (
-                    <div className="space-y-2">
-                      <input
-                        value={note}
-                        onChange={e => setNote(e.target.value)}
-                        placeholder="Admin note (optional)"
-                        className="w-full bg-sidebar border border-white/10 rounded-lg px-3 py-2 text-sm text-surface focus:outline-none focus:border-primary"
-                      />
+                <div className="border-t border-white/5 px-5 py-4 bg-sidebar/50">
+                  {!isOpen ? (
+                    <button
+                      onClick={() => { setActionId(d.id); setActionMsg(prev => ({ ...prev, [d.id]: { ok: false, text: '' } })) }}
+                      className="text-sm bg-primary/10 hover:bg-primary/20 text-primary px-5 py-2 rounded-lg transition font-medium"
+                    >
+                      Review Deposit →
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs text-surface/50 mb-1">Admin note (optional — shown to customer)</label>
+                        <input
+                          value={notes[d.id] ?? ''}
+                          onChange={e => setNotes(prev => ({ ...prev, [d.id]: e.target.value }))}
+                          placeholder="e.g. Verified on Tronscan, tx confirmed"
+                          className="w-full bg-bg border border-white/10 rounded-lg px-3 py-2 text-sm text-surface focus:outline-none focus:border-primary"
+                        />
+                      </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleAction(d.id, 'approve')}
-                          className="flex-1 bg-primary text-bg text-sm font-semibold py-2 rounded-lg hover:bg-primary/90 transition"
+                          disabled={isLoading}
+                          className="flex-1 bg-primary text-bg text-sm font-bold py-2.5 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition"
                         >
-                          ✓ Approve & Credit
+                          {isLoading ? 'Processing…' : '✓ Approve & Credit Balance'}
                         </button>
                         <button
                           onClick={() => handleAction(d.id, 'reject')}
-                          className="flex-1 bg-danger/20 text-danger text-sm font-semibold py-2 rounded-lg hover:bg-danger/30 transition"
+                          disabled={isLoading}
+                          className="flex-1 bg-danger/20 text-danger text-sm font-semibold py-2.5 rounded-lg hover:bg-danger/30 disabled:opacity-50 transition"
                         >
                           ✗ Reject
                         </button>
                         <button
-                          onClick={() => { setActionId(null); setNote('') }}
-                          className="px-4 py-2 bg-white/5 text-surface/60 text-sm rounded-lg hover:bg-white/10 transition"
+                          onClick={() => { setActionId(null); setNotes(prev => { const n = { ...prev }; delete n[d.id]; return n }) }}
+                          disabled={isLoading}
+                          className="px-4 py-2 bg-white/5 text-surface/50 text-sm rounded-lg hover:bg-white/10 transition"
                         >
                           Cancel
                         </button>
                       </div>
                     </div>
-                  ) : (
-                    <button
-                      onClick={() => { setActionId(d.id); setMsg('') }}
-                      className="text-sm bg-white/5 hover:bg-white/10 text-surface/70 px-4 py-2 rounded-lg transition"
-                    >
-                      Review
-                    </button>
                   )}
-                </>
+                </div>
               )}
             </div>
-          ))}
-        </div>
-      )}
+          )
+        })}
+      </div>
     </div>
   )
 }
