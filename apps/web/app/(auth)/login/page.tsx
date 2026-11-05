@@ -26,40 +26,62 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-card rounded-xl p-8 shadow-xl">
-      <h2 className="text-xl font-semibold mb-6">Sign In</h2>
-      {error && <p className="text-danger text-sm mb-4 bg-danger/10 p-3 rounded-lg">{error}</p>}
+    <div className="bg-card rounded-2xl border border-white/8 p-6 shadow-2xl shadow-black/40">
+      <h2 className="text-lg font-bold text-surface mb-1">Welcome back</h2>
+      <p className="text-sm text-surface/40 mb-6">Sign in to your account</p>
+
+      {error && (
+        <div className="flex items-center gap-2 text-danger text-sm mb-4 bg-danger/10 border border-danger/20 p-3 rounded-xl">
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm text-surface/70 mb-1">Email</label>
+          <label className="block text-xs font-semibold text-surface/50 uppercase tracking-wide mb-1.5">Email</label>
           <input
             type="email"
             value={form.email}
             onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-            className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2.5 text-surface focus:outline-none focus:border-primary"
+            placeholder="you@example.com"
+            className="w-full bg-sidebar border border-white/10 rounded-xl px-4 py-3 text-surface placeholder:text-surface/20 focus:outline-none focus:border-primary transition text-sm"
             required
           />
         </div>
         <div>
-          <label className="block text-sm text-surface/70 mb-1">Password</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-semibold text-surface/50 uppercase tracking-wide">Password</label>
+          </div>
           <PasswordInput
             value={form.password}
             onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-            className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2.5 text-surface focus:outline-none focus:border-primary"
+            className="w-full bg-sidebar border border-white/10 rounded-xl px-4 py-3 text-surface placeholder:text-surface/20 focus:outline-none focus:border-primary transition text-sm"
             required
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition"
+          className="w-full bg-primary text-bg font-bold py-3.5 rounded-xl disabled:opacity-50 active:scale-95 transition-all text-sm mt-2"
         >
-          {loading ? 'Signing in…' : 'Sign In'}
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              Signing in…
+            </span>
+          ) : 'Sign In'}
         </button>
       </form>
-      <p className="text-center text-sm text-surface/60 mt-4">
-        No account?{' '}
-        <Link href="/register" className="text-primary hover:underline">Register</Link>
+
+      <p className="text-center text-sm text-surface/40 mt-5">
+        Don&apos;t have an account?{' '}
+        <Link href="/register" className="text-primary font-semibold">Create one</Link>
       </p>
     </div>
   )

@@ -5,7 +5,7 @@ import { api } from '@/services/api'
 import { WalletCard } from '@/components/ui/WalletCard'
 import Link from 'next/link'
 import { unitsToDisplay } from '@blockcoin/shared'
-import { ShimmerCards, ShimmerRows, ShimmerStats } from '@/components/ui/Shimmer'
+import { ShimmerCards, ShimmerRows } from '@/components/ui/Shimmer'
 
 interface Wallet {
   id: string
@@ -21,6 +21,12 @@ interface Tx {
   amountDisplay: string
   status: string
   createdAt: string
+}
+
+const TX_LABEL: Record<string, string> = {
+  CREDIT: 'Money Received',
+  DEBIT: 'Money Sent',
+  TRANSFER: 'Transfer',
 }
 
 export default function DashboardPage() {
@@ -49,89 +55,133 @@ export default function DashboardPage() {
   }, 0n)
 
   return (
-    <div className="p-4 md:p-8">
-      <div className="mb-6 md:mb-8">
-        <h2 className="text-xl md:text-2xl font-bold">Welcome, {user?.firstName}</h2>
-        <p className="text-surface/50 text-sm mt-1">Your BlockCoin wallet dashboard</p>
-      </div>
+    <div className="min-h-screen bg-bg">
+      {/* Hero balance banner */}
+      <div className="bg-gradient-to-b from-[#0d3d2c] to-bg px-5 pt-6 pb-8">
+        <div className="mb-1">
+          <p className="text-white/50 text-sm">Good day,</p>
+          <h1 className="text-xl font-bold text-white">{user?.firstName} {user?.lastName}</h1>
+        </div>
+        <div className="mt-6 text-center">
+          <p className="text-white/40 text-xs uppercase tracking-widest mb-2">Total Portfolio</p>
+          <p className="text-5xl font-bold font-mono text-white tracking-tight">
+            {unitsToDisplay(totalBalance)}
+          </p>
+          <p className="text-primary font-semibold mt-1">USDT</p>
+        </div>
 
-      {loading ? <ShimmerStats count={3} /> : (
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-card rounded-xl p-6 border border-white/5">
-          <p className="text-sm text-surface/50">Total Balance</p>
-          <p className="text-3xl font-bold font-mono text-primary mt-2">{unitsToDisplay(totalBalance)}</p>
-          <p className="text-xs text-surface/40 mt-1">USDT</p>
-        </div>
-        <div className="bg-card rounded-xl p-6 border border-white/5">
-          <p className="text-sm text-surface/50">Wallets</p>
-          <p className="text-3xl font-bold text-secondary mt-2">{wallets.length}</p>
-          <p className="text-xs text-surface/40 mt-1">of 10 maximum</p>
-        </div>
-        <div className="bg-card rounded-xl p-6 border border-white/5">
-          <p className="text-sm text-surface/50">Recent Transactions</p>
-          <p className="text-3xl font-bold text-warning mt-2">{txs.length}</p>
-          <p className="text-xs text-surface/40 mt-1">last 5 shown</p>
-        </div>
-      </div>
-      )}
-
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">Wallets</h3>
-        <Link href="/dashboard/wallets" className="text-sm text-primary hover:underline">View all →</Link>
-      </div>
-
-      {loading ? <div className="mb-8"><ShimmerCards count={3} /></div> : wallets.length === 0 ? (
-        <div className="bg-card rounded-xl border border-white/5 p-8 text-center mb-8">
-          <p className="text-surface/40 mb-4">No wallets yet</p>
-          <Link href="/dashboard/wallets"
-            className="bg-primary text-bg text-sm font-semibold px-6 py-2.5 rounded-lg hover:bg-primary/90 transition">
-            Create Your First Wallet
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
-          {wallets.slice(0, 3).map(w => (
-            <WalletCard key={w.id} wallet={w} onRefresh={loadWallets} />
+        {/* Quick actions */}
+        <div className="grid grid-cols-4 gap-3 mt-8">
+          {[
+            { href: '/dashboard/deposits', label: 'Deposit', icon: (
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m0 0l-4-4m4 4l4-4" />
+              </svg>
+            )},
+            { href: '/dashboard/wallets', label: 'Wallets', icon: (
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            )},
+            { href: '/dashboard/transactions', label: 'History', icon: (
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            )},
+            { href: '/dashboard/profile', label: 'Profile', icon: (
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            )},
+          ].map(a => (
+            <Link key={a.href} href={a.href}
+              className="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white">
+                {a.icon}
+              </div>
+              <span className="text-[11px] text-white/60 font-medium">{a.label}</span>
+            </Link>
           ))}
         </div>
-      )}
-
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">Recent Transactions</h3>
-        <Link href="/dashboard/transactions" className="text-sm text-primary hover:underline">View all →</Link>
       </div>
 
-      <div className="bg-card rounded-xl border border-white/5">
-        {loading ? <ShimmerRows rows={5} /> : txs.length === 0 ? (
-          <p className="p-6 text-surface/40 text-sm">No transactions yet</p>
-        ) : (
-          <div className="divide-y divide-white/5">
-            {txs.map(tx => (
-              <Link key={tx.id} href={`/dashboard/transactions/${tx.id}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-white/2 transition">
-                <div className="flex items-center gap-3">
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                    tx.type === 'CREDIT' ? 'bg-primary/20 text-primary' :
-                    tx.type === 'DEBIT' ? 'bg-danger/20 text-danger' :
-                    'bg-secondary/20 text-secondary'
-                  }`}>
-                    {tx.type === 'CREDIT' ? '↓' : tx.type === 'DEBIT' ? '↑' : '⇄'}
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium">{tx.type}</p>
-                    <p className="text-xs text-surface/40">{new Date(tx.createdAt).toLocaleString()}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className={`font-mono text-sm font-semibold ${tx.type === 'CREDIT' ? 'text-primary' : 'text-danger'}`}>
-                    {tx.type === 'CREDIT' ? '+' : '-'}{tx.amountDisplay} USDT
-                  </p>
-                  <p className="text-xs text-surface/40">{tx.status}</p>
-                </div>
-              </Link>
-            ))}
+      <div className="px-4 -mt-2 space-y-6 pb-4">
+        {/* Wallets section */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-surface">My Wallets</h2>
+            <Link href="/dashboard/wallets" className="text-xs text-primary font-medium">See all</Link>
           </div>
-        )}
+          {loading ? <ShimmerCards count={2} /> : wallets.length === 0 ? (
+            <div className="bg-card rounded-2xl border border-white/5 p-8 text-center">
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" className="text-primary">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <p className="text-surface/50 text-sm mb-4">No wallets yet</p>
+              <Link href="/dashboard/wallets"
+                className="bg-primary text-bg text-sm font-semibold px-6 py-2.5 rounded-xl inline-block active:scale-95 transition-transform">
+                Create Wallet
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {wallets.slice(0, 2).map(w => (
+                <WalletCard key={w.id} wallet={w} onRefresh={loadWallets} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent transactions */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-surface">Recent Activity</h2>
+            <Link href="/dashboard/transactions" className="text-xs text-primary font-medium">See all</Link>
+          </div>
+          <div className="bg-card rounded-2xl border border-white/5 overflow-hidden">
+            {loading ? <ShimmerRows rows={4} /> : txs.length === 0 ? (
+              <div className="p-8 text-center">
+                <p className="text-surface/40 text-sm">No transactions yet</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {txs.map(tx => (
+                  <Link key={tx.id} href={`/dashboard/transactions/${tx.id}`}
+                    className="flex items-center gap-3 px-4 py-3.5 active:bg-white/5 transition">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                      tx.type === 'CREDIT' ? 'bg-primary/15' :
+                      tx.type === 'DEBIT'  ? 'bg-danger/15' : 'bg-secondary/15'
+                    }`}>
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+                        className={tx.type === 'CREDIT' ? 'text-primary' : tx.type === 'DEBIT' ? 'text-danger' : 'text-secondary'}>
+                        {tx.type === 'CREDIT'
+                          ? <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m0 0l-4-4m4 4l4-4" />
+                          : tx.type === 'DEBIT'
+                          ? <path strokeLinecap="round" strokeLinejoin="round" d="M12 20V4m0 0l-4 4m4-4l4 4" />
+                          : <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        }
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-surface">{TX_LABEL[tx.type] ?? tx.type}</p>
+                      <p className="text-xs text-surface/40 mt-0.5">
+                        {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className={`text-sm font-bold font-mono ${tx.type === 'CREDIT' ? 'text-primary' : 'text-danger'}`}>
+                        {tx.type === 'CREDIT' ? '+' : '-'}{tx.amountDisplay}
+                      </p>
+                      <p className="text-[10px] text-surface/30 mt-0.5">USDT</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
