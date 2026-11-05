@@ -339,8 +339,8 @@ async function runFailureBehavior(
 
   // Force to FAILED immediately
   const queue = getSimulationQueue()
-  await queue.remove(`process:${sim.id}`).catch(() => {})
-  await queue.remove(`expire:${sim.id}`).catch(() => {})
+  await queue.remove(`process_${sim.id}`).catch(() => {})
+  await queue.remove(`expire_${sim.id}`).catch(() => {})
 
   await prisma.$transaction(async (tx) => {
     await tx.simulation.update({ where: { id: sim.id }, data: { status: 'FAILED' } })
@@ -446,7 +446,7 @@ async function runHistoryUpdate(
   })
 
   const queue = getSimulationQueue()
-  await queue.remove(`process:${failedSim.id}`).catch(() => {})
+  await queue.remove(`process_${failedSim.id}`).catch(() => {})
   await prisma.simulation.update({ where: { id: failedSim.id }, data: { status: 'FAILED' } })
   await prisma.simulationEvent.create({
     data: { simulationId: failedSim.id, fromStatus: 'CREATED', toStatus: 'FAILED', note: 'Security test' },
@@ -574,7 +574,7 @@ async function runDuplicateDetection(
     processingDelay: 60,
   })
   const queue = getSimulationQueue()
-  await queue.remove(`process:${sim.id}`).catch(() => {})
+  await queue.remove(`process_${sim.id}`).catch(() => {})
   await prisma.simulation.update({ where: { id: sim.id }, data: { status: 'CANCELLED' } })
 
   return sim.id

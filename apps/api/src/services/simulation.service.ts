@@ -1,7 +1,6 @@
 import { PrismaClient, SimulationStatus, TransactionType } from '@blockcoin/database'
 import { displayToUnits } from '@blockcoin/shared'
 import { getSimulationQueue, JOBS } from '../utils/queue'
-import { v4 as uuidv4 } from 'uuid'
 
 export interface CreateSimulationInput {
   walletId: string
@@ -47,21 +46,19 @@ export async function createSimulation(prisma: PrismaClient, input: CreateSimula
 
   const queue = getSimulationQueue()
 
-  // Schedule expiration job first (if applicable)
   if (expiresAt) {
     const delay = Math.max(0, expiresAt.getTime() - Date.now())
     await queue.add(JOBS.EXPIRE_SIMULATION, { simulationId: sim.id }, {
       delay,
-      jobId: `expire:${sim.id}`,
+      jobId: `expire_${sim.id}`,
       removeOnComplete: true,
     })
   }
 
-  // Enqueue processing job with optional delay
   const processDelay = (input.processingDelay ?? 0) * 1000
   await queue.add(JOBS.PROCESS_SIMULATION, { simulationId: sim.id }, {
     delay: processDelay,
-    jobId: `process:${sim.id}`,
+    jobId: `process_${sim.id}`,
     removeOnComplete: true,
     removeOnFail: false,
   })
@@ -82,8 +79,8 @@ export async function cancelSimulation(prisma: PrismaClient, simulationId: strin
   }
 
   const queue = getSimulationQueue()
-  await queue.remove(`process:${simulationId}`).catch(() => {})
-  await queue.remove(`expire:${simulationId}`).catch(() => {})
+  await queue.remove(`process_${simulationId}`).catch(() => {})
+  await queue.remove(`expire_${simulationId}`).catch(() => {})
 
   await prisma.$transaction(async (tx) => {
     await tx.simulation.update({
@@ -104,8 +101,8 @@ export async function adminCancelSimulation(prisma: PrismaClient, simulationId: 
   if (terminal.includes(sim.status)) throw new Error(`Simulation already in terminal state: ${sim.status}`)
 
   const queue = getSimulationQueue()
-  await queue.remove(`process:${simulationId}`).catch(() => {})
-  await queue.remove(`expire:${simulationId}`).catch(() => {})
+  await queue.remove(`process_${simulationId}`).catch(() => {})
+  await queue.remove(`expire_${simulationId}`).catch(() => {})
 
   await prisma.$transaction(async (tx) => {
     await tx.simulation.update({ where: { id: simulationId }, data: { status: 'CANCELLED' } })
