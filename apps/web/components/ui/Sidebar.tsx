@@ -10,7 +10,6 @@ const USER_NAV = [
   { href: '/dashboard/wallets', label: 'Wallets', icon: '◈', feature: null },
   { href: '/dashboard/deposits', label: 'Deposit USDT', icon: '↓', feature: null },
   { href: '/dashboard/transactions', label: 'Transactions', icon: '⇄', feature: null },
-  { href: '/dashboard/simulations', label: 'Payments', icon: '⚙', feature: null },
   { href: '/dashboard/profile', label: 'Profile', icon: '◉', feature: null },
 ]
 
