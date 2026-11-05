@@ -51,6 +51,17 @@ enum TestnetNetwork {
   TRON_NILE
 }
 
+enum DepositNetwork {
+  ETH_ERC20
+  TRON_TRC20
+}
+
+enum DepositStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -68,6 +79,7 @@ model User {
   adminLogs           AdminLog[]            @relation("AdminActor")
   apiKeys             ApiKey[]
   subAdminPermissions SubAdminPermission[]
+  depositRequests     DepositRequest[]
 
   @@index([email])
 }
@@ -94,9 +106,10 @@ model VirtualWallet {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ledgerAccount  LedgerAccount?
-  simulations    Simulation[]
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ledgerAccount    LedgerAccount?
+  simulations      Simulation[]
+  depositRequests  DepositRequest[]
 
   @@index([userId])
 }
@@ -267,6 +280,28 @@ model SystemSetting {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model DepositRequest {
+  id          String         @id @default(cuid())
+  userId      String
+  walletId    String
+  network     DepositNetwork
+  txHash      String         @unique
+  amountDisplay String
+  status      DepositStatus  @default(PENDING)
+  adminNote   String?
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user   User          @relation(fields: [userId], references: [id])
+  wallet VirtualWallet @relation(fields: [walletId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([txHash])
 }
 
 model SecurityReport {

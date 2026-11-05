@@ -8,6 +8,7 @@ import { api } from '@/services/api'
 const USER_NAV = [
   { href: '/dashboard', label: 'Dashboard', icon: '⊞', feature: null },
   { href: '/dashboard/wallets', label: 'Wallets', icon: '◈', feature: null },
+  { href: '/dashboard/deposits', label: 'Deposit USDT', icon: '↓', feature: null },
   { href: '/dashboard/transactions', label: 'Transactions', icon: '⇄', feature: null },
   { href: '/dashboard/simulations', label: 'Payments', icon: '⚙', feature: null },
   { href: '/dashboard/profile', label: 'Profile', icon: '◉', feature: null },
@@ -17,6 +18,7 @@ const ADMIN_NAV = [
   { href: '/admin', label: 'Dashboard', icon: '⊞', feature: null },
   { href: '/admin/users', label: 'Users', icon: '◉', feature: 'users' },
   { href: '/admin/wallets', label: 'Wallets', icon: '◈', feature: 'wallets' },
+  { href: '/admin/deposits', label: 'Deposits', icon: '↓', feature: 'deposits' },
   { href: '/admin/transactions', label: 'Transactions', icon: '⇄', feature: 'transactions' },
   { href: '/admin/simulations', label: 'Payments', icon: '⚙', feature: 'payments' },
   { href: '/admin/templates', label: 'Templates', icon: '☰', feature: 'templates' },
@@ -46,7 +48,7 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
   return (
     <>
       <div className="p-6 border-b border-white/5">
-        <h1 className="text-lg font-bold text-primary">BlockCoin</h1>
+        <Link href="/" className="text-lg font-bold text-primary hover:text-primary/80 transition-colors">BlockCoin</Link>
         <p className="text-xs text-surface/40 mt-0.5">USDT Platform</p>
       </div>
 
@@ -89,7 +91,7 @@ export function Sidebar({ user, onLogout }: { user: AuthUser; onLogout: () => vo
   return (
     <>
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-sidebar border-b border-white/5">
-        <h1 className="text-base font-bold text-primary">BlockCoin</h1>
+        <Link href="/" className="text-base font-bold text-primary hover:text-primary/80 transition-colors">BlockCoin</Link>
         <button onClick={() => setOpen(true)} className="text-surface/70 hover:text-surface p-1" aria-label="Open menu">
           <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />

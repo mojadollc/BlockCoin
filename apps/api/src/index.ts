@@ -14,6 +14,7 @@ import walletRoutes from './routes/wallets.routes'
 import transactionRoutes from './routes/transactions.routes'
 import simulationRoutes from './routes/simulations.routes'
 import testnetRoutes from './routes/testnet.routes'
+import depositRoutes from './routes/deposits.routes'
 import { authenticate } from './middleware/auth'
 import { getUIFlags } from './controllers/admin/settings.controller'
 
@@ -47,6 +48,7 @@ app.use('/api/v1/wallets', walletRoutes)
 app.use('/api/v1/transactions', transactionRoutes)
 app.use('/api/v1/simulations', simulationRoutes)
 app.use('/api/v1/testnet', testnetRoutes)
+app.use('/api/v1/deposits', depositRoutes)
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }))
 

@@ -102,12 +102,7 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-bg/70 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-bg text-xs font-black">B</span>
-            </div>
-            <span className="text-base font-bold tracking-tight">BlockCoin</span>
-          </div>
+          <Link href="/" className="text-base font-bold tracking-tight hover:text-primary transition-colors">BlockCoin</Link>
           <div className="hidden md:flex items-center gap-8 text-sm text-surface/50">
             <a href="#features" className="hover:text-surface transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-surface transition-colors">How It Works</a>
@@ -390,13 +385,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-white/5 py-10 px-5">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-bg text-xs font-black">B</span>
-            </div>
-            <span className="font-bold text-sm">BlockCoin</span>
-            <span className="text-xs text-surface/20">USDT Platform</span>
-          </div>
+          <Link href="/" className="font-bold text-sm hover:text-primary transition-colors">BlockCoin</Link>
           <p className="text-xs text-surface/20">
             © {new Date().getFullYear()} BlockCoin. All rights reserved.
           </p>
