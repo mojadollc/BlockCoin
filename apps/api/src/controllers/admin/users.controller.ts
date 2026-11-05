@@ -66,22 +66,39 @@ export async function getUser(req: AuthRequest, res: Response): Promise<void> {
 export async function createUser(req: AuthRequest, res: Response): Promise<void> {
   try {
     const { email, password, firstName, lastName, role } = req.body
-    const existing = await prisma.user.findUnique({ where: { email } })
+
+    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } })
     if (existing) { badRequest(res, 'Email already registered'); return }
 
     const passwordHash = await argon2.hash(password, { type: argon2.argon2id })
-    const user = await prisma.user.create({
-      data: { email, passwordHash, firstName, lastName, role: role ?? 'USER' },
-      select: { id: true, email: true, firstName: true, lastName: true, role: true },
-    })
 
-    await prisma.adminLog.create({
-      data: { actorId: req.user!.sub, action: 'CREATE_USER', targetType: 'User', targetId: user.id },
+    const user = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: { email: email.toLowerCase().trim(), passwordHash, firstName, lastName, role: role ?? 'USER' },
+        select: { id: true, email: true, firstName: true, lastName: true, role: true },
+      })
+
+      // Auto-create a default wallet for the user
+      await tx.virtualWallet.create({
+        data: { userId: newUser.id, label: 'Main Wallet' },
+      })
+
+      await tx.adminLog.create({
+        data: { actorId: req.user!.sub, action: 'CREATE_USER', targetType: 'User', targetId: newUser.id },
+      })
+
+      return newUser
     })
 
     created(res, user)
-  } catch {
-    serverError(res)
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('[createUser]', msg)
+    if (msg.includes('Unique constraint') || msg.includes('unique')) {
+      badRequest(res, 'Email already registered')
+    } else {
+      serverError(res, msg)
+    }
   }
 }
 
