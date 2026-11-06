@@ -21,15 +21,14 @@ export function PWAInstallPrompt() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    // Don't show if already running as installed PWA
+    // Only skip if already running as an installed PWA
     if (window.matchMedia('(display-mode: standalone)').matches) return
-    // Don't show if user already dismissed this session
-    if (sessionStorage.getItem('pwa-dismissed')) return
+    if ((window.navigator as any).standalone === true) return
 
-    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !(window.navigator as any).standalone
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent)
     setIsIOS(ios)
 
-    // Always show after 2s — regardless of browser/device
+    // Always show after 2s on every page load/refresh
     const t = setTimeout(() => setShow(true), 2000)
 
     const handler = (e: Event) => {
@@ -59,7 +58,6 @@ export function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShow(false)
-    sessionStorage.setItem('pwa-dismissed', '1')
   }
 
   if (!show) return null
