@@ -6,25 +6,25 @@ import { AuthUser } from '@blockcoin/shared'
 import { api } from '@/services/api'
 
 const USER_NAV = [
-  { href: '/dashboard', label: 'Dashboard', icon: '⊞', feature: null },
-  { href: '/dashboard/wallets', label: 'Wallets', icon: '◈', feature: null },
-  { href: '/dashboard/deposits', label: 'Deposit USDT', icon: '↓', feature: null },
+  { href: '/dashboard',              label: 'Dashboard',    icon: '⊞', feature: null },
+  { href: '/dashboard/wallets',      label: 'Wallets',      icon: '◈', feature: null },
+  { href: '/dashboard/deposits',     label: 'Deposit USDT', icon: '↓', feature: null },
   { href: '/dashboard/transactions', label: 'Transactions', icon: '⇄', feature: null },
-  { href: '/dashboard/profile', label: 'Profile', icon: '◉', feature: null },
+  { href: '/dashboard/profile',      label: 'Profile',      icon: '◉', feature: null },
 ]
 
 const ADMIN_NAV = [
-  { href: '/admin', label: 'Dashboard', icon: '⊞', feature: null },
-  { href: '/admin/users', label: 'Users', icon: '◉', feature: 'users' },
-  { href: '/admin/wallets', label: 'Wallets', icon: '◈', feature: 'wallets' },
-  { href: '/admin/deposits', label: 'Deposits', icon: '↓', feature: 'deposits' },
-  { href: '/admin/transactions', label: 'Transactions', icon: '⇄', feature: 'transactions' },
-  { href: '/admin/simulations', label: 'Payments', icon: '⚙', feature: 'payments' },
-  { href: '/admin/templates', label: 'Templates', icon: '☰', feature: 'templates' },
-  { href: '/admin/security-simulator', label: 'Security Testing', icon: '🛡', feature: 'security' },
-  { href: '/admin/audit-logs', label: 'Audit Logs', icon: '📋', feature: 'audit_logs' },
-  { href: '/admin/security', label: 'Reports', icon: '📊', feature: 'security' },
-  { href: '/admin/settings', label: 'Settings', icon: '⚙', feature: 'settings' },
+  { href: '/admin',                    label: 'Dashboard',       icon: '⊞', feature: null },
+  { href: '/admin/users',              label: 'Users',           icon: '◉', feature: 'users' },
+  { href: '/admin/wallets',            label: 'Wallets',         icon: '◈', feature: 'wallets' },
+  { href: '/admin/deposits',           label: 'Deposits',        icon: '↓', feature: 'deposits' },
+  { href: '/admin/transactions',       label: 'Transactions',    icon: '⇄', feature: 'transactions' },
+  { href: '/admin/simulations',        label: 'Payments',        icon: '⚙', feature: 'payments' },
+  { href: '/admin/templates',          label: 'Templates',       icon: '☰', feature: 'templates' },
+  { href: '/admin/security-simulator', label: 'Security Testing',icon: '🛡', feature: 'security' },
+  { href: '/admin/audit-logs',         label: 'Audit Logs',      icon: '📋', feature: 'audit_logs' },
+  { href: '/admin/security',           label: 'Reports',         icon: '📊', feature: 'security' },
+  { href: '/admin/settings',           label: 'Settings',        icon: '⚙', feature: 'settings' },
 ]
 
 function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () => void; onNav?: () => void }) {
@@ -69,32 +69,36 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
               <div key={i} className="h-9 rounded-lg bg-white/5 animate-pulse" />
             ))}
           </div>
-        ) : nav.map(item => {
-          const level = item.feature ? permMap[item.feature] : null
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNav}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-                isActive ? 'bg-primary/10 text-primary font-medium' : 'text-surface/60 hover:text-surface hover:bg-white/5'
-              }`}
-            >
-              <span>{item.icon}</span>
-              <span className="flex-1">{item.label}</span>
-              {user.role === 'SUB_ADMIN' && level && (
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                  level === 'WRITE'
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-secondary/20 text-secondary'
-                }`}>
-                  {level}
-                </span>
-              )}
-            </Link>
-          )
-        })
+        ) : (
+          nav.map(item => {
+            const level = item.feature ? permMap[item.feature] : null
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onNav}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+                  isActive
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-surface/60 hover:text-surface hover:bg-white/5'
+                }`}
+              >
+                <span>{item.icon}</span>
+                <span className="flex-1">{item.label}</span>
+                {user.role === 'SUB_ADMIN' && level && (
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                    level === 'WRITE'
+                      ? 'bg-primary/20 text-primary'
+                      : 'bg-secondary/20 text-secondary'
+                  }`}>
+                    {level}
+                  </span>
+                )}
+              </Link>
+            )
+          })
+        )}
       </nav>
 
       <div className="p-4 border-t border-white/5">
