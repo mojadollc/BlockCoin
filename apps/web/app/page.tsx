@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { MarketChart } from '@/components/ui/MarketChart'
+import { TickerStrip } from '@/components/ui/TickerStrip'
 
 const FEATURES = [
   {
@@ -121,8 +122,12 @@ export default function LandingPage() {
         </div>
       </nav>
 
+      <div className="fixed top-16 left-0 right-0 z-40">
+        <TickerStrip />
+      </div>
+
       {/* Hero */}
-      <section className="relative pt-36 pb-28 px-5 flex flex-col items-center text-center overflow-hidden">
+      <section className="relative pt-44 pb-28 px-5 flex flex-col items-center text-center overflow-hidden">
         {/* Background glows */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-primary/8 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute top-40 left-1/4 w-72 h-72 bg-secondary/6 rounded-full blur-[80px] pointer-events-none" />
