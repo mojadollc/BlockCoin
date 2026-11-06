@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { MarketChart, fetchMarketData } from '@/components/ui/MarketChart'
-import { TickerStrip, fetchTickerData } from '@/components/ui/TickerStrip'
+import { MarketChart } from '@/components/ui/MarketChart'
+import { TickerStrip } from '@/components/ui/TickerStrip'
+import { fetchMarketData, fetchTickerData } from '@/lib/marketData'
 
 export const metadata: Metadata = {
   title: 'BlockCoin — USDT Wallet & Live Crypto Trading Platform',

@@ -1,36 +1,7 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
-
-type Coin = { symbol: string; price: number; change: number }
-
-const COIN_IDS = [
-  { id: 'tether',      symbol: 'USDT' },
-  { id: 'bitcoin',     symbol: 'BTC'  },
-  { id: 'ethereum',    symbol: 'ETH'  },
-  { id: 'tron',        symbol: 'TRX'  },
-  { id: 'binancecoin', symbol: 'BNB'  },
-  { id: 'solana',      symbol: 'SOL'  },
-  { id: 'ripple',      symbol: 'XRP'  },
-  { id: 'cardano',     symbol: 'ADA'  },
-]
-
-export async function fetchTickerData(): Promise<Coin[]> {
-  try {
-    const ids = COIN_IDS.map(c => c.id).join(',')
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
-      { next: { revalidate: 60 } }
-    )
-    const data = await res.json()
-    return COIN_IDS.map(c => ({
-      symbol: c.symbol,
-      price: data[c.id]?.usd ?? 0,
-      change: data[c.id]?.usd_24h_change ?? 0,
-    }))
-  } catch {
-    return []
-  }
-}
+import { useEffect, useState } from 'react'
+import { fetchTickerData } from '@/lib/marketData'
+import type { TickerCoin as Coin } from '@/lib/marketData'
 
 function fmtPrice(p: number) {
   if (p < 0.01) return p.toFixed(6)

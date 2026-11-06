@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { fetchMarketData } from '@/lib/marketData'
 
 export type MarketCoinData = {
   id: string
@@ -20,28 +21,6 @@ const COIN_IDS = [
 ]
 
 const COLORS = ['#00C89B', '#2684FF', '#F5B942', '#EF5350', '#a78bfa', '#38bdf8']
-
-export async function fetchMarketData(): Promise<MarketCoinData[]> {
-  try {
-    const ids = COIN_IDS.map(c => c.id).join(',')
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h`,
-      { next: { revalidate: 60 } }
-    )
-    const data = await res.json()
-    return COIN_IDS.map(c => {
-      const d = data.find((x: any) => x.id === c.id)
-      return {
-        id: c.id, symbol: c.symbol, name: c.name,
-        price: d?.current_price ?? 0,
-        change24h: d?.price_change_percentage_24h ?? 0,
-        sparkline: d?.sparkline_in_7d?.price ?? [],
-      }
-    })
-  } catch {
-    return []
-  }
-}
 
 function drawChart(canvas: HTMLCanvasElement, data: number[], color: string, main = false) {
   const dpr = window.devicePixelRatio || 1
