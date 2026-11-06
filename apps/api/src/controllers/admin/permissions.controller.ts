@@ -17,7 +17,10 @@ export async function getSubAdminPermissions(req: AuthRequest, res: Response): P
     const msg = e instanceof Error ? e.message : String(e)
     console.error('[getSubAdminPermissions]', msg)
     serverError(res, msg)
-  }(req: AuthRequest, res: Response): Promise<void> {
+  }
+}
+
+export async function setSubAdminPermissions(req: AuthRequest, res: Response): Promise<void> {
   try {
     const { permissions } = req.body as {
       permissions: Array<{ feature: PermissionFeature; level: 'READ' | 'WRITE' }>
@@ -29,7 +32,6 @@ export async function getSubAdminPermissions(req: AuthRequest, res: Response): P
 
     if (!Array.isArray(permissions)) { badRequest(res, 'permissions must be an array'); return }
 
-    // Validate all features before touching the DB
     for (const p of permissions) {
       if (!PERMISSION_FEATURES.includes(p.feature)) {
         badRequest(res, `Invalid feature: ${p.feature}`); return
@@ -39,7 +41,6 @@ export async function getSubAdminPermissions(req: AuthRequest, res: Response): P
       }
     }
 
-    // Atomic: delete all existing then insert new ones
     await prisma.$transaction(async (tx) => {
       await tx.subAdminPermission.deleteMany({ where: { userId: req.params.id } })
 
