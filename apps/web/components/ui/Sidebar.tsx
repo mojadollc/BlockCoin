@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AuthUser } from '@blockcoin/shared'
 import { api } from '@/services/api'
+import { TickerStrip } from './TickerStrip'
 
 const USER_NAV = [
   { href: '/dashboard',              label: 'Dashboard',    icon: '⊞', feature: null },
@@ -126,18 +127,21 @@ export function Sidebar({ user, onLogout }: { user: AuthUser; onLogout: () => vo
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 bg-sidebar border-b border-white/5" style={{ paddingTop: 'max(12px, env(safe-area-inset-top))', paddingBottom: '12px' }}>
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center group-hover:bg-primary/30 transition">
-            <span className="text-sm font-bold text-primary">₮</span>
-          </div>
-          <span className="text-base font-bold text-primary group-hover:text-primary/80 transition">BlockCoin</span>
-        </Link>
-        <button onClick={() => setOpen(true)} className="text-surface/70 hover:text-surface p-1" aria-label="Open menu">
-          <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-sidebar border-b border-white/5">
+        <div className="flex items-center justify-between px-4" style={{ paddingTop: 'max(12px, env(safe-area-inset-top))', paddingBottom: '12px' }}>
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center group-hover:bg-primary/30 transition">
+              <span className="text-sm font-bold text-primary">₮</span>
+            </div>
+            <span className="text-base font-bold text-primary group-hover:text-primary/80 transition">BlockCoin</span>
+          </Link>
+          <button onClick={() => setOpen(true)} className="text-surface/70 hover:text-surface p-1" aria-label="Open menu">
+            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+        <TickerStrip />
       </div>
 
       {open && <div className="md:hidden fixed inset-0 z-40 bg-black/60" onClick={() => setOpen(false)} />}
@@ -154,6 +158,7 @@ export function Sidebar({ user, onLogout }: { user: AuthUser; onLogout: () => vo
       </aside>
 
       <aside className="hidden md:flex w-64 bg-sidebar min-h-screen flex-col border-r border-white/5 shrink-0">
+        <TickerStrip />
         <NavContent user={user} onLogout={onLogout} />
       </aside>
     </>
