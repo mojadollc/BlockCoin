@@ -21,39 +21,26 @@ export function PWAInstallPrompt() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    // Don't show if already installed (standalone mode)
+    // Don't show if already running as installed PWA
     if (window.matchMedia('(display-mode: standalone)').matches) return
-    // Don't show if user already dismissed
-    if (localStorage.getItem('pwa-dismissed')) return
+    // Don't show if user already dismissed this session
+    if (sessionStorage.getItem('pwa-dismissed')) return
 
     const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !(window.navigator as any).standalone
+    setIsIOS(ios)
 
-    if (ios) {
-      setIsIOS(true)
-      // Delay 2s so page loads first
-      const t = setTimeout(() => setShow(true), 2000)
-      return () => clearTimeout(t)
-    }
+    // Always show after 2s — regardless of browser/device
+    const t = setTimeout(() => setShow(true), 2000)
 
     const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
-      // Delay 2s so page loads first
-      const t = setTimeout(() => setShow(true), 2000)
-      return () => clearTimeout(t)
     }
-
     window.addEventListener('beforeinstallprompt', handler)
 
-    // On desktop browsers that don't fire beforeinstallprompt (Firefox, Safari desktop)
-    // still show the modal after 2s so users know the app exists
-    const fallback = setTimeout(() => {
-      if (!localStorage.getItem('pwa-dismissed')) setShow(true)
-    }, 2000)
-
     return () => {
+      clearTimeout(t)
       window.removeEventListener('beforeinstallprompt', handler)
-      clearTimeout(fallback)
     }
   }, [])
 
@@ -72,7 +59,7 @@ export function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShow(false)
-    localStorage.setItem('pwa-dismissed', '1')
+    sessionStorage.setItem('pwa-dismissed', '1')
   }
 
   if (!show) return null
