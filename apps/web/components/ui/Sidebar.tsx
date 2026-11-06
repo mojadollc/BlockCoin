@@ -47,8 +47,13 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
   return (
     <>
       <div className="p-6 border-b border-white/5">
-        <Link href="/" className="text-lg font-bold text-primary hover:text-primary/80 transition-colors">BlockCoin</Link>
-        <p className="text-xs text-surface/40 mt-0.5">USDT Platform</p>
+        <Link href="/" className="flex items-center gap-2.5 group w-fit">
+          <div className="w-8 h-8 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center group-hover:bg-primary/30 transition">
+            <span className="text-base font-bold text-primary">₮</span>
+          </div>
+          <span className="text-lg font-bold text-primary group-hover:text-primary/80 transition">BlockCoin</span>
+        </Link>
+        <p className="text-xs text-surface/40 mt-1.5 ml-0.5">USDT Platform</p>
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -90,7 +95,12 @@ export function Sidebar({ user, onLogout }: { user: AuthUser; onLogout: () => vo
   return (
     <>
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 bg-sidebar border-b border-white/5" style={{ paddingTop: 'max(12px, env(safe-area-inset-top))', paddingBottom: '12px' }}>
-        <Link href="/" className="text-base font-bold text-primary hover:text-primary/80 transition-colors">BlockCoin</Link>
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center group-hover:bg-primary/30 transition">
+            <span className="text-sm font-bold text-primary">₮</span>
+          </div>
+          <span className="text-base font-bold text-primary group-hover:text-primary/80 transition">BlockCoin</span>
+        </Link>
         <button onClick={() => setOpen(true)} className="text-surface/70 hover:text-surface p-1" aria-label="Open menu">
           <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
