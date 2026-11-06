@@ -106,7 +106,7 @@ export function PWAInstallPrompt() {
               <span className="text-4xl font-bold text-primary">₮</span>
             </div>
 
-            <h2 className="text-xl font-bold text-white">Install BlockCoin</h2>
+            <h2 className="text-xl font-bold text-white">Install BlockCoin App</h2>
             <p className="text-white/50 text-sm mt-1">Add to your home screen for the best experience</p>
           </div>
 
