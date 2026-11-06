@@ -5,6 +5,12 @@ import { AuthRequest } from '../../middleware/auth'
 
 export async function getDashboard(req: AuthRequest, res: Response): Promise<void> {
   try {
+    const isSubAdmin = req.user!.role === 'SUB_ADMIN'
+    const actorId = req.user!.sub
+
+    // SUB_ADMIN only sees their own activity log, not platform-wide stats
+    const logWhere = isSubAdmin ? { actorId } : {}
+
     const [totalUsers, activeUsers, totalWallets, totalSimulations, recentLogs, simsByStatus] =
       await Promise.all([
         prisma.user.count(),
@@ -12,6 +18,7 @@ export async function getDashboard(req: AuthRequest, res: Response): Promise<voi
         prisma.virtualWallet.count(),
         prisma.simulation.count(),
         prisma.adminLog.findMany({
+          where: logWhere,
           take: 10,
           orderBy: { createdAt: 'desc' },
           include: { actor: { select: { firstName: true, lastName: true, email: true } } },
@@ -26,6 +33,7 @@ export async function getDashboard(req: AuthRequest, res: Response): Promise<voi
       stats: { totalUsers, activeUsers, totalWallets, totalSimulations },
       recentLogs,
       simsByStatus,
+      isSubAdmin,
     })
   } catch {
     serverError(res)

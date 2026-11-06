@@ -30,12 +30,14 @@ const ADMIN_NAV = [
 function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () => void; onNav?: () => void }) {
   const pathname = usePathname()
   const [allowedFeatures, setAllowedFeatures] = useState<string[]>([])
+  const [permsLoaded, setPermsLoaded] = useState(user.role !== 'SUB_ADMIN')
 
   useEffect(() => {
     if (user.role === 'SUB_ADMIN') {
       api.get<Array<{ feature: string; level: string }>>(`/api/v1/admin/users/${user.id}/permissions`)
         .then(perms => setAllowedFeatures(perms.map(p => p.feature)))
         .catch(() => {})
+        .finally(() => setPermsLoaded(true))
     }
   }, [user.id, user.role])
 
@@ -57,7 +59,13 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {nav.map(item => (
+        {!permsLoaded ? (
+          <div className="space-y-1">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-9 rounded-lg bg-white/5 animate-pulse" />
+            ))}
+          </div>
+        ) : nav.map(item => (
           <Link
             key={item.href}
             href={item.href}
@@ -75,10 +83,15 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
       </nav>
 
       <div className="p-4 border-t border-white/5">
-        <div className="text-sm text-surface/70 mb-2">
+        <div className="text-sm text-surface/70 mb-1">
           {user.firstName} {user.lastName}
+        </div>
+        <div className="mb-2">
           {user.role === 'ADMIN' && (
-            <span className="ml-2 text-xs bg-secondary/20 text-secondary px-1.5 py-0.5 rounded">ADMIN</span>
+            <span className="text-xs bg-secondary/20 text-secondary px-1.5 py-0.5 rounded">ADMIN</span>
+          )}
+          {user.role === 'SUB_ADMIN' && (
+            <span className="text-xs bg-warning/20 text-warning px-1.5 py-0.5 rounded">SUB-ADMIN</span>
           )}
         </div>
         <button onClick={onLogout} className="text-xs text-surface/40 hover:text-danger transition">

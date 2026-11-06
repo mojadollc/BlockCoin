@@ -6,8 +6,9 @@ import { ShimmerStats, ShimmerRows } from '@/components/ui/Shimmer'
 
 interface DashboardData {
   stats: { totalUsers: number; activeUsers: number; totalWallets: number; totalSimulations: number }
-  recentLogs: Array<{ id: string; action: string; createdAt: string; actor: { email: string } }>
+  recentLogs: Array<{ id: string; action: string; createdAt: string; actor: { email: string; firstName: string; lastName: string } }>
   simsByStatus: Array<{ status: string; _count: { status: number } }>
+  isSubAdmin: boolean
 }
 
 export default function AdminDashboard() {
@@ -55,7 +56,7 @@ export default function AdminDashboard() {
 
         <div className="bg-card rounded-xl border border-white/5">
           <div className="p-4 border-b border-white/5">
-            <h3 className="font-semibold">Recent Admin Activity</h3>
+            <h3 className="font-semibold">{data?.isSubAdmin ? 'My Recent Activity' : 'Recent Admin Activity'}</h3>
           </div>
           <div className="divide-y divide-white/5">
             {loading ? <ShimmerRows rows={5} /> : data?.recentLogs.length === 0 ? (
@@ -63,12 +64,12 @@ export default function AdminDashboard() {
             ) : data?.recentLogs.map(log => (
               <div key={log.id} className="px-4 py-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-primary font-medium">{log.action}</span>
+                  <span className="text-primary font-medium">{log.action.replace(/_/g, ' ')}</span>
                   <span className="text-surface/40 text-xs">
                     {new Date(log.createdAt).toLocaleString()}
                   </span>
                 </div>
-                <p className="text-surface/50 text-xs mt-0.5">{log.actor.email}</p>
+                <p className="text-surface/50 text-xs mt-0.5">{log.actor.firstName} {log.actor.lastName} · {log.actor.email}</p>
               </div>
             ))}
           </div>
