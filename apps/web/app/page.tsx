@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MarketChart } from '@/components/ui/MarketChart'
 
 const FEATURES = [
   {
@@ -128,23 +129,7 @@ export default function LandingPage() {
         <div className="absolute top-40 right-1/4 w-72 h-72 bg-warning/4 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-xs font-semibold px-4 py-2 rounded-full mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Trusted by 500+ customers worldwide
-          </div>
-
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[1.05] tracking-tight mb-6">
-            The Professional<br />
-            <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #00C89B 0%, #2684FF 100%)' }}>
-              USDT Platform
-            </span>
-          </h1>
-
-          <p className="text-lg text-surface/50 max-w-xl mx-auto mb-10 leading-relaxed">
-            Send, receive, and manage USDT across multiple wallets with real-time tracking, full transaction history, and live blockchain integration.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-20">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
             <Link href="/register"
               className="w-full sm:w-auto bg-primary text-bg font-bold px-8 py-3.5 rounded-xl hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/20 text-sm">
               Get Started Free
@@ -154,62 +139,7 @@ export default function LandingPage() {
               See How It Works →
             </a>
           </div>
-
-          {/* Dashboard mockup */}
-          <div className="relative">
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-primary/20 to-secondary/10 blur-sm" />
-            <div className="relative bg-card border border-white/8 rounded-2xl overflow-hidden shadow-2xl">
-              {/* Mockup top bar */}
-              <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5 bg-sidebar/60">
-                <span className="w-2.5 h-2.5 rounded-full bg-danger/60" />
-                <span className="w-2.5 h-2.5 rounded-full bg-warning/60" />
-                <span className="w-2.5 h-2.5 rounded-full bg-primary/60" />
-                <span className="ml-3 text-xs text-surface/20 font-mono">blockcoin.app/dashboard</span>
-              </div>
-              <div className="p-5 sm:p-7">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <p className="text-xs text-surface/30 mb-1">Total Portfolio</p>
-                    <p className="text-4xl font-black font-mono text-primary tracking-tight">125,000.00</p>
-                    <p className="text-xs text-surface/30 mt-1">USDT</p>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <span className="text-xs bg-primary/15 text-primary px-3 py-1 rounded-full font-semibold border border-primary/20">● LIVE</span>
-                    <span className="text-xs text-primary/60 font-mono">+12.4% this week</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-3 mb-5">
-                  {[
-                    { label: 'Main Wallet', bal: '50,000.00', color: 'border-primary/20 bg-primary/5' },
-                    { label: 'Operations', bal: '25,000.00', color: 'border-secondary/20 bg-secondary/5' },
-                    { label: 'Reserve', bal: '50,000.00', color: 'border-warning/20 bg-warning/5' },
-                  ].map(w => (
-                    <div key={w.label} className={`rounded-xl border ${w.color} p-3`}>
-                      <p className="text-xs text-surface/40 mb-1">{w.label}</p>
-                      <p className="font-mono text-sm font-bold text-surface">{w.bal}</p>
-                      <p className="text-xs text-primary/50 mt-0.5">USDT</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { type: 'CREDIT', amount: '+10,000.00', status: 'COMPLETED', statusColor: 'bg-primary/15 text-primary border-primary/20', icon: '↓', iconBg: 'bg-primary/15 text-primary' },
-                    { type: 'DEBIT', amount: '-5,000.00', status: 'PROCESSING', statusColor: 'bg-secondary/15 text-secondary border-secondary/20', icon: '↑', iconBg: 'bg-warning/15 text-warning' },
-                    { type: 'CREDIT', amount: '+25,000.00', status: 'PENDING', statusColor: 'bg-warning/15 text-warning border-warning/20', icon: '↓', iconBg: 'bg-primary/15 text-primary' },
-                  ].map((tx, i) => (
-                    <div key={i} className="flex items-center justify-between bg-sidebar/40 rounded-xl px-4 py-2.5 border border-white/4">
-                      <div className="flex items-center gap-3">
-                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${tx.iconBg}`}>{tx.icon}</span>
-                        <span className="text-xs text-surface/50 font-medium">{tx.type}</span>
-                      </div>
-                      <span className="font-mono text-xs font-bold text-surface">{tx.amount} USDT</span>
-                      <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${tx.statusColor}`}>{tx.status}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <MarketChart />
         </div>
       </section>
 
