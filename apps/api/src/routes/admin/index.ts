@@ -20,7 +20,7 @@ import {
   adminListSimulations, adminGetSimulation, adminCreateSimulation,
   adminCancelSim, adminForceStatus,
 } from '../../controllers/admin/simulations.controller'
-import { getSubAdminPermissions, setSubAdminPermissions } from '../../controllers/admin/permissions.controller'
+import { getSubAdminPermissions, setSubAdminPermissions, getMyPermissions } from '../../controllers/admin/permissions.controller'
 import { adminListDeposits, approveDeposit, rejectDeposit } from '../../controllers/admin/deposits.controller'
 import { validate } from '../../middleware/validate'
 import { AdjustBalanceSchema, CreateTemplateSchema, CreateSimulationSchema } from '@blockcoin/validation'
@@ -55,14 +55,7 @@ router.post('/users/:id/activate', requirePermission('users', 'WRITE'), activate
 router.post('/users/:id/reset-password', requirePermission('users', 'WRITE'), resetUserPassword)
 
 // My own permissions — SUB_ADMIN can fetch their own (used by sidebar)
-router.get('/me/permissions', async (req, res) => {
-  const { prisma } = await import('../../utils/prisma')
-  const { ok } = await import('../../utils/response')
-  try {
-    const perms = await prisma.subAdminPermission.findMany({ where: { userId: req.user!.sub } })
-    ok(res, perms)
-  } catch { res.status(500).json({ success: false, error: 'Server error' }) }
-})
+router.get('/me/permissions', getMyPermissions)
 
 // Sub-admin permissions — ADMIN only (to manage other users)
 router.get('/users/:id/permissions', requireRole('ADMIN'), getSubAdminPermissions)

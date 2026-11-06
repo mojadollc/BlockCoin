@@ -4,6 +4,16 @@ import { ok, badRequest, notFound, serverError } from '../../utils/response'
 import { AuthRequest } from '../../middleware/auth'
 import { PERMISSION_FEATURES, PermissionFeature } from '@blockcoin/shared'
 
+export async function getMyPermissions(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const perms = await prisma.subAdminPermission.findMany({ where: { userId: req.user!.sub } })
+    ok(res, perms)
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e)
+    serverError(res, msg)
+  }
+}
+
 export async function getSubAdminPermissions(req: AuthRequest, res: Response): Promise<void> {
   try {
     const user = await prisma.user.findUnique({
