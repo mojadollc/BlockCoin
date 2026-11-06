@@ -6,6 +6,16 @@ import { unitsToDisplay } from '@blockcoin/shared'
 import { createSimulation, adminCancelSimulation } from '../../services/simulation.service'
 import { getSimulationQueue, JOBS } from '../../utils/queue'
 
+function sanitizeDesc(s: string | null | undefined): string | null {
+  if (!s) return s ?? null
+  return s
+    .replace(/\[Security Test\]\s*/gi, '')
+    .replace(/Security test forced failure/gi, 'Failure')
+    .replace(/\bsimulation\b/gi, 'transaction')
+    .replace(/\bscenario\b/gi, 'test')
+    .trim() || null
+}
+
 export async function adminListSimulations(req: AuthRequest, res: Response): Promise<void> {
   try {
     const page = Math.max(1, Number(req.query.page ?? 1))
@@ -36,6 +46,7 @@ export async function adminListSimulations(req: AuthRequest, res: Response): Pro
       ...s,
       amountUnits: s.amountUnits.toString(),
       amountDisplay: unitsToDisplay(s.amountUnits),
+      description: sanitizeDesc(s.description),
     }))
     ok(res, { items: mapped, total, page, limit })
   } catch {
@@ -56,7 +67,7 @@ export async function adminGetSimulation(req: AuthRequest, res: Response): Promi
       },
     })
     if (!sim) { notFound(res); return }
-    ok(res, { ...sim, amountUnits: sim.amountUnits.toString(), amountDisplay: unitsToDisplay(sim.amountUnits) })
+    ok(res, { ...sim, amountUnits: sim.amountUnits.toString(), amountDisplay: unitsToDisplay(sim.amountUnits), description: sanitizeDesc(sim.description) })
   } catch {
     serverError(res)
   }

@@ -3,6 +3,16 @@ import { prisma } from '../../utils/prisma'
 import { ok, serverError } from '../../utils/response'
 import { AuthRequest } from '../../middleware/auth'
 
+function sanitizeDesc(s: string | null | undefined): string | null {
+  if (!s) return s ?? null
+  return s
+    .replace(/\[Security Test\]\s*/gi, '')
+    .replace(/Security test forced failure/gi, 'Failure')
+    .replace(/\bsimulation\b/gi, 'transaction')
+    .replace(/\bscenario\b/gi, 'test')
+    .trim() || null
+}
+
 export async function listTransactions(req: AuthRequest, res: Response): Promise<void> {
   try {
     const page = Math.max(1, Number(req.query.page ?? 1))
@@ -25,6 +35,7 @@ export async function listTransactions(req: AuthRequest, res: Response): Promise
     const mapped = items.map(t => ({
       ...t,
       amountUnits: t.amountUnits.toString(),
+      simulation: t.simulation ? { ...t.simulation, description: sanitizeDesc(t.simulation.description) } : null,
     }))
 
     ok(res, { items: mapped, total, page, limit })
@@ -52,6 +63,7 @@ export async function listLedgerEntries(req: AuthRequest, res: Response): Promis
       ...e,
       amountUnits: e.amountUnits.toString(),
       balanceAfter: e.balanceAfter.toString(),
+      description: sanitizeDesc(e.description),
     }))
 
     ok(res, { items: mappedEntries, total, page, limit })
