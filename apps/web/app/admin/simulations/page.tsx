@@ -6,6 +6,7 @@ import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import Link from 'next/link'
 import { ShimmerRows } from '@/components/ui/Shimmer'
+import { usePermission } from '@/hooks/usePermission'
 
 interface Wallet { id: string; label: string; user: { email: string } }
 interface Simulation {
@@ -22,6 +23,7 @@ interface Simulation {
 }
 
 export default function AdminSimulationsPage() {
+  const { canWrite } = usePermission('payments')
   const [sims, setSims] = useState<Simulation[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -102,12 +104,14 @@ export default function AdminSimulationsPage() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
-        <button
-          onClick={() => setCreateOpen(true)}
-          className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
-        >
-          + Create Transaction
-        </button>
+        {canWrite && (
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+          >
+            + Create Transaction
+          </button>
+        )}
       </div>
 
       {/* Status filter */}
@@ -148,10 +152,12 @@ export default function AdminSimulationsPage() {
                     {sim.type === 'CREDIT' ? '+' : '-'}{sim.amountDisplay} USDT
                   </p>
                   <div className="flex gap-2 text-xs">
-                    <button onClick={() => { setForceOpen(sim.id); setMsg('') }} className="text-secondary hover:underline">
-                      Force Status
-                    </button>
-                    {!['COMPLETED', 'FAILED', 'EXPIRED', 'CANCELLED'].includes(sim.status) && (
+                    {canWrite && (
+                      <button onClick={() => { setForceOpen(sim.id); setMsg('') }} className="text-secondary hover:underline">
+                        Force Status
+                      </button>
+                    )}
+                    {canWrite && !['COMPLETED', 'FAILED', 'EXPIRED', 'CANCELLED'].includes(sim.status) && (
                       <button onClick={() => handleCancel(sim.id)} className="text-danger hover:underline">
                         Cancel
                       </button>
