@@ -9,16 +9,20 @@ export async function listUsers(req: AuthRequest, res: Response): Promise<void> 
     const page = Math.max(1, Number(req.query.page ?? 1))
     const limit = Math.min(100, Math.max(1, Number(req.query.limit ?? 20)))
     const search = (req.query.search as string) ?? ''
+    const isSubAdmin = req.user!.role === 'SUB_ADMIN'
+
+    const baseWhere = isSubAdmin ? { role: { not: 'ADMIN' as const } } : {}
 
     const where = search
       ? {
+          ...baseWhere,
           OR: [
             { email: { contains: search, mode: 'insensitive' as const } },
             { firstName: { contains: search, mode: 'insensitive' as const } },
             { lastName: { contains: search, mode: 'insensitive' as const } },
           ],
         }
-      : {}
+      : baseWhere
 
     const [items, total] = await Promise.all([
       prisma.user.findMany({
@@ -57,6 +61,8 @@ export async function getUser(req: AuthRequest, res: Response): Promise<void> {
       },
     })
     if (!user) { notFound(res); return }
+    // SUB_ADMIN cannot view ADMIN profiles
+    if (req.user!.role === 'SUB_ADMIN' && user.role === 'ADMIN') { notFound(res); return }
     ok(res, user)
   } catch {
     serverError(res)
