@@ -157,8 +157,8 @@ export default function UserDetailPage() {
         {msg && <p className="mt-3 text-sm text-primary">{msg}</p>}
       </div>
 
-      {/* Permissions matrix — only for SUB_ADMIN targets, only editable if viewer has WRITE */}
-      {user.role === 'SUB_ADMIN' && (
+      {/* Permissions matrix — only for SUB_ADMIN targets, only visible if viewer has WRITE */}
+      {user.role === 'SUB_ADMIN' && canWrite && (
         <div className="bg-card rounded-xl border border-white/5">
           <div className="p-4 border-b border-white/5 flex items-center justify-between">
             <div>
