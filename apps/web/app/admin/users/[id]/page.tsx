@@ -5,16 +5,18 @@ import { api } from '@/services/api'
 import { unitsToDisplay } from '@blockcoin/shared'
 import { Modal } from '@/components/ui/Modal'
 import { PasswordInput } from '@/components/ui/PasswordInput'
+import { usePermission } from '@/hooks/usePermission'
 
 const FEATURES: { key: string; label: string; desc: string }[] = [
-  { key: 'users',        label: 'Users',        desc: 'View and manage user accounts' },
-  { key: 'wallets',      label: 'Wallets',      desc: 'View wallets and adjust balances' },
-  { key: 'transactions', label: 'Transactions', desc: 'View transaction history' },
-  { key: 'payments',     label: 'Payments',     desc: 'Create and manage payments' },
-  { key: 'templates',    label: 'Templates',    desc: 'Manage payment templates' },
-  { key: 'security',     label: 'Security',     desc: 'Run security tests and view reports' },
-  { key: 'audit_logs',   label: 'Audit Logs',   desc: 'View admin activity logs' },
-  { key: 'settings',     label: 'Settings',     desc: 'View and edit platform settings' },
+  { key: 'users',        label: 'Users',           desc: 'View and manage user accounts' },
+  { key: 'wallets',      label: 'Wallets',          desc: 'View wallets and adjust balances' },
+  { key: 'transactions', label: 'Transactions',     desc: 'View transaction history' },
+  { key: 'payments',     label: 'Payments',         desc: 'Create and manage payments' },
+  { key: 'templates',    label: 'Templates',        desc: 'Manage payment templates' },
+  { key: 'security',     label: 'Security',         desc: 'Run security tests and view reports' },
+  { key: 'audit_logs',   label: 'Audit Logs',       desc: 'View admin activity logs' },
+  { key: 'settings',     label: 'Settings',         desc: 'View and edit platform settings' },
+  { key: 'deposits',     label: 'Deposits',         desc: 'Review and approve deposits' },
 ]
 
 interface Permission { feature: string; level: 'READ' | 'WRITE' }
@@ -36,6 +38,8 @@ interface UserDetail {
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
+  const { canWrite } = usePermission('users')
+
   const [user, setUser] = useState<UserDetail | null>(null)
   const [resetOpen, setResetOpen] = useState(false)
   const [newPassword, setNewPassword] = useState('')
@@ -54,13 +58,8 @@ export default function UserDetailPage() {
       .catch(() => {})
   }
 
-  useEffect(() => {
-    loadUser()
-  }, [id])
-
-  useEffect(() => {
-    if (user?.role === 'SUB_ADMIN') loadPermissions()
-  }, [user?.role])
+  useEffect(() => { loadUser() }, [id])
+  useEffect(() => { if (user?.role === 'SUB_ADMIN') loadPermissions() }, [user?.role])
 
   async function handleReset(e: React.FormEvent) {
     e.preventDefault()
@@ -138,35 +137,45 @@ export default function UserDetailPage() {
               </span>
             </div>
           </div>
-          <div className="flex gap-2 flex-wrap justify-end">
-            <button onClick={toggleActive}
-              className="text-sm px-3 py-1.5 rounded-lg bg-warning/10 text-warning hover:bg-warning/20 transition">
-              {user.isActive ? 'Suspend' : 'Activate'}
-            </button>
-            <button onClick={() => setResetOpen(true)}
-              className="text-sm px-3 py-1.5 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition">
-              Reset Password
-            </button>
-          </div>
+          {/* Only show action buttons if WRITE permission */}
+          {canWrite && (
+            <div className="flex gap-2 flex-wrap justify-end">
+              <button onClick={toggleActive}
+                className="text-sm px-3 py-1.5 rounded-lg bg-warning/10 text-warning hover:bg-warning/20 transition">
+                {user.isActive ? 'Suspend' : 'Activate'}
+              </button>
+              <button onClick={() => setResetOpen(true)}
+                className="text-sm px-3 py-1.5 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition">
+                Reset Password
+              </button>
+            </div>
+          )}
         </div>
+        {!canWrite && (
+          <p className="mt-3 text-xs text-surface/30 italic">👁 View only — you have READ access to Users</p>
+        )}
         {msg && <p className="mt-3 text-sm text-primary">{msg}</p>}
       </div>
 
-      {/* Permissions matrix — only for SUB_ADMIN */}
+      {/* Permissions matrix — only for SUB_ADMIN targets, only editable if viewer has WRITE */}
       {user.role === 'SUB_ADMIN' && (
         <div className="bg-card rounded-xl border border-white/5">
           <div className="p-4 border-b border-white/5 flex items-center justify-between">
             <div>
               <h3 className="font-semibold">Permissions</h3>
-              <p className="text-xs text-surface/40 mt-0.5">Control what this sub-admin can access</p>
+              <p className="text-xs text-surface/40 mt-0.5">
+                {canWrite ? 'Control what this sub-admin can access' : 'Permissions assigned to this sub-admin'}
+              </p>
             </div>
-            <button
-              onClick={savePermissions}
-              disabled={permSaving}
-              className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition"
-            >
-              {permSaving ? 'Saving…' : 'Save Permissions'}
-            </button>
+            {canWrite && (
+              <button
+                onClick={savePermissions}
+                disabled={permSaving}
+                className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition"
+              >
+                {permSaving ? 'Saving…' : 'Save Permissions'}
+              </button>
+            )}
           </div>
 
           {permMsg && (
@@ -184,25 +193,39 @@ export default function UserDetailPage() {
                     <p className="text-sm font-medium">{f.label}</p>
                     <p className="text-xs text-surface/40 mt-0.5">{f.desc}</p>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    {(['NONE', 'READ', 'WRITE'] as const).map(opt => (
-                      <button
-                        key={opt}
-                        onClick={() => setLevel(f.key, opt)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                          level === opt
-                            ? opt === 'NONE'
-                              ? 'bg-white/10 text-surface'
-                              : opt === 'READ'
-                              ? 'bg-secondary/20 text-secondary border border-secondary/30'
-                              : 'bg-primary/20 text-primary border border-primary/30'
-                            : 'bg-white/5 text-surface/40 hover:bg-white/10 hover:text-surface/70'
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
+                  {canWrite ? (
+                    /* Editable buttons for WRITE viewers */
+                    <div className="flex items-center gap-1 shrink-0">
+                      {(['NONE', 'READ', 'WRITE'] as const).map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => setLevel(f.key, opt)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                            level === opt
+                              ? opt === 'NONE'
+                                ? 'bg-white/10 text-surface'
+                                : opt === 'READ'
+                                ? 'bg-secondary/20 text-secondary border border-secondary/30'
+                                : 'bg-primary/20 text-primary border border-primary/30'
+                              : 'bg-white/5 text-surface/40 hover:bg-white/10 hover:text-surface/70'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    /* Read-only badge for READ viewers */
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${
+                      level === 'WRITE'
+                        ? 'bg-primary/20 text-primary'
+                        : level === 'READ'
+                        ? 'bg-secondary/20 text-secondary'
+                        : 'bg-white/5 text-surface/30'
+                    }`}>
+                      {level}
+                    </span>
+                  )}
                 </div>
               )
             })}
@@ -243,22 +266,24 @@ export default function UserDetailPage() {
         )}
       </div>
 
-      <Modal isOpen={resetOpen} onClose={() => setResetOpen(false)} title="Reset Password">
-        <form onSubmit={handleReset} className="space-y-4">
-          <div>
-            <label className="block text-sm text-surface/60 mb-1">New Password</label>
-            <PasswordInput
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2 text-surface focus:outline-none focus:border-primary"
-              required minLength={8}
-            />
-          </div>
-          <button type="submit" className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition">
-            Reset Password
-          </button>
-        </form>
-      </Modal>
+      {canWrite && (
+        <Modal isOpen={resetOpen} onClose={() => setResetOpen(false)} title="Reset Password">
+          <form onSubmit={handleReset} className="space-y-4">
+            <div>
+              <label className="block text-sm text-surface/60 mb-1">New Password</label>
+              <PasswordInput
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                className="w-full bg-sidebar border border-white/10 rounded-lg px-4 py-2 text-surface focus:outline-none focus:border-primary"
+                required minLength={8}
+              />
+            </div>
+            <button type="submit" className="w-full bg-primary text-bg font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition">
+              Reset Password
+            </button>
+          </form>
+        </Modal>
+      )}
     </div>
   )
 }
