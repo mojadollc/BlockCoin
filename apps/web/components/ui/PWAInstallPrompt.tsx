@@ -170,9 +170,9 @@ export function PWAInstallPrompt() {
                 )}
               </button>
             ) : !isIOS ? (
-              /* Browser doesn't support install prompt — show info */
-              <div className="w-full bg-white/5 border border-white/8 text-surface/60 font-medium py-3.5 rounded-2xl text-xs text-center">
-                Use your browser menu → "Add to Home Screen" or "Install App"
+              <div className="w-full bg-white/5 border border-white/8 rounded-2xl px-4 py-3.5 text-center space-y-1">
+                <p className="text-sm font-semibold text-surface/60">Open in Chrome or Edge</p>
+                <p className="text-xs text-surface/30">For one-tap install, visit this site in Chrome or Edge on Android or desktop</p>
               </div>
             ) : null}
 
