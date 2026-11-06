@@ -10,8 +10,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && user && user.role !== 'ADMIN') {
+    if (!loading && user && user.role === 'USER') {
       router.replace('/dashboard')
+    }
+    if (!loading && !user) {
+      router.replace('/login')
     }
   }, [user, loading, router])
 
@@ -23,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     )
   }
 
-  if (!user || user.role !== 'ADMIN') return null
+  if (!user || user.role === 'USER') return null
 
   return (
     <div className="flex min-h-screen bg-bg">

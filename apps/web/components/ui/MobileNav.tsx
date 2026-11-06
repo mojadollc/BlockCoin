@@ -1,7 +1,9 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { AuthUser } from '@blockcoin/shared'
+import { api } from '@/services/api'
 
 const USER_TABS = [
   { href: '/dashboard', label: 'Home', icon: (
@@ -62,7 +64,35 @@ const ADMIN_TABS = [
 
 export function MobileNav({ user }: { user: AuthUser }) {
   const pathname = usePathname()
-  const tabs = user.role === 'USER' ? USER_TABS : ADMIN_TABS
+  const [allowedFeatures, setAllowedFeatures] = useState<string[]>([])
+
+  useEffect(() => {
+    if (user.role === 'SUB_ADMIN') {
+      api.get<Array<{ feature: string }>>(`/api/v1/admin/users/${user.id}/permissions`)
+        .then(p => setAllowedFeatures(p.map(x => x.feature)))
+        .catch(() => {})
+    }
+  }, [user.id, user.role])
+
+  let tabs
+  if (user.role === 'USER') {
+    tabs = USER_TABS
+  } else if (user.role === 'SUB_ADMIN') {
+    // Always show Dashboard, then only permitted features (max 4 more to fit mobile)
+    const featureTabMap: Record<string, typeof ADMIN_TABS[number]> = {
+      users:        ADMIN_TABS.find(t => t.href === '/admin/users')!,
+      wallets:      ADMIN_TABS.find(t => t.href === '/admin/wallets')!,
+      payments:     ADMIN_TABS.find(t => t.href === '/admin/simulations')!,
+      settings:     ADMIN_TABS.find(t => t.href === '/admin/settings')!,
+    }
+    const permitted = allowedFeatures
+      .map(f => featureTabMap[f])
+      .filter(Boolean)
+      .slice(0, 4)
+    tabs = [ADMIN_TABS[0], ...permitted]
+  } else {
+    tabs = ADMIN_TABS
+  }
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-white/10 safe-bottom">
