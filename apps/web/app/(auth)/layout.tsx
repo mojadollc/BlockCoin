@@ -1,4 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Sign In — BlockCoin USDT Wallet',
+  description: 'Sign in to your BlockCoin account to manage your USDT wallets, track crypto balances, and execute blockchain transactions.',
+  robots: { index: false, follow: false },
+}
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

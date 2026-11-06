@@ -1,6 +1,25 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { MarketChart } from '@/components/ui/MarketChart'
 import { TickerStrip } from '@/components/ui/TickerStrip'
+
+export const metadata: Metadata = {
+  title: 'BlockCoin — USDT Wallet & Live Crypto Trading Platform',
+  description: 'Manage USDT wallets, track live crypto prices, and execute blockchain transactions on Ethereum & TRON. The professional stablecoin platform trusted by 500+ users worldwide.',
+  alternates: { canonical: 'https://blockcoin.beegoo.app' },
+  openGraph: {
+    title: 'BlockCoin — USDT Wallet & Live Crypto Trading Platform',
+    description: 'Send, receive and manage USDT with real-time market data, live BTC, ETH, TRX prices, and full blockchain integration. Start free today.',
+    url: 'https://blockcoin.beegoo.app',
+    images: [{ url: 'https://blockcoin.beegoo.app/icon-512.png', width: 512, height: 512, alt: 'BlockCoin USDT Platform' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BlockCoin — USDT Wallet & Live Crypto Trading Platform',
+    description: 'Send, receive and manage USDT with real-time market data and live blockchain integration.',
+    images: ['https://blockcoin.beegoo.app/icon-512.png'],
+  },
+}
 
 const FEATURES = [
   {

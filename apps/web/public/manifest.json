@@ -1,7 +1,7 @@
 {
-  "name": "BlockCoin USDT Wallet",
+  "name": "BlockCoin — USDT Wallet & Crypto Platform",
   "short_name": "BlockCoin",
-  "description": "Professional USDT Wallet Platform",
+  "description": "Professional USDT wallet platform. Send, receive and manage Tether (USDT) with live crypto market prices, real-time blockchain integration on Ethereum and TRON, and full transaction history.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
@@ -10,32 +10,15 @@
   "theme_color": "#00C89B",
   "prefer_related_applications": false,
   "id": "/",
-  "categories": ["finance"],
+  "categories": ["finance", "crypto", "productivity"],
   "lang": "en",
+  "screenshots": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "form_factor": "narrow" }
+  ],
   "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
