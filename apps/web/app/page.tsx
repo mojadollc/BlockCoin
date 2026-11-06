@@ -127,7 +127,7 @@ export default function LandingPage() {
       </div>
 
       {/* Hero */}
-      <section className="relative pt-44 pb-28 px-5 flex flex-col items-center text-center overflow-hidden">
+      <section className="relative pt-28 pb-10 px-5 flex flex-col items-center text-center overflow-hidden">
         {/* Background glows */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-primary/8 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute top-40 left-1/4 w-72 h-72 bg-secondary/6 rounded-full blur-[80px] pointer-events-none" />
@@ -135,7 +135,7 @@ export default function LandingPage() {
 
         <div className="relative max-w-3xl mx-auto">
           <MarketChart />
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
             <Link href="/register"
               className="w-full sm:w-auto bg-primary text-bg font-bold px-8 py-3.5 rounded-xl hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/20 text-sm">
               Get Started Free
@@ -149,7 +149,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-14 border-y border-white/5">
+      <section className="py-8 border-y border-white/5">
         <div className="max-w-4xl mx-auto px-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {STATS.map(s => (
@@ -163,11 +163,11 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-28 px-5">
+      <section id="features" className="py-12 px-5">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">Platform Features</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Everything You Need to Manage USDT</h2>
+          <div className="text-center mb-8">
+            <p className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-3">Platform Features</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight">Everything You Need to Manage USDT</h2>
             <p className="text-surface/40 max-w-lg mx-auto text-sm leading-relaxed">
               From wallet creation to live blockchain transactions — every tool your team needs, in one place.
             </p>
@@ -191,12 +191,12 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-28 px-5 relative overflow-hidden">
+      <section id="how-it-works" className="py-12 px-5 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-sidebar/0 via-sidebar/30 to-sidebar/0 pointer-events-none" />
         <div className="max-w-4xl mx-auto relative">
-          <div className="text-center mb-16">
-            <p className="text-secondary text-xs font-bold uppercase tracking-[0.2em] mb-4">Simple Setup</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Up and Running in Minutes</h2>
+          <div className="text-center mb-8">
+            <p className="text-secondary text-xs font-bold uppercase tracking-[0.2em] mb-3">Simple Setup</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight">Up and Running in Minutes</h2>
             <p className="text-surface/40 max-w-sm mx-auto text-sm">No complex configuration. No waiting.</p>
           </div>
           <div className="relative">
@@ -220,11 +220,11 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-28 px-5">
+      <section id="testimonials" className="py-12 px-5">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-warning text-xs font-bold uppercase tracking-[0.2em] mb-4">Customer Feedback</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">What Our Customers Are Saying</h2>
+          <div className="text-center mb-8">
+            <p className="text-warning text-xs font-bold uppercase tracking-[0.2em] mb-3">Customer Feedback</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight">What Our Customers Are Saying</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {TESTIMONIALS.map((t, i) => (
@@ -251,12 +251,12 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-28 px-5 relative overflow-hidden">
+      <section id="pricing" className="py-12 px-5 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-sidebar/0 via-sidebar/30 to-sidebar/0 pointer-events-none" />
         <div className="max-w-3xl mx-auto relative">
-          <div className="text-center mb-16">
-            <p className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">Pricing</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Simple, Transparent Pricing</h2>
+          <div className="text-center mb-8">
+            <p className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-3">Pricing</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight">Simple, Transparent Pricing</h2>
             <p className="text-surface/40 max-w-sm mx-auto text-sm">No hidden fees. Cancel anytime.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -297,11 +297,11 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-28 px-5 relative overflow-hidden">
+      <section className="py-12 px-5 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-primary/6 rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-xl mx-auto text-center relative">
-          <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Ready to Get Started?</h2>
-          <p className="text-surface/40 mb-10 text-sm leading-relaxed">
+          <h2 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight">Ready to Get Started?</h2>
+          <p className="text-surface/40 mb-6 text-sm leading-relaxed">
             Join hundreds of customers already using BlockCoin to manage USDT at scale.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -318,7 +318,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-10 px-5">
+      <footer className="border-t border-white/5 py-6 px-5">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link href="/" className="font-bold text-sm hover:text-primary transition-colors">BlockCoin</Link>
           <p className="text-xs text-surface/20">
