@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { MarketChart } from '@/components/ui/MarketChart'
-import { TickerStrip } from '@/components/ui/TickerStrip'
+import { MarketChart, fetchMarketData } from '@/components/ui/MarketChart'
+import { TickerStrip, fetchTickerData } from '@/components/ui/TickerStrip'
 
 export const metadata: Metadata = {
   title: 'BlockCoin — USDT Wallet & Live Crypto Trading Platform',
@@ -116,7 +116,12 @@ const accentBg: Record<string, string> = {
   warning: 'bg-warning/10 text-warning',
 }
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const [tickerCoins, marketCoins] = await Promise.all([
+    fetchTickerData(),
+    fetchMarketData(),
+  ])
+
   return (
     <div className="min-h-screen bg-bg text-surface overflow-x-hidden">
 
@@ -142,7 +147,7 @@ export default function LandingPage() {
       </nav>
 
       <div className="fixed top-16 left-0 right-0 z-40">
-        <TickerStrip />
+        <TickerStrip initialCoins={tickerCoins} />
       </div>
 
       {/* Hero */}
@@ -153,7 +158,7 @@ export default function LandingPage() {
         <div className="absolute top-40 right-1/4 w-72 h-72 bg-warning/4 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto">
-          <MarketChart />
+          <MarketChart initialCoins={marketCoins} />
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
             <Link href="/register"
               className="w-full sm:w-auto bg-primary text-bg font-bold px-8 py-3.5 rounded-xl hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/20 text-sm">

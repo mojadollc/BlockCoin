@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState, useCallback } from 'react'
 
-type CoinData = {
+export type MarketCoinData = {
   id: string
   symbol: string
   name: string
@@ -10,20 +10,43 @@ type CoinData = {
   sparkline: number[]
 }
 
-const COINS = [
-  { id: 'bitcoin',   symbol: 'BTC',  name: 'Bitcoin'  },
-  { id: 'ethereum',  symbol: 'ETH',  name: 'Ethereum' },
-  { id: 'tether',    symbol: 'USDT', name: 'Tether'   },
-  { id: 'tron',      symbol: 'TRX',  name: 'TRON'     },
-  { id: 'solana',    symbol: 'SOL',  name: 'Solana'   },
-  { id: 'ripple',    symbol: 'XRP',  name: 'XRP'      },
+const COIN_IDS = [
+  { id: 'bitcoin',  symbol: 'BTC',  name: 'Bitcoin'  },
+  { id: 'ethereum', symbol: 'ETH',  name: 'Ethereum' },
+  { id: 'tether',   symbol: 'USDT', name: 'Tether'   },
+  { id: 'tron',     symbol: 'TRX',  name: 'TRON'     },
+  { id: 'solana',   symbol: 'SOL',  name: 'Solana'   },
+  { id: 'ripple',   symbol: 'XRP',  name: 'XRP'      },
 ]
 
 const COLORS = ['#00C89B', '#2684FF', '#F5B942', '#EF5350', '#a78bfa', '#38bdf8']
 
+export async function fetchMarketData(): Promise<MarketCoinData[]> {
+  try {
+    const ids = COIN_IDS.map(c => c.id).join(',')
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h`,
+      { next: { revalidate: 60 } }
+    )
+    const data = await res.json()
+    return COIN_IDS.map(c => {
+      const d = data.find((x: any) => x.id === c.id)
+      return {
+        id: c.id, symbol: c.symbol, name: c.name,
+        price: d?.current_price ?? 0,
+        change24h: d?.price_change_percentage_24h ?? 0,
+        sparkline: d?.sparkline_in_7d?.price ?? [],
+      }
+    })
+  } catch {
+    return []
+  }
+}
+
 function drawChart(canvas: HTMLCanvasElement, data: number[], color: string, main = false) {
   const dpr = window.devicePixelRatio || 1
   const rect = canvas.getBoundingClientRect()
+  if (!rect.width || !rect.height) return
   canvas.width = rect.width * dpr
   canvas.height = rect.height * dpr
   const ctx = canvas.getContext('2d')
@@ -61,102 +84,67 @@ function drawChart(canvas: HTMLCanvasElement, data: number[], color: string, mai
   ctx.moveTo(pts[0].x, pts[0].y)
   if (main) {
     for (let i = 1; i < pts.length; i++) {
-      const cp = { x: (pts[i - 1].x + pts[i].x) / 2, y: (pts[i - 1].y + pts[i].y) / 2 }
-      ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, cp.x, cp.y)
+      const cp = { x: (pts[i-1].x + pts[i].x) / 2, y: (pts[i-1].y + pts[i].y) / 2 }
+      ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, cp.x, cp.y)
     }
   } else {
     pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y))
   }
-  ctx.lineTo(w, h)
-  ctx.lineTo(0, h)
-  ctx.closePath()
-  ctx.fillStyle = grad
-  ctx.fill()
+  ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath()
+  ctx.fillStyle = grad; ctx.fill()
 
   ctx.beginPath()
   ctx.moveTo(pts[0].x, pts[0].y)
   if (main) {
     for (let i = 1; i < pts.length; i++) {
-      const cp = { x: (pts[i - 1].x + pts[i].x) / 2, y: (pts[i - 1].y + pts[i].y) / 2 }
-      ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, cp.x, cp.y)
+      const cp = { x: (pts[i-1].x + pts[i].x) / 2, y: (pts[i-1].y + pts[i].y) / 2 }
+      ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, cp.x, cp.y)
     }
   } else {
     pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y))
   }
-  ctx.strokeStyle = color
-  ctx.lineWidth = main ? 2 : 1.5
-  ctx.stroke()
+  ctx.strokeStyle = color; ctx.lineWidth = main ? 2 : 1.5; ctx.stroke()
 
   if (main) {
     const last = pts[pts.length - 1]
-    ctx.beginPath()
-    ctx.arc(last.x, last.y, 4, 0, Math.PI * 2)
-    ctx.fillStyle = color
-    ctx.fill()
-    ctx.beginPath()
-    ctx.arc(last.x, last.y, 7, 0, Math.PI * 2)
-    ctx.fillStyle = color + '30'
-    ctx.fill()
+    ctx.beginPath(); ctx.arc(last.x, last.y, 4, 0, Math.PI * 2)
+    ctx.fillStyle = color; ctx.fill()
+    ctx.beginPath(); ctx.arc(last.x, last.y, 7, 0, Math.PI * 2)
+    ctx.fillStyle = color + '30'; ctx.fill()
   }
 }
 
 function SparklineCanvas({ data, color }: { data: number[]; color: string }) {
   const ref = useRef<HTMLCanvasElement>(null)
-
-  useEffect(() => {
-    if (ref.current) drawChart(ref.current, data, color, false)
-  }, [data, color])
-
+  useEffect(() => { if (ref.current) drawChart(ref.current, data, color, false) }, [data, color])
   return <canvas ref={ref} className="w-full h-8" />
 }
 
-export function MarketChart() {
-  const [coins, setCoins] = useState<CoinData[]>([])
-  const [selected, setSelected] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const mainRef = useRef<HTMLCanvasElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+const fmtPrice = (p: number) =>
+  p < 1 ? p.toFixed(4) : p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-  const fetchData = async () => {
-    try {
-      const ids = COINS.map(c => c.id).join(',')
-      const res = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h`,
-        { cache: 'no-store' }
-      )
-      const data = await res.json()
-      setCoins(COINS.map(c => {
-        const d = data.find((x: any) => x.id === c.id)
-        return {
-          id: c.id, symbol: c.symbol, name: c.name,
-          price: d?.current_price ?? 0,
-          change24h: d?.price_change_percentage_24h ?? 0,
-          sparkline: d?.sparkline_in_7d?.price ?? [],
-        }
-      }))
-    } catch {}
-    setLoading(false)
-  }
+export function MarketChart({ initialCoins = [] }: { initialCoins?: MarketCoinData[] }) {
+  const [coins, setCoins] = useState<MarketCoinData[]>(initialCoins)
+  const [selected, setSelected] = useState(0)
+  const [loading, setLoading] = useState(initialCoins.length === 0)
+  const mainRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    fetchData()
-    const t = setInterval(fetchData, 60_000)
+    if (initialCoins.length === 0) {
+      fetchMarketData().then(d => { setCoins(d); setLoading(false) })
+    }
+    const t = setInterval(() => fetchMarketData().then(setCoins), 60_000)
     return () => clearInterval(t)
   }, [])
 
   const redraw = useCallback(() => {
     const canvas = mainRef.current
     const coin = coins[selected]
-    if (canvas && coin?.sparkline.length > 1) {
-      drawChart(canvas, coin.sparkline, COLORS[selected], true)
-    }
+    if (canvas && coin?.sparkline.length > 1) drawChart(canvas, coin.sparkline, COLORS[selected], true)
   }, [coins, selected])
 
-  useEffect(() => {
-    redraw()
-  }, [redraw])
+  useEffect(() => { redraw() }, [redraw])
 
-  // Redraw on resize
   useEffect(() => {
     const el = mainRef.current
     if (!el) return
@@ -169,11 +157,8 @@ export function MarketChart() {
   const pos = coin ? coin.change24h >= 0 : true
   const color = COLORS[selected]
 
-  const fmtPrice = (p: number) =>
-    p < 1 ? p.toFixed(4) : p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
   return (
-    <div className="relative w-full max-w-3xl mx-auto" ref={containerRef}>
+    <div className="relative w-full max-w-3xl mx-auto">
       <div className="absolute -inset-1 rounded-2xl blur-sm" style={{ background: `linear-gradient(135deg, ${color}30, #2684FF15)` }} />
       <div className="relative bg-card border border-white/8 rounded-2xl overflow-hidden shadow-2xl">
 
@@ -190,14 +175,12 @@ export function MarketChart() {
         </div>
 
         <div className="p-3 sm:p-5">
-          {/* Coin tabs — scrollable on mobile */}
+          {/* Coin tabs */}
           <div className="flex gap-1.5 sm:gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
             {loading
-              ? COINS.map((_, i) => <div key={i} className="h-8 w-16 sm:w-20 rounded-lg bg-white/5 animate-pulse shrink-0" />)
+              ? COIN_IDS.map((_, i) => <div key={i} className="h-8 w-16 sm:w-20 rounded-lg bg-white/5 animate-pulse shrink-0" />)
               : coins.map((c, i) => (
-                <button
-                  key={c.id}
-                  onClick={() => setSelected(i)}
+                <button key={c.id} onClick={() => setSelected(i)}
                   className={`shrink-0 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all ${
                     selected === i ? 'text-bg font-bold' : 'bg-white/5 text-surface/50 hover:text-surface'
                   }`}
@@ -233,7 +216,7 @@ export function MarketChart() {
             </div>
           )}
 
-          {/* Main chart — responsive height */}
+          {/* Main chart */}
           <div className="relative h-32 sm:h-40 mb-3 sm:mb-5">
             {loading
               ? <div className="w-full h-full rounded-xl bg-white/5 animate-pulse" />
@@ -241,14 +224,12 @@ export function MarketChart() {
             }
           </div>
 
-          {/* Sparkline grid — 3 cols on all sizes, compact on mobile */}
+          {/* Sparkline grid */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {loading
               ? [...Array(6)].map((_, i) => <div key={i} className="h-14 rounded-xl bg-white/5 animate-pulse" />)
               : coins.map((c, i) => (
-                <button
-                  key={c.id}
-                  onClick={() => setSelected(i)}
+                <button key={c.id} onClick={() => setSelected(i)}
                   className={`rounded-xl p-2 sm:p-2.5 border transition-all text-left ${
                     selected === i ? 'border-white/20 bg-white/5' : 'border-white/5 hover:border-white/10'
                   }`}
