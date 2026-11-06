@@ -5,11 +5,12 @@ import { api } from '@/services/api'
 import { PasswordInput } from '@/components/ui/PasswordInput'
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const [profile, setProfile] = useState({ firstName: '', lastName: '' })
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '' })
   const [profileMsg, setProfileMsg] = useState('')
   const [pwMsg, setPwMsg] = useState('')
+  const [confirmLogout, setConfirmLogout] = useState(false)
 
   useEffect(() => {
     if (user) setProfile({ firstName: user.firstName, lastName: user.lastName })
@@ -146,6 +147,39 @@ export default function ProfilePage() {
             </div>
           ))}
         </div>
+
+        {/* Sign out */}
+        {!confirmLogout ? (
+          <button
+            onClick={() => setConfirmLogout(true)}
+            className="w-full flex items-center justify-center gap-2 bg-danger/10 border border-danger/20 text-danger font-semibold py-3.5 rounded-2xl active:scale-95 transition-all text-sm"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Sign Out
+          </button>
+        ) : (
+          <div className="bg-card rounded-2xl border border-danger/20 p-4 space-y-3">
+            <p className="text-sm text-center text-surface/70">Are you sure you want to sign out?</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmLogout(false)}
+                className="flex-1 py-3 rounded-xl bg-white/5 text-surface/60 text-sm font-semibold active:scale-95 transition-transform"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={logout}
+                className="flex-1 py-3 rounded-xl bg-danger text-white text-sm font-bold active:scale-95 transition-transform"
+              >
+                Yes, Sign Out
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="h-4" />
       </div>
     </div>
   )
