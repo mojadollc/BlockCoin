@@ -129,7 +129,8 @@ export default function LandingPage() {
         <div className="absolute top-40 right-1/4 w-72 h-72 bg-warning/4 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+          <MarketChart />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
             <Link href="/register"
               className="w-full sm:w-auto bg-primary text-bg font-bold px-8 py-3.5 rounded-xl hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/20 text-sm">
               Get Started Free
@@ -139,7 +140,6 @@ export default function LandingPage() {
               See How It Works →
             </a>
           </div>
-          <MarketChart />
         </div>
       </section>
 
