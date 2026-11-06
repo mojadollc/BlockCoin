@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { api } from '@/services/api'
+import { usePermission } from '@/hooks/usePermission'
 
 interface DepositRequest {
   id: string
@@ -37,6 +38,7 @@ const STATUS_ICONS: Record<string, string> = {
 }
 
 export default function AdminDepositsPage() {
+  const { canWrite } = usePermission('deposits')
   const [deposits, setDeposits]     = useState<DepositRequest[]>([])
   const [filter, setFilter]         = useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING')
   const [counts, setCounts]         = useState<Record<string, number>>({ PENDING: 0, APPROVED: 0, REJECTED: 0 })
@@ -229,7 +231,7 @@ export default function AdminDepositsPage() {
               </div>
 
               {/* Action panel — PENDING only */}
-              {d.status === 'PENDING' && (
+              {d.status === 'PENDING' && canWrite && (
                 <div className="border-t border-white/5 px-5 py-4 bg-sidebar/50">
                   {!isOpen ? (
                     <button

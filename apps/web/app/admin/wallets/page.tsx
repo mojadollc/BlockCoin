@@ -6,6 +6,7 @@ import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import { unitsToDisplay } from '@blockcoin/shared'
 import { ShimmerTable } from '@/components/ui/Shimmer'
+import { usePermission } from '@/hooks/usePermission'
 
 interface Wallet {
   id: string
@@ -17,6 +18,7 @@ interface Wallet {
 }
 
 export default function AdminWalletsPage() {
+  const { canWrite } = usePermission('wallets')
   const [wallets, setWallets] = useState<Wallet[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -63,19 +65,25 @@ export default function AdminWalletsPage() {
     )},
     { key: 'actions', header: '', render: (w: Wallet) => (
       <div className="flex gap-2">
-        <button onClick={() => { setAdjustWallet(w); setMsg('') }} className="text-xs text-secondary hover:underline">
-          Adjust Balance
-        </button>
-        <button
-          onClick={async () => {
-            const ep = w.status === 'ACTIVE' ? `/api/v1/admin/wallets/${w.id}/suspend` : `/api/v1/admin/wallets/${w.id}/activate`
-            await api.post(ep).catch(() => {})
-            load()
-          }}
-          className="text-xs text-warning hover:underline"
-        >
-          {w.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
-        </button>
+        {canWrite ? (
+          <>
+            <button onClick={() => { setAdjustWallet(w); setMsg('') }} className="text-xs text-secondary hover:underline">
+              Adjust Balance
+            </button>
+            <button
+              onClick={async () => {
+                const ep = w.status === 'ACTIVE' ? `/api/v1/admin/wallets/${w.id}/suspend` : `/api/v1/admin/wallets/${w.id}/activate`
+                await api.post(ep).catch(() => {})
+                load()
+              }}
+              className="text-xs text-warning hover:underline"
+            >
+              {w.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
+            </button>
+          </>
+        ) : (
+          <span className="text-xs text-surface/30 italic">View only</span>
+        )}
       </div>
     )},
   ]

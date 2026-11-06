@@ -29,13 +29,17 @@ const ADMIN_NAV = [
 
 function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () => void; onNav?: () => void }) {
   const pathname = usePathname()
-  const [allowedFeatures, setAllowedFeatures] = useState<string[]>([])
+  const [permMap, setPermMap] = useState<Record<string, string>>({})
   const [permsLoaded, setPermsLoaded] = useState(user.role !== 'SUB_ADMIN')
 
   useEffect(() => {
     if (user.role === 'SUB_ADMIN') {
       api.get<Array<{ feature: string; level: string }>>(`/api/v1/admin/users/${user.id}/permissions`)
-        .then(perms => setAllowedFeatures(perms.map(p => p.feature)))
+        .then(perms => {
+          const map: Record<string, string> = {}
+          for (const p of perms) map[p.feature] = p.level
+          setPermMap(map)
+        })
         .catch(() => {})
         .finally(() => setPermsLoaded(true))
     }
@@ -43,7 +47,7 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
 
   const baseNav = user.role === 'USER' ? USER_NAV : ADMIN_NAV
   const nav = user.role === 'SUB_ADMIN'
-    ? baseNav.filter(item => item.feature === null || allowedFeatures.includes(item.feature))
+    ? baseNav.filter(item => item.feature === null || item.feature in permMap)
     : baseNav
 
   return (
@@ -65,21 +69,32 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
               <div key={i} className="h-9 rounded-lg bg-white/5 animate-pulse" />
             ))}
           </div>
-        ) : nav.map(item => (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNav}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-              pathname === item.href
-                ? 'bg-primary/10 text-primary font-medium'
-                : 'text-surface/60 hover:text-surface hover:bg-white/5'
-            }`}
-          >
-            <span>{item.icon}</span>
-            {item.label}
-          </Link>
-        ))}
+        ) : nav.map(item => {
+          const level = item.feature ? permMap[item.feature] : null
+          const isActive = pathname === item.href
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNav}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+                isActive ? 'bg-primary/10 text-primary font-medium' : 'text-surface/60 hover:text-surface hover:bg-white/5'
+              }`}
+            >
+              <span>{item.icon}</span>
+              <span className="flex-1">{item.label}</span>
+              {user.role === 'SUB_ADMIN' && level && (
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                  level === 'WRITE'
+                    ? 'bg-primary/20 text-primary'
+                    : 'bg-secondary/20 text-secondary'
+                }`}>
+                  {level}
+                </span>
+              )}
+            </Link>
+          )
+        })
       </nav>
 
       <div className="p-4 border-t border-white/5">

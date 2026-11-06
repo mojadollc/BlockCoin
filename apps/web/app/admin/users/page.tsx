@@ -7,6 +7,7 @@ import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
 import Link from 'next/link'
 import { ShimmerTable } from '@/components/ui/Shimmer'
+import { usePermission } from '@/hooks/usePermission'
 
 interface User {
   id: string
@@ -20,6 +21,7 @@ interface User {
 }
 
 export default function AdminUsersPage() {
+  const { canWrite } = usePermission('users')
   const [users, setUsers] = useState<User[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -79,9 +81,11 @@ export default function AdminUsersPage() {
     { key: 'actions', header: '', render: (u: User) => (
       <div className="flex gap-2">
         <Link href={`/admin/users/${u.id}`} className="text-xs text-secondary hover:underline">View</Link>
-        <button onClick={() => toggleActive(u)} className="text-xs text-warning hover:underline">
-          {u.isActive ? 'Suspend' : 'Activate'}
-        </button>
+        {canWrite && (
+          <button onClick={() => toggleActive(u)} className="text-xs text-warning hover:underline">
+            {u.isActive ? 'Suspend' : 'Activate'}
+          </button>
+        )}
       </div>
     )},
   ]
@@ -90,12 +94,14 @@ export default function AdminUsersPage() {
     <div className="p-4 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h2 className="text-xl md:text-2xl font-bold">Users</h2>
-        <button
-          onClick={() => setCreateOpen(true)}
-          className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
-        >
-          + Create User
-        </button>
+        {canWrite && (
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="bg-primary text-bg text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+          >
+            + Create User
+          </button>
+        )}
       </div>
 
       <div className="bg-card rounded-xl border border-white/5 mb-4">
