@@ -68,7 +68,7 @@ export function MobileNav({ user }: { user: AuthUser }) {
 
   useEffect(() => {
     if (user.role === 'SUB_ADMIN') {
-      api.get<Array<{ feature: string }>>(`/api/v1/admin/users/${user.id}/permissions`)
+      api.get<Array<{ feature: string }>>('/api/v1/admin/me/permissions')
         .then(p => setAllowedFeatures(p.map(x => x.feature)))
         .catch(() => {})
     }

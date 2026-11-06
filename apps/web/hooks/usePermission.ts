@@ -12,7 +12,7 @@ let fetchPromise: Promise<void> | null = null
 function loadPermissions(userId: string): Promise<void> {
   if (fetchPromise) return fetchPromise
   fetchPromise = api
-    .get<Array<{ feature: string; level: string }>>(`/api/v1/admin/users/${userId}/permissions`)
+    .get<Array<{ feature: string; level: string }>>('/api/v1/admin/me/permissions')
     .then(perms => {
       cache = {}
       for (const p of perms) cache[p.feature] = p.level as Level

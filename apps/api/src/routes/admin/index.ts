@@ -54,7 +54,17 @@ router.post('/users/:id/suspend', requirePermission('users', 'WRITE'), suspendUs
 router.post('/users/:id/activate', requirePermission('users', 'WRITE'), activateUser)
 router.post('/users/:id/reset-password', requirePermission('users', 'WRITE'), resetUserPassword)
 
-// Sub-admin permissions — ADMIN only
+// My own permissions — SUB_ADMIN can fetch their own (used by sidebar)
+router.get('/me/permissions', async (req, res) => {
+  const { prisma } = await import('../../utils/prisma')
+  const { ok } = await import('../../utils/response')
+  try {
+    const perms = await prisma.subAdminPermission.findMany({ where: { userId: req.user!.sub } })
+    ok(res, perms)
+  } catch { res.status(500).json({ success: false, error: 'Server error' }) }
+})
+
+// Sub-admin permissions — ADMIN only (to manage other users)
 router.get('/users/:id/permissions', requireRole('ADMIN'), getSubAdminPermissions)
 router.post('/users/:id/permissions', requireRole('ADMIN'), setSubAdminPermissions)
 

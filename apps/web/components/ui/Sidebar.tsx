@@ -34,7 +34,7 @@ function NavContent({ user, onLogout, onNav }: { user: AuthUser; onLogout: () =>
 
   useEffect(() => {
     if (user.role === 'SUB_ADMIN') {
-      api.get<Array<{ feature: string; level: string }>>(`/api/v1/admin/users/${user.id}/permissions`)
+      api.get<Array<{ feature: string; level: string }>>('/api/v1/admin/me/permissions')
         .then(perms => {
           const map: Record<string, string> = {}
           for (const p of perms) map[p.feature] = p.level
