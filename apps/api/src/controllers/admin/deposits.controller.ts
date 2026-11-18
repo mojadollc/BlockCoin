@@ -122,7 +122,7 @@ export async function rejectDeposit(req: AuthRequest, res: Response): Promise<vo
 
     const deposit = await prisma.depositRequest.findUnique({ where: { id } })
     if (!deposit) { notFound(res); return }
-    if (deposit.status !== 'PENDING' && deposit.status !== 'PROCESSING') { badRequest(res, 'Deposit cannot be rejected'); return }
+    if (deposit.status !== 'PENDING' && (deposit.status as string) !== 'PROCESSING') { badRequest(res, 'Deposit cannot be rejected'); return }
 
     await prisma.$transaction([
       prisma.depositRequest.update({
@@ -221,7 +221,7 @@ export async function setDepositStatus(req: AuthRequest, res: Response): Promise
       prisma.depositRequest.update({
         where: { id },
         data: {
-          status: status as 'PENDING' | 'PROCESSING' | 'REJECTED',
+          status: status as any,
           adminNote: adminNote ?? null,
           ...(status === 'REJECTED' ? { reviewedBy: req.user!.sub, reviewedAt: new Date() } : {}),
         },
