@@ -21,7 +21,7 @@ import {
   adminCancelSim, adminForceStatus,
 } from '../../controllers/admin/simulations.controller'
 import { getSubAdminPermissions, setSubAdminPermissions, getMyPermissions } from '../../controllers/admin/permissions.controller'
-import { adminListDeposits, approveDeposit, rejectDeposit } from '../../controllers/admin/deposits.controller'
+import { adminListDeposits, approveDeposit, rejectDeposit, setDepositStatus } from '../../controllers/admin/deposits.controller'
 import { validate } from '../../middleware/validate'
 import { AdjustBalanceSchema, CreateTemplateSchema, CreateSimulationSchema } from '@blockcoin/validation'
 import { z } from 'zod'
@@ -106,5 +106,6 @@ router.get('/security-reports', requirePermission('security', 'READ'), getSecuri
 router.get('/deposits', requirePermission('deposits', 'READ'), adminListDeposits)
 router.post('/deposits/:id/approve', requirePermission('deposits', 'WRITE'), approveDeposit)
 router.post('/deposits/:id/reject', requirePermission('deposits', 'WRITE'), rejectDeposit)
+router.post('/deposits/:id/status', requirePermission('deposits', 'WRITE'), setDepositStatus)
 
 export default router

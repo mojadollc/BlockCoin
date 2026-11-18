@@ -26,22 +26,24 @@ const EXPLORER_URL: Record<string, (hash: string) => string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  PENDING:  'bg-warning/20 text-warning',
-  APPROVED: 'bg-primary/20 text-primary',
-  REJECTED: 'bg-danger/20 text-danger',
+  PENDING:    'bg-warning/20 text-warning',
+  PROCESSING: 'bg-secondary/20 text-secondary',
+  APPROVED:   'bg-primary/20 text-primary',
+  REJECTED:   'bg-danger/20 text-danger',
 }
 
 const STATUS_ICONS: Record<string, string> = {
-  PENDING:  '🕐',
-  APPROVED: '✅',
-  REJECTED: '❌',
+  PENDING:    '🕐',
+  PROCESSING: '⚙️',
+  APPROVED:   '✅',
+  REJECTED:   '❌',
 }
 
 export default function AdminDepositsPage() {
   const { canWrite } = usePermission('deposits')
   const [deposits, setDeposits]     = useState<DepositRequest[]>([])
-  const [filter, setFilter]         = useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING')
-  const [counts, setCounts]         = useState<Record<string, number>>({ PENDING: 0, APPROVED: 0, REJECTED: 0 })
+  const [filter, setFilter]         = useState<'PENDING' | 'PROCESSING' | 'APPROVED' | 'REJECTED'>('PENDING')
+  const [counts, setCounts]         = useState<Record<string, number>>({ PENDING: 0, PROCESSING: 0, APPROVED: 0, REJECTED: 0 })
   const [loadError, setLoadError]   = useState('')
   const [actionId, setActionId]     = useState<string | null>(null)
   const [notes, setNotes]           = useState<Record<string, string>>({})
@@ -52,20 +54,23 @@ export default function AdminDepositsPage() {
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoadError('')
     try {
-      // Load current filter + always refresh pending count
-      const [filtered, pending] = await Promise.all([
+      const [filtered, pending, processing] = await Promise.all([
         api.get<{ items: DepositRequest[]; total: number }>(
           `/api/v1/admin/deposits?status=${filter}&limit=50`
         ),
         filter !== 'PENDING'
           ? api.get<{ total: number }>('/api/v1/admin/deposits?status=PENDING&limit=1')
           : Promise.resolve(null),
+        filter !== 'PROCESSING'
+          ? api.get<{ total: number }>('/api/v1/admin/deposits?status=PROCESSING&limit=1')
+          : Promise.resolve(null),
       ])
       setDeposits(filtered.items)
       setCounts(prev => ({
         ...prev,
         [filter]: filtered.total,
-        ...(pending ? { PENDING: pending.total } : { PENDING: filtered.total }),
+        ...(pending    ? { PENDING:    pending.total    } : { PENDING:    filtered.total }),
+        ...(processing ? { PROCESSING: processing.total } : { PROCESSING: filtered.total }),
       }))
     } catch {
       if (!silent) setLoadError('Failed to load deposits. Check your connection or permissions.')
@@ -78,18 +83,20 @@ export default function AdminDepositsPage() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [load])
 
-  async function handleAction(id: string, action: 'approve' | 'reject') {
+  async function handleSetStatus(id: string, status: string) {
     setActionLoading(prev => ({ ...prev, [id]: true }))
     setActionMsg(prev => ({ ...prev, [id]: { ok: false, text: '' } }))
     try {
-      await api.post(`/api/v1/admin/deposits/${id}/${action}`, { adminNote: notes[id] ?? '' })
-      setActionMsg(prev => ({
-        ...prev,
-        [id]: { ok: true, text: action === 'approve' ? '✅ Approved — balance credited' : '❌ Deposit rejected' },
-      }))
+      await api.post(`/api/v1/admin/deposits/${id}/status`, { status, adminNote: notes[id] ?? '' })
+      const labels: Record<string, string> = {
+        PENDING: '🕐 Marked as Pending',
+        PROCESSING: '⚙️ Marked as Processing',
+        APPROVED: '✅ Approved — balance credited',
+        REJECTED: '❌ Deposit rejected',
+      }
+      setActionMsg(prev => ({ ...prev, [id]: { ok: true, text: labels[status] ?? 'Updated' } }))
       setActionId(null)
       setNotes(prev => { const n = { ...prev }; delete n[id]; return n })
-      // Refresh after short delay so the success message is visible
       setTimeout(() => load(), 800)
     } catch (err: unknown) {
       setActionMsg(prev => ({
@@ -101,7 +108,7 @@ export default function AdminDepositsPage() {
     }
   }
 
-  const tabs = (['PENDING', 'APPROVED', 'REJECTED'] as const)
+  const tabs = (['PENDING', 'PROCESSING', 'APPROVED', 'REJECTED'] as const)
 
   return (
     <div className="p-6 md:p-8 max-w-4xl">
@@ -230,15 +237,15 @@ export default function AdminDepositsPage() {
                 )}
               </div>
 
-              {/* Action panel — PENDING only */}
-              {d.status === 'PENDING' && canWrite && (
+              {/* Action panel — not APPROVED */}
+              {d.status !== 'APPROVED' && canWrite && (
                 <div className="border-t border-white/5 px-5 py-4 bg-sidebar/50">
                   {!isOpen ? (
                     <button
                       onClick={() => { setActionId(d.id); setActionMsg(prev => ({ ...prev, [d.id]: { ok: false, text: '' } })) }}
                       className="text-sm bg-primary/10 hover:bg-primary/20 text-primary px-5 py-2 rounded-lg transition font-medium"
                     >
-                      Review Deposit →
+                      Change Status →
                     </button>
                   ) : (
                     <div className="space-y-3">
@@ -251,18 +258,36 @@ export default function AdminDepositsPage() {
                           className="w-full bg-bg border border-white/10 rounded-lg px-3 py-2 text-sm text-surface focus:outline-none focus:border-primary"
                         />
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
+                        {d.status !== 'PENDING' && (
+                          <button
+                            onClick={() => handleSetStatus(d.id, 'PENDING')}
+                            disabled={isLoading}
+                            className="flex-1 min-w-[100px] bg-warning/10 text-warning text-sm font-semibold py-2.5 rounded-lg hover:bg-warning/20 disabled:opacity-50 transition"
+                          >
+                            🕐 Pending
+                          </button>
+                        )}
+                        {d.status !== 'PROCESSING' && (
+                          <button
+                            onClick={() => handleSetStatus(d.id, 'PROCESSING')}
+                            disabled={isLoading}
+                            className="flex-1 min-w-[100px] bg-secondary/10 text-secondary text-sm font-semibold py-2.5 rounded-lg hover:bg-secondary/20 disabled:opacity-50 transition"
+                          >
+                            ⚙️ Processing
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleAction(d.id, 'approve')}
+                          onClick={() => handleSetStatus(d.id, 'APPROVED')}
                           disabled={isLoading}
-                          className="flex-1 bg-primary text-bg text-sm font-bold py-2.5 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition"
+                          className="flex-1 min-w-[100px] bg-primary text-bg text-sm font-bold py-2.5 rounded-lg hover:bg-primary/90 disabled:opacity-50 transition"
                         >
-                          {isLoading ? 'Processing…' : '✓ Approve & Credit Balance'}
+                          {isLoading ? 'Saving…' : '✓ Approve'}
                         </button>
                         <button
-                          onClick={() => handleAction(d.id, 'reject')}
+                          onClick={() => handleSetStatus(d.id, 'REJECTED')}
                           disabled={isLoading}
-                          className="flex-1 bg-danger/20 text-danger text-sm font-semibold py-2.5 rounded-lg hover:bg-danger/30 disabled:opacity-50 transition"
+                          className="flex-1 min-w-[100px] bg-danger/20 text-danger text-sm font-semibold py-2.5 rounded-lg hover:bg-danger/30 disabled:opacity-50 transition"
                         >
                           ✗ Reject
                         </button>

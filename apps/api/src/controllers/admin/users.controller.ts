@@ -54,7 +54,7 @@ export async function getUser(req: AuthRequest, res: Response): Promise<void> {
         role: true, isActive: true, createdAt: true,
         virtualWallets: {
           select: {
-            id: true, label: true, status: true, createdAt: true,
+            id: true, label: true, address: true, status: true, createdAt: true,
             ledgerAccount: { select: { balanceUnits: true } },
           },
         },

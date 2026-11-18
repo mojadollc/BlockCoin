@@ -23,9 +23,10 @@ const NETWORK_META: Record<string, { label: string; short: string; placeholder: 
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  PENDING:  'bg-warning/20 text-warning',
-  APPROVED: 'bg-primary/20 text-primary',
-  REJECTED: 'bg-danger/20 text-danger',
+  PENDING:    'bg-warning/20 text-warning',
+  PROCESSING: 'bg-secondary/20 text-secondary',
+  APPROVED:   'bg-primary/20 text-primary',
+  REJECTED:   'bg-danger/20 text-danger',
 }
 
 export default function DepositsPage() {

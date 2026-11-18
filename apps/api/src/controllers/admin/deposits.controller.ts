@@ -122,7 +122,7 @@ export async function rejectDeposit(req: AuthRequest, res: Response): Promise<vo
 
     const deposit = await prisma.depositRequest.findUnique({ where: { id } })
     if (!deposit) { notFound(res); return }
-    if (deposit.status !== 'PENDING') { badRequest(res, 'Deposit is not pending'); return }
+    if (deposit.status !== 'PENDING' && deposit.status !== 'PROCESSING') { badRequest(res, 'Deposit cannot be rejected'); return }
 
     await prisma.$transaction([
       prisma.depositRequest.update({
@@ -146,6 +146,96 @@ export async function rejectDeposit(req: AuthRequest, res: Response): Promise<vo
     ])
 
     ok(res, null, 'Deposit rejected')
+  } catch {
+    serverError(res)
+  }
+}
+
+export async function setDepositStatus(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const { id } = req.params
+    const { status, adminNote } = req.body
+
+    const allowed = ['PENDING', 'PROCESSING', 'APPROVED', 'REJECTED']
+    if (!allowed.includes(status)) { badRequest(res, 'Invalid status'); return }
+
+    const deposit = await prisma.depositRequest.findUnique({ where: { id } })
+    if (!deposit) { notFound(res); return }
+    if (deposit.status === 'APPROVED') { badRequest(res, 'Already approved'); return }
+
+    // APPROVED path — credit the ledger
+    if (status === 'APPROVED') {
+      const amountUnits = displayToUnits(deposit.amountDisplay)
+      if (amountUnits <= 0n) { badRequest(res, 'Invalid amount'); return }
+      await ensureLedgerAccount(prisma, deposit.walletId)
+
+      let balanceAfterDisplay: string
+      try {
+        const result = await prisma.$transaction(async (tx) => {
+          const ledgerResult = await ledgerCreditDebit({
+            prisma: tx as unknown as typeof prisma,
+            walletId: deposit.walletId,
+            type: 'CREDIT',
+            amountUnits,
+            description: `USDT deposit (${deposit.network}) — tx: ${deposit.txHash.slice(0, 16)}…`,
+            actorId: req.user!.sub,
+            idempotencyKey: `deposit:${deposit.id}`,
+          })
+          await tx.transaction.create({
+            data: {
+              environment: 'INTERNAL',
+              type: 'CREDIT',
+              amountUnits,
+              status: 'COMPLETED',
+              toWalletId: deposit.walletId,
+              idempotencyKey: `tx:deposit:${deposit.id}`,
+            },
+          })
+          await tx.depositRequest.update({
+            where: { id },
+            data: { status: 'APPROVED', adminNote: adminNote ?? null, reviewedBy: req.user!.sub, reviewedAt: new Date() },
+          })
+          await tx.adminLog.create({
+            data: {
+              actorId: req.user!.sub, action: 'APPROVE_DEPOSIT',
+              targetType: 'DepositRequest', targetId: id,
+              metadata: { txHash: deposit.txHash, amountDisplay: deposit.amountDisplay, network: deposit.network },
+            },
+          })
+          return ledgerResult
+        })
+        balanceAfterDisplay = result.balanceAfterDisplay
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : 'Unknown error'
+        if (msg === 'Insufficient balance') { badRequest(res, msg); return }
+        throw e
+      }
+
+      io.to(`wallet:${deposit.walletId}`).emit('balance:update', { walletId: deposit.walletId, balanceDisplay: balanceAfterDisplay })
+      ok(res, { balanceAfterDisplay })
+      return
+    }
+
+    // PENDING / PROCESSING / REJECTED — simple status update
+    await prisma.$transaction([
+      prisma.depositRequest.update({
+        where: { id },
+        data: {
+          status: status as 'PENDING' | 'PROCESSING' | 'REJECTED',
+          adminNote: adminNote ?? null,
+          ...(status === 'REJECTED' ? { reviewedBy: req.user!.sub, reviewedAt: new Date() } : {}),
+        },
+      }),
+      prisma.adminLog.create({
+        data: {
+          actorId: req.user!.sub, action: `SET_DEPOSIT_${status}`,
+          targetType: 'DepositRequest', targetId: id,
+          metadata: { txHash: deposit.txHash, adminNote },
+        },
+      }),
+    ])
+
+    ok(res, null, `Deposit marked ${status}`)
   } catch {
     serverError(res)
   }

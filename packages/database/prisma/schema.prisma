@@ -58,6 +58,7 @@ enum DepositNetwork {
 
 enum DepositStatus {
   PENDING
+  PROCESSING
   APPROVED
   REJECTED
 }

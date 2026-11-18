@@ -30,7 +30,7 @@ interface UserDetail {
   isActive: boolean
   createdAt: string
   virtualWallets: Array<{
-    id: string; label: string; status: string; createdAt: string
+    id: string; label: string; address: string; status: string; createdAt: string
     ledgerAccount: { balanceUnits: string } | null
   }>
 }
@@ -135,6 +135,13 @@ export default function UserDetailPage() {
               <span className={`text-xs px-2 py-0.5 rounded-full ${user.isActive ? 'bg-primary/20 text-primary' : 'bg-danger/20 text-danger'}`}>
                 {user.isActive ? 'Active' : 'Suspended'}
               </span>
+            </div>
+            <div className="mt-4 space-y-1.5">
+              <p className="text-xs text-surface/40"><span className="text-surface/30">ID:</span> <span className="font-mono">{user.id}</span></p>
+              <p className="text-xs text-surface/40"><span className="text-surface/30">Joined:</span> {new Date(user.createdAt).toLocaleString()}</p>
+              <p className="text-xs text-surface/40"><span className="text-surface/30">Total Balance:</span> <span className="text-primary font-mono font-semibold">
+                {unitsToDisplay(user.virtualWallets.reduce((sum, w) => sum + BigInt(w.ledgerAccount?.balanceUnits ?? '0'), 0n))} USDT
+              </span></p>
             </div>
           </div>
           {/* Only show action buttons if WRITE permission */}
@@ -249,16 +256,22 @@ export default function UserDetailPage() {
         ) : (
           <div className="divide-y divide-white/5">
             {user.virtualWallets.map(w => (
-              <div key={w.id} className="px-4 py-3 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">{w.label}</p>
-                  <p className="text-xs text-surface/40 mt-0.5 font-mono">{w.id}</p>
+              <div key={w.id} className="px-4 py-4 flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium">{w.label}</p>
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${w.status === 'ACTIVE' ? 'bg-primary/20 text-primary' : 'bg-danger/20 text-danger'}`}>
+                      {w.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-surface/30 mt-1 font-mono truncate">ID: {w.id}</p>
+                  <p className="text-xs text-surface/30 mt-0.5 font-mono truncate">Address: {w.address}</p>
+                  <p className="text-xs text-surface/30 mt-0.5">Created: {new Date(w.createdAt).toLocaleString()}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-mono text-primary">
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-mono text-primary font-semibold">
                     {w.ledgerAccount ? unitsToDisplay(BigInt(w.ledgerAccount.balanceUnits)) : '0.000000'} USDT
                   </p>
-                  <p className="text-xs text-surface/40 mt-0.5">{w.status}</p>
                 </div>
               </div>
             ))}
