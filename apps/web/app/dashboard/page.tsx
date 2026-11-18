@@ -21,12 +21,16 @@ interface Tx {
   amountDisplay: string
   status: string
   createdAt: string
+  walletLabel?: string
+  network?: string
+  isDeposit?: boolean
 }
 
 const TX_LABEL: Record<string, string> = {
   CREDIT: 'Money Received',
   DEBIT: 'Money Sent',
   TRANSFER: 'Transfer',
+  DEPOSIT: 'Deposit Request',
 }
 
 export default function DashboardPage() {
@@ -44,7 +48,19 @@ export default function DashboardPage() {
     Promise.all([
       api.get<Wallet[]>('/api/v1/wallets'),
       api.get<{ items: Tx[] }>('/api/v1/transactions?limit=5'),
-    ]).then(([w, t]) => { setWallets(w); setTxs(t.items) })
+      api.get<{ items: any[] }>('/api/v1/deposits?limit=5'),
+    ]).then(([w, t, d]) => {
+      setWallets(w)
+      const deps: Tx[] = d.items.map((dep: any) => ({
+        id: dep.id, type: 'DEPOSIT', amountDisplay: dep.amountDisplay,
+        status: dep.status, createdAt: dep.createdAt,
+        walletLabel: dep.wallet?.label, network: dep.network, isDeposit: true,
+      }))
+      const merged = [...t.items, ...deps]
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 5)
+      setTxs(merged)
+    })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [loadWallets])
@@ -146,33 +162,46 @@ export default function DashboardPage() {
                 <p className="text-surface/40 text-sm">No transactions yet</p>
               </div>
             ) : (
-              <div className="divide-y divide-white/5">
+                  <div className="divide-y divide-white/5">
                 {txs.map(tx => (
-                  <Link key={tx.id} href={`/dashboard/transactions/${tx.id}`}
+                  <Link key={tx.id} href={tx.isDeposit ? '/dashboard/deposits' : `/dashboard/transactions/${tx.id}`}
                     className="flex items-center gap-3 px-4 py-3.5 active:bg-white/5 transition">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                      tx.type === 'CREDIT' ? 'bg-primary/15' :
-                      tx.type === 'DEBIT'  ? 'bg-danger/15' : 'bg-secondary/15'
+                      tx.type === 'CREDIT'  ? 'bg-primary/15' :
+                      tx.type === 'DEBIT'   ? 'bg-danger/15' :
+                      tx.type === 'DEPOSIT' ? 'bg-warning/15' : 'bg-secondary/15'
                     }`}>
                       <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
-                        className={tx.type === 'CREDIT' ? 'text-primary' : tx.type === 'DEBIT' ? 'text-danger' : 'text-secondary'}>
+                        className={tx.type === 'CREDIT' ? 'text-primary' : tx.type === 'DEBIT' ? 'text-danger' : tx.type === 'DEPOSIT' ? 'text-warning' : 'text-secondary'}>
                         {tx.type === 'CREDIT'
                           ? <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m0 0l-4-4m4 4l4-4" />
                           : tx.type === 'DEBIT'
                           ? <path strokeLinecap="round" strokeLinejoin="round" d="M12 20V4m0 0l-4 4m4-4l4 4" />
+                          : tx.type === 'DEPOSIT'
+                          ? <path strokeLinecap="round" strokeLinejoin="round" d="M3 16v2a2 2 0 002 2h14a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4" />
                           : <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         }
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-surface">{TX_LABEL[tx.type] ?? tx.type}</p>
-                      <p className="text-xs text-surface/40 mt-0.5">
-                        {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <p className="text-xs text-surface/40">
+                          {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                        {tx.walletLabel && <span className="text-xs text-surface/30">· {tx.walletLabel}</span>}
+                        {tx.isDeposit && (
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                            tx.status === 'APPROVED' ? 'bg-primary/20 text-primary' :
+                            tx.status === 'REJECTED' ? 'bg-danger/20 text-danger' :
+                            'bg-warning/20 text-warning'
+                          }`}>{tx.status}</span>
+                        )}
+                      </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className={`text-sm font-bold font-mono ${tx.type === 'CREDIT' ? 'text-primary' : 'text-danger'}`}>
-                        {tx.type === 'CREDIT' ? '+' : '-'}{tx.amountDisplay}
+                      <p className={`text-sm font-bold font-mono ${tx.type === 'DEBIT' ? 'text-danger' : 'text-primary'}`}>
+                        {tx.type === 'DEBIT' ? '-' : '+'}{tx.amountDisplay}
                       </p>
                       <p className="text-[10px] text-surface/30 mt-0.5">USDT</p>
                     </div>

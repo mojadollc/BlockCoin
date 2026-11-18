@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 interface TxItem {
   id: string
-  kind: 'transaction' | 'payment'
+  kind: 'transaction' | 'payment' | 'deposit'
   type: string
   amountDisplay: string
   status: string
@@ -28,7 +28,7 @@ function sanitize(text: string | null): string {
     .replace(/\s{2,}/g, ' ').trim()
 }
 
-const FILTERS = ['All', 'COMPLETED', 'PENDING', 'PROCESSING', 'FAILED']
+const FILTERS = ['All', 'COMPLETED', 'PENDING', 'PROCESSING', 'FAILED', 'APPROVED', 'REJECTED']
 
 const TX_ICON = {
   CREDIT: (
@@ -46,12 +46,18 @@ const TX_ICON = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
     </svg>
   ),
+  DEPOSIT: (
+    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16v2a2 2 0 002 2h14a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4" />
+    </svg>
+  ),
 }
 
 const TX_LABEL: Record<string, string> = {
   CREDIT: 'Money Received',
   DEBIT: 'Money Sent',
   TRANSFER: 'Transfer',
+  DEPOSIT: 'Deposit Request',
 }
 
 function groupByDate(items: TxItem[]) {
@@ -83,9 +89,10 @@ export default function TransactionsPage() {
       const params = new URLSearchParams({ page: String(page), limit: '20' })
       if (status) params.set('status', status)
 
-      const [txRes, simRes] = await Promise.allSettled([
+      const [txRes, simRes, depRes] = await Promise.allSettled([
         api.get<{ items: any[]; total: number }>(`/api/v1/transactions?${params}`),
         api.get<{ items: any[]; total: number }>(`/api/v1/simulations?${params}`),
+        api.get<{ items: any[]; total: number }>(`/api/v1/deposits?${params}`),
       ])
 
       const txs: TxItem[] = txRes.status === 'fulfilled'
@@ -108,8 +115,18 @@ export default function TransactionsPage() {
           }))
         : []
 
+      const deps: TxItem[] = depRes.status === 'fulfilled'
+        ? depRes.value.items.map(d => ({
+            id: d.id, kind: 'deposit' as const,
+            type: 'DEPOSIT', amountDisplay: d.amountDisplay, status: d.status,
+            description: `Deposit via ${d.network === 'TRON_TRC20' ? 'TRON TRC-20' : 'Ethereum ERC-20'}`,
+            walletLabel: d.wallet?.label ?? null, createdAt: d.createdAt,
+            detailPath: `/dashboard/deposits`,
+          }))
+        : []
+
       const seen = new Set<string>()
-      const merged = [...txs, ...sims]
+      const merged = [...txs, ...sims, ...deps]
         .filter(i => { if (seen.has(i.id)) return false; seen.add(i.id); return true })
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 20)
@@ -117,7 +134,8 @@ export default function TransactionsPage() {
       setItems(merged)
       setTotal(
         (txRes.status === 'fulfilled' ? txRes.value.total : 0) +
-        (simRes.status === 'fulfilled' ? simRes.value.total : 0)
+        (simRes.status === 'fulfilled' ? simRes.value.total : 0) +
+        (depRes.status === 'fulfilled' ? depRes.value.total : 0)
       )
     } finally {
       setLoading(false)
@@ -183,11 +201,12 @@ export default function TransactionsPage() {
                       className="flex items-center gap-3 px-4 py-3.5 active:bg-white/5 transition"
                     >
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                        item.type === 'CREDIT' ? 'bg-primary/15 text-primary' :
-                        item.type === 'DEBIT'  ? 'bg-danger/15 text-danger' :
+                        item.type === 'CREDIT'  ? 'bg-primary/15 text-primary' :
+                        item.type === 'DEBIT'   ? 'bg-danger/15 text-danger' :
+                        item.type === 'DEPOSIT' ? 'bg-warning/15 text-warning' :
                         'bg-secondary/15 text-secondary'
                       }`}>
-                        {TX_ICON[item.type as keyof typeof TX_ICON] ?? TX_ICON.TRANSFER}
+                        {(TX_ICON as any)[item.type] ?? TX_ICON.TRANSFER}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-surface truncate">
@@ -197,14 +216,17 @@ export default function TransactionsPage() {
                           <p className="text-xs text-surface/40">
                             {new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                           </p>
+                          {item.walletLabel && (
+                            <span className="text-xs text-surface/30 truncate max-w-[80px]">· {item.walletLabel}</span>
+                          )}
                           <StatusBadge status={item.status as any} />
                         </div>
                       </div>
                       <div className="text-right shrink-0">
                         <p className={`text-sm font-bold font-mono ${
-                          item.type === 'CREDIT' ? 'text-primary' : 'text-danger'
+                          item.type === 'DEBIT' ? 'text-danger' : 'text-primary'
                         }`}>
-                          {item.type === 'CREDIT' ? '+' : '-'}{item.amountDisplay}
+                          {item.type === 'DEBIT' ? '-' : '+'}{item.amountDisplay}
                         </p>
                         <p className="text-[10px] text-surface/30 mt-0.5">USDT</p>
                       </div>
