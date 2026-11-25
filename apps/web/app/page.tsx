@@ -135,6 +135,7 @@ export default async function LandingPage() {
             <a href="#how-it-works" className="hover:text-surface transition-colors">How It Works</a>
             <a href="#pricing" className="hover:text-surface transition-colors">Pricing</a>
             <a href="#testimonials" className="hover:text-surface transition-colors">Reviews</a>
+            <Link href="/advertise" className="hover:text-surface transition-colors">Advertise</Link>
           </div>
           <div className="flex items-center gap-2">
             <Link href="/login" className="text-sm text-surface/60 hover:text-surface transition-colors px-4 py-2 rounded-lg hover:bg-white/5">
@@ -352,6 +353,7 @@ export default async function LandingPage() {
           <div className="flex items-center gap-6 text-xs text-surface/30">
             <Link href="/login" className="hover:text-surface transition-colors">Sign In</Link>
             <Link href="/register" className="hover:text-surface transition-colors">Register</Link>
+            <Link href="/advertise" className="hover:text-surface transition-colors">Advertise</Link>
           </div>
         </div>
       </footer>
