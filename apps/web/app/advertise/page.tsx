@@ -5,6 +5,15 @@ import { useState } from 'react'
 
 const SITE_URL = 'https://blockcoin.beegoo.app'
 
+function buildTrackingUrl(creativeId: number, size: string, ref = 'YOUR-SITE.COM') {
+  const params = new URLSearchParams({
+    ref,
+    creative: String(creativeId),
+    size,
+  })
+  return `${SITE_URL}/go?${params.toString()}`
+}
+
 const CREATIVES = [
   {
     id: 1,
@@ -59,9 +68,10 @@ const AD_SIZES = [
   { label: 'Square', width: 250, height: 250, popular: false },
 ]
 
-function buildSnippet(imageUrl: string, width: number, height: number) {
+function buildSnippet(imageUrl: string, width: number, height: number, creativeId: number) {
   const src = `${SITE_URL}${imageUrl}`
-  return `<a href="${SITE_URL}" target="_blank" rel="noopener sponsored" style="display:inline-block;width:${width}px;height:${height}px;overflow:hidden;">
+  const trackingUrl = buildTrackingUrl(creativeId, `${width}x${height}`)
+  return `<a href="${trackingUrl}" target="_blank" rel="noopener sponsored" style="display:inline-block;width:${width}px;height:${height}px;overflow:hidden;">
   <img src="${src}" alt="BlockCoin — USDT Wallet Platform" width="${width}" height="${height}" style="width:${width}px;height:${height}px;object-fit:cover;border:0;" />
 </a>`
 }
@@ -186,7 +196,8 @@ export default function AdvertisePage() {
 
   const creative = CREATIVES[activeCreative]
   const size = AD_SIZES[activeSize]
-  const snippet = buildSnippet(creative.file, size.width, size.height)
+  const trackingUrl = buildTrackingUrl(creative.id, `${size.width}x${size.height}`)
+  const snippet = buildSnippet(creative.file, size.width, size.height, creative.id)
 
   return (
     <div className="min-h-screen bg-bg text-surface">
@@ -378,6 +389,42 @@ export default function AdvertisePage() {
                 </div>
               </div>
 
+              {/* Tracking URL info */}
+              <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
+                <div className="px-5 py-4 border-b border-white/5 flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5B942" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Click Tracking</p>
+                    <p className="text-xs text-surface/30 mt-0.5">Every ad click is tracked with UTM parameters</p>
+                  </div>
+                </div>
+                <div className="px-5 py-4 space-y-3">
+                  <div className="bg-[#0a1018] rounded-xl px-4 py-3">
+                    <p className="text-xs text-surface/30 mb-1.5 font-semibold uppercase tracking-wider">Destination URL</p>
+                    <p className="text-xs font-mono text-primary break-all">{trackingUrl.replace('YOUR-SITE.COM', 'your-site.com')}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { param: 'utm_source', value: 'your-site.com', note: 'Publisher domain' },
+                      { param: 'utm_medium', value: 'display', note: 'Ad type' },
+                      { param: 'utm_campaign', value: 'blockcoin-ads', note: 'Campaign name' },
+                      { param: 'utm_content', value: `creative-${creative.id}`, note: 'Which creative' },
+                    ].map(p => (
+                      <div key={p.param} className="bg-[#0a1018] rounded-lg px-3 py-2.5">
+                        <p className="text-xs font-mono text-secondary/70">{p.param}</p>
+                        <p className="text-xs font-bold text-surface/70 mt-0.5 truncate">{p.value}</p>
+                        <p className="text-xs text-surface/25 mt-0.5">{p.note}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-surface/30 leading-relaxed">
+                    Replace <span className="font-mono text-surface/50 bg-white/5 px-1.5 py-0.5 rounded">YOUR-SITE.COM</span> in the snippet with your actual domain so you can identify traffic sources in your analytics.
+                  </p>
+                </div>
+              </div>
+
               {/* Snippet card */}
               <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
                 <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
@@ -392,7 +439,7 @@ export default function AdvertisePage() {
                 <div className="relative">
                   <pre className="text-xs text-surface/40 bg-[#0a1018] p-5 overflow-x-auto leading-relaxed whitespace-pre font-mono scrollbar-none">
                     <span className="text-secondary/70">{'<a'}</span>
-                    {` href="${SITE_URL}"\n   target="_blank"\n   rel="noopener sponsored"\n   style="display:inline-block;\n          width:${size.width}px;\n          height:${size.height}px;\n          overflow:hidden;">\n  `}
+                    {` href="${trackingUrl.replace('YOUR-SITE.COM', 'your-site.com')}"\n   target="_blank"\n   rel="noopener sponsored"\n   style="display:inline-block;\n          width:${size.width}px;\n          height:${size.height}px;\n          overflow:hidden;">\n  `}
                     <span className="text-secondary/70">{'<img'}</span>
                     {`\n    src="${SITE_URL}${creative.file}"\n    alt="BlockCoin"\n    width="${size.width}"\n    height="${size.height}"\n    style="width:${size.width}px;\n           height:${size.height}px;\n           object-fit:cover;\n           border:0;" />\n`}
                     <span className="text-secondary/70">{'</a>'}</span>
@@ -408,7 +455,7 @@ export default function AdvertisePage() {
               <div className="flex gap-3 bg-primary/5 border border-primary/15 rounded-xl px-4 py-3.5">
                 <span className="text-primary text-base shrink-0 mt-0.5">💡</span>
                 <p className="text-xs text-surface/50 leading-relaxed">
-                  Paste the snippet anywhere in your HTML. The image is hosted on our CDN — no setup needed on your end.
+                  All clicks route through <span className="font-mono text-primary/80">/go</span> and land on <span className="font-mono text-primary/80">/register</span> with UTM params — track conversions in Google Analytics or any analytics tool.
                 </p>
               </div>
             </div>
