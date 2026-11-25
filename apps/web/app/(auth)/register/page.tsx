@@ -202,21 +202,6 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <style jsx global>{`
-        @keyframes auth-in {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20% { transform: translateX(-6px); }
-          40% { transform: translateX(6px); }
-          60% { transform: translateX(-4px); }
-          80% { transform: translateX(4px); }
-        }
-        .animate-auth-in { animation: auth-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        .animate-shake { animation: shake 0.4s ease-out; }
-      `}</style>
     </div>
   )
 }

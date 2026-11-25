@@ -152,33 +152,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </div>
 
-      <style jsx global>{`
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.6; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.05); }
-        }
-        @keyframes pulse-slow2 {
-          0%, 100% { opacity: 0.4; transform: scale(1.05); }
-          50% { opacity: 0.8; transform: scale(1); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(-1deg); }
-          50% { transform: translateY(-12px) rotate(1deg); }
-        }
-        @keyframes float2 {
-          0%, 100% { transform: translateY(-8px) rotate(1deg); }
-          50% { transform: translateY(4px) rotate(-1deg); }
-        }
-        @keyframes float3 {
-          0%, 100% { transform: translateY(4px) rotate(0.5deg); }
-          50% { transform: translateY(-8px) rotate(-0.5deg); }
-        }
-        .animate-pulse-slow { animation: pulse-slow 6s ease-in-out infinite; }
-        .animate-pulse-slow2 { animation: pulse-slow2 8s ease-in-out infinite; }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        .animate-float2 { animation: float2 7s ease-in-out infinite; }
-        .animate-float3 { animation: float3 5s ease-in-out infinite; }
-      `}</style>
     </div>
   )
 }
