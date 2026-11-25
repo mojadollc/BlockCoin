@@ -15,12 +15,13 @@ const COOKIE_OPTS = {
 export async function register(req: Request, res: Response): Promise<void> {
   try {
     const { email, password, firstName, lastName } = req.body
-    const existing = await prisma.user.findUnique({ where: { email } })
+    const normalizedEmail = email.toLowerCase().trim()
+    const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } })
     if (existing) { badRequest(res, 'Email already registered'); return }
 
     const passwordHash = await argon2.hash(password, { type: argon2.argon2id })
     const user = await prisma.user.create({
-      data: { email, passwordHash, firstName, lastName },
+      data: { email: normalizedEmail, passwordHash, firstName, lastName },
       select: { id: true, email: true, firstName: true, lastName: true, role: true },
     })
     created(res, user)
@@ -32,7 +33,7 @@ export async function register(req: Request, res: Response): Promise<void> {
 export async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body
-    const user = await prisma.user.findUnique({ where: { email } })
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } })
     if (!user || !user.isActive) { unauthorized(res, 'Invalid credentials'); return }
 
     const valid = await argon2.verify(user.passwordHash, password)
