@@ -54,12 +54,12 @@ export default function VideoAdPage({ params }: { params: { slug: string } }) {
 
   const embedSnippet = `<iframe
   src="${pageUrl}?embed=1"
-  width="640"
-  height="360"
+  width="400"
+  height="711"
   frameborder="0"
   allow="autoplay; fullscreen"
   allowfullscreen
-  style="border:0;border-radius:12px;overflow:hidden;">
+  style="border:0;border-radius:24px;overflow:hidden;">
 </iframe>`
 
   return (
