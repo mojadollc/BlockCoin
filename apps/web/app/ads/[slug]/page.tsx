@@ -20,10 +20,7 @@ const VIDEOS: Record<string, { title: string; description: string; url: string; 
   },
 }
 
-export async function generateStaticParams() {
-  return Object.keys(VIDEOS).map(slug => ({ slug }))
-}
-
+export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const video = VIDEOS[params.slug]
   if (!video) return {}
