@@ -15,6 +15,7 @@ import transactionRoutes from './routes/transactions.routes'
 import simulationRoutes from './routes/simulations.routes'
 import testnetRoutes from './routes/testnet.routes'
 import depositRoutes from './routes/deposits.routes'
+import adsRoutes from './routes/ads.routes'
 import { authenticate } from './middleware/auth'
 import { getUIFlags } from './controllers/admin/settings.controller'
 
@@ -25,6 +26,7 @@ const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3005',
   'http://localhost:3005',
   'http://localhost:3000',
+  'https://blockcoin.beegoo.app',
 ]
 
 export const io = new SocketServer(httpServer, {
@@ -68,6 +70,7 @@ app.use('/api/v1/transactions', transactionRoutes)
 app.use('/api/v1/simulations', simulationRoutes)
 app.use('/api/v1/testnet', testnetRoutes)
 app.use('/api/v1/deposits', depositRoutes)
+app.use('/api/v1/ads', adsRoutes)
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }))
 

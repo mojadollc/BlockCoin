@@ -105,7 +105,7 @@ export default function VideoAdPage({ params }: { params: { slug: string } }) {
                 <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
                 <div className="w-8 h-1 rounded-full bg-white/10" />
               </div>
-              <VideoPlayer url={videoUrl} title={video.title} trackingUrl={trackingUrl} />
+              <VideoPlayer url={videoUrl} title={video.title} trackingUrl={trackingUrl} slug={video.slug} />
             </div>
           </div>
 
