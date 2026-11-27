@@ -4,30 +4,28 @@ import Link from 'next/link'
 import VideoPlayer, { CopyUrlButton, CopySnippetButton } from './VideoPlayer'
 
 const SITE_URL = 'https://blockcoin.beegoo.app'
+const R2_BASE = 'https://pub-207464b7ca864a90b541ddb8a74af3f9.r2.dev'
 
-const VIDEOS: Record<string, { title: string; description: string; slug: string }> = {
+const VIDEOS: Record<string, { title: string; description: string; slug: string; r2Key: string }> = {
   'crypto-ads-ambassadors': {
     slug: 'crypto-ads-ambassadors',
     title: 'Crypto Ads Ambassadors',
     description: 'BlockCoin ambassador campaign — join the fastest growing USDT wallet platform.',
+    r2Key: 'ads/videos/crypto-ads-ambassadors.mp4',
   },
   'crypto-ads-hype': {
     slug: 'crypto-ads-hype',
     title: 'Crypto Ads Hype',
     description: 'Feel the energy of the BlockCoin movement — USDT wallets for the next generation.',
+    r2Key: 'ads/videos/crypto-ads-hype.mp4',
   },
-}
-
-const VIDEO_URLS: Record<string, () => string> = {
-  'crypto-ads-ambassadors': () => process.env.NEXT_PUBLIC_VIDEO_CRYPTO_ADS_AMBASSADORS ?? '',
-  'crypto-ads-hype': () => process.env.NEXT_PUBLIC_VIDEO_CRYPTO_ADS_HYPE ?? '',
 }
 
 export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const video = VIDEOS[params.slug]
   if (!video) return {}
-  const url = VIDEO_URLS[params.slug]?.()
+  const videoUrl = `${R2_BASE}/${video.r2Key}`
   return {
     title: `${video.title} — BlockCoin`,
     description: video.description,
@@ -36,7 +34,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: video.description,
       url: `${SITE_URL}/ads/${video.slug}`,
       type: 'video.other',
-      ...(url ? { videos: [{ url, type: 'video/mp4' }] } : {}),
+      videos: [{ url: videoUrl, type: 'video/mp4' }],
     },
     twitter: {
       card: 'player',
@@ -49,7 +47,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default function VideoAdPage({ params }: { params: { slug: string } }) {
   const video = VIDEOS[params.slug]
   if (!video) notFound()
-  const videoUrl = VIDEO_URLS[params.slug]?.() ?? ''
+  const videoUrl = `${R2_BASE}/${video.r2Key}`
 
   const pageUrl = `${SITE_URL}/ads/${video.slug}`
   const trackingUrl = `${SITE_URL}/go?ref=video-embed&creative=${video.slug}&size=video`
