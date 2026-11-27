@@ -461,6 +461,72 @@ export default function AdvertisePage() {
             </div>
           </div>
 
+          {/* ── Video Ads ── */}
+          <div className="mt-20 pt-16 border-t border-white/5">
+            <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+              <div>
+                <h2 className="text-sm font-bold text-surface/60 uppercase tracking-widest mb-1">Video Ads</h2>
+                <p className="text-2xl font-black tracking-tight">Embed Our Video Campaigns</p>
+              </div>
+              <span className="text-xs text-surface/30 bg-card border border-white/5 px-3 py-1.5 rounded-full">
+                Hosted on Cloudflare R2
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {[
+                {
+                  slug: 'crypto-ads-ambassadors',
+                  title: 'Crypto Ads Ambassadors',
+                  desc: 'BlockCoin ambassador campaign — join the fastest growing USDT wallet platform.',
+                  duration: 'Video Ad',
+                },
+                {
+                  slug: 'crypto-ads-hype',
+                  title: 'Crypto Ads Hype',
+                  desc: 'Feel the energy of the BlockCoin movement — USDT wallets for the next generation.',
+                  duration: 'Video Ad',
+                },
+              ].map(v => (
+                <div key={v.slug} className="bg-card border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-all group">
+                  {/* Thumbnail placeholder */}
+                  <div className="relative bg-[#0a1018] h-44 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+                    <div className="relative w-16 h-16 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="#00C89B" style={{ marginLeft: '3px' }}>
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                      </svg>
+                    </div>
+                    <span className="absolute top-3 right-3 text-xs font-bold bg-secondary/20 text-secondary px-2.5 py-1 rounded-full">
+                      ▶ MP4
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <p className="font-bold text-sm mb-1">{v.title}</p>
+                    <p className="text-xs text-surface/40 leading-relaxed mb-4">{v.desc}</p>
+                    <div className="flex gap-2">
+                      <a
+                        href={`${SITE_URL}/ads/${v.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 bg-primary text-bg text-xs font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors"
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Watch & Embed
+                      </a>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(`${SITE_URL}/ads/${v.slug}`)}
+                        className="flex items-center justify-center gap-1.5 bg-white/5 border border-white/10 text-surface/60 hover:bg-white/10 hover:text-surface text-xs font-bold px-4 py-2.5 rounded-xl transition-all"
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy URL
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* ── How it works ── */}
           <div className="mt-20 pt-16 border-t border-white/5">
             <div className="text-center mb-10">

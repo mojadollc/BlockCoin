@@ -26,5 +26,8 @@
     "ts-jest": "^29.4.15",
     "turbo": "^2.0.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1178.0"
   }
 }
