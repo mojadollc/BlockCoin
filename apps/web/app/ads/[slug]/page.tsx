@@ -94,32 +94,23 @@ export default function VideoAdPage({ params }: { params: { slug: string } }) {
           <p className="text-surface/40 text-sm max-w-xl leading-relaxed">{video.description}</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-10 items-start">
 
-          {/* Left — video player + CTA */}
+          {/* Left — 9:16 video player */}
           <div className="space-y-4">
-            <VideoPlayer url={videoUrl} title={video.title} trackingUrl={trackingUrl} />
-
-            <a
-              href={trackingUrl}
-              target="_blank"
-              rel="noopener sponsored"
-              className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-2xl px-5 py-4 hover:bg-primary/15 transition-all group"
-            >
-              <div>
-                <p className="font-bold text-sm">Start with BlockCoin</p>
-                <p className="text-xs text-surface/40 mt-0.5">Free account — no credit card required</p>
+            {/* Phone frame */}
+            <div className="relative mx-auto" style={{ maxWidth: '400px' }}>
+              {/* Notch */}
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-5 bg-black rounded-full z-20 flex items-center justify-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                <div className="w-8 h-1 rounded-full bg-white/10" />
               </div>
-              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#101820" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </div>
-            </a>
+              <VideoPlayer url={videoUrl} title={video.title} trackingUrl={trackingUrl} />
+            </div>
           </div>
 
-          {/* Right — URL, embed, tracking */}
-          <div className="space-y-4">
+          {/* Right — info panel */}
+          <div className="space-y-4 lg:pt-2">
 
             {/* Unique URL */}
             <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
